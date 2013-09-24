@@ -16,10 +16,6 @@ class FixedRotor extends Rotor {
     }
 
     @Override
-    void setSetting(int position) {
-    }
-
-    @Override
     boolean advances() {
         return false;
     }

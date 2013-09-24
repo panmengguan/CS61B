@@ -65,9 +65,11 @@ class Machine {
 
     /** Returns the converted character from CH.*/
     char convert(char ch) {
+        boolean initialNotch = rotors[4].atNotch();
+
         rotors[4].advance();
 
-        if (rotors[3].atNotch()) {
+        if (rotors[3].atNotch() && !initialNotch) {
             rotors[3].advance();
         }
 

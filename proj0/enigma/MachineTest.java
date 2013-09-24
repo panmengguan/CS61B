@@ -31,6 +31,28 @@ public class MachineTest {
         assertEquals(Rotor.toIndex('B'), ro4.getSetting());
     }
 
+    @Test public void advance2() {
+        Rotor ref = RotorGenerator.getRotor("B");
+        Rotor fix = RotorGenerator.getRotor("BETA");
+        Rotor ro3 = RotorGenerator.getRotor("III");
+        Rotor ro4 = RotorGenerator.getRotor("II");
+        Rotor ro5 = RotorGenerator.getRotor("I");
+
+        fix.setSetting(Rotor.toIndex('B'));
+        ro3.setSetting(Rotor.toIndex('C'));
+        ro4.setSetting(Rotor.toIndex('D'));
+        ro5.setSetting(Rotor.toIndex('Z'));
+
+        Machine m1 = new Machine(ref, fix, ro3, ro4, ro5);
+
+        m1.convert('C');
+
+        assertEquals(Rotor.toIndex('B'), fix.getSetting());
+        assertEquals(Rotor.toIndex('C'), ro3.getSetting());
+        assertEquals(Rotor.toIndex('D'), ro4.getSetting());
+        assertEquals(Rotor.toIndex('A'), ro5.getSetting());
+    }
+
     @Test public void doubleStep() {
         Rotor ref = RotorGenerator.getRotor("B");
         Rotor fix = RotorGenerator.getRotor("BETA");
