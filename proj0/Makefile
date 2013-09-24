@@ -39,17 +39,15 @@ enigma/Main.class: $(SRC)
 style:
 	$(STYLEPROG) enigma/*.java
 
-check: enigma/Main.class
+check: enigma/*.class
 	@code=0; \
 	echo "Testing correct inputs:"; \
 	if ! $(TEST_CORRECT) $(CORRECT_TESTS); then code=1; fi; \
 	echo; echo "Testing erroneous inputs:"; \
 	if ! $(TEST_ERROR) $(ERROR_TESTS)/*.inp; then code=1; fi; \
 	test $$code -eq 0
-
-
-test: enigma/*.class
-	java enigma.MachineTest engima.RotorTest
+	java enigma.MachineTest
+	java enigma.RotorTest
 
 clean:
 	$(RM) enigma/*.class */*~ *~ OUT

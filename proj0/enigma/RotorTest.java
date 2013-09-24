@@ -130,7 +130,7 @@ public class RotorTest {
         fixed.setSetting(Rotor.toIndex('B'));
         fixed.advance();
 
-        assertEquals(Rotor.toIndex('E'),
+        assertEquals(Rotor.toIndex('X'),
                      fixed.convertForward(Rotor.toIndex('B')));
     }
 }
