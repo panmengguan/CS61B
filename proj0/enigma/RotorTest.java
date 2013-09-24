@@ -54,7 +54,7 @@ public class RotorTest {
             Rotor.OnNotchAdvance() {
 
                 @Override
-                public void onNotchAdvance(Rotor rotor) {
+                public void onNotchAdvance() {
                     dummy[0] += 1;
                 }
             };

@@ -19,4 +19,4 @@ style:
 
 test:
 	cd ..; java enigma.RotorTest
-	cd ..; java enigma.EnigmaTest
+	cd ..; java enigma.MachineTest

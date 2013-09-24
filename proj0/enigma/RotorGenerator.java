@@ -74,6 +74,12 @@ class RotorGenerator {
 
             char[] backwardChars = spec[2].toCharArray();
 
+            char[] notchesCH = spec[3].toCharArray();
+
+            for (int i = 0; i < notchesCH.length; i += 1) {
+                notches.add(Rotor.toIndex(notchesCH[i]));
+            }
+
             Map<Integer, Integer> backwardMap = getMapping(backwardChars);
             return new Rotor(forwardMap, backwardMap, notches);
 

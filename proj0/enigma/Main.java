@@ -4,12 +4,19 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /** Enigma simulator.
  *  @author Kiet Lam
  */
 public final class Main {
 
-    // WARNING: Not all methods that have code in them are complete!
+    /** The expected number of space delimited strings in a config line.*/
+    static final int EXPECTED_STRS_CONFIG_NUM = 7;
+
+    /** The expected number of rotors.*/
+    static final int EXPECTED_ROTORS_NUM = 5;
 
     /** Process a sequence of encryptions and decryptions, as
      *  specified in the input from the standard input.  Print the
@@ -20,8 +27,6 @@ public final class Main {
         BufferedReader input =
             new BufferedReader(new InputStreamReader(System.in));
 
-        buildRotors();
-
         M = null;
 
         try {
@@ -30,10 +35,14 @@ public final class Main {
                 if (line == null) {
                     break;
                 }
+
                 if (isConfigurationLine(line)) {
-                    M = new Machine();
-                    configure(M, line);
+                    M = readConfiguration(line);
                 } else {
+                    if (M == null) {
+                        System.exit(1);
+                    }
+
                     printMessageLine(M.convert(standardize(line)));
                 }
             }
@@ -45,31 +54,95 @@ public final class Main {
 
     /** Return true iff LINE is an Enigma configuration line. */
     private static boolean isConfigurationLine(String line) {
-        return false; // FIXME
+        if (line.equals("") || line.equals("\n")
+            || line.length() <= 0) {
+            return false;
+        }
+
+        return line.charAt(0) == '*';
     }
 
-    /** Configure M according to the specification given on CONFIG,
-     *  which must have the format specified in the assignment. */
-    private static void configure(Machine M, String config) {
-        // FIXME
+    /** Returns a Machine given a valid configuration LINE.*/
+    private static Machine readConfiguration(String line) {
+        String[] strs = line.split(" ");
+        Set<String> rotors = new HashSet<String>();
+
+        if (strs.length != EXPECTED_STRS_CONFIG_NUM) {
+            return null;
+        }
+
+        if (!RotorGenerator.REFLECTORS.contains(strs[1])) {
+            return null;
+        }
+
+        Rotor reflector = RotorGenerator.getRotor(strs[1]);
+        rotors.add(strs[1]);
+
+        if (!RotorGenerator.FIXED_ROTORS.contains(strs[2])) {
+            return null;
+        }
+
+        Rotor fixed = RotorGenerator.getRotor(strs[2]);
+        rotors.add(strs[2]);
+
+        if (!RotorGenerator.NORMAL_ROTORS.contains(strs[3])) {
+            return null;
+        }
+
+        Rotor rotor3 = RotorGenerator.getRotor(strs[3]);
+        rotors.add(strs[3]);
+
+        if (!RotorGenerator.NORMAL_ROTORS.contains(strs[4])) {
+            return null;
+        }
+
+        Rotor rotor4 = RotorGenerator.getRotor(strs[4]);
+        rotors.add(strs[4]);
+
+        if (!RotorGenerator.NORMAL_ROTORS.contains(strs[5])) {
+            return null;
+        }
+
+        Rotor rotor5 = RotorGenerator.getRotor(strs[5]);
+        rotors.add(strs[5]);
+
+        if (!strs[6].matches("[A-Z]+") || strs[6].length() != 4) {
+            return null;
+        }
+
+        char[] inits = strs[6].toCharArray();
+
+        fixed.setSetting(Rotor.toIndex(inits[0]));
+        rotor3.setSetting(Rotor.toIndex(inits[1]));
+        rotor4.setSetting(Rotor.toIndex(inits[2]));
+        rotor5.setSetting(Rotor.toIndex(inits[3]));
+
+        if (rotors.size() != EXPECTED_ROTORS_NUM) {
+            return null;
+        }
+
+        return new Machine(reflector, fixed, rotor3, rotor4, rotor5);
     }
 
     /** Return the result of converting LINE to all upper case,
      *  removing all blanks and tabs.  It is an error if LINE contains
      *  characters other than letters and blanks. */
     private static String standardize(String line) {
-        return line; // FIXME
+        line = line.replaceAll("\t", "");
+        line = line.replaceAll(" ", "");
+        line = line.replaceAll("\n", "");
+        line = line.toUpperCase();
+
+        if (!line.matches("[A-Z]+")) {
+            return "";
+        }
+
+        return line;
     }
 
     /** Print MSG in groups of five (except that the last group may
      *  have fewer letters). */
     private static void printMessageLine(String msg) {
-        // FIXME
+        System.out.println(msg);
     }
-
-    /** Create all the necessary rotors. */
-    private static void buildRotors() {
-        // FIXME
-    }
-
 }

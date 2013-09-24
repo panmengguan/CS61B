@@ -49,7 +49,7 @@ check: enigma/Main.class
 
 
 test: enigma/*.class
-	java enigma.RotorTest enigma.EnigmaTest
+	java enigma.MachineTest engima.RotorTest
 
 clean:
 	$(RM) enigma/*.class */*~ *~ OUT

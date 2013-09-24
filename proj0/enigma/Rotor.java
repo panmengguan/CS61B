@@ -44,9 +44,9 @@ class Rotor {
     public interface OnNotchAdvance {
 
         /** Callback for when an advance() causes
-         *  the notch to move. Includes ROTOR for uses.
+         *  the notch to move.
          */
-        void onNotchAdvance(Rotor rotor);
+        void onNotchAdvance();
     }
 
     /** Constructs a Rotor given a FORWARDMAP, BACKWARDMAP,
@@ -64,7 +64,7 @@ class Rotor {
     void advance() {
 
         if (atNotch() && _onNotchAdvance != null) {
-            _onNotchAdvance.onNotchAdvance(this);
+            _onNotchAdvance.onNotchAdvance();
         }
 
         _setting += 1;
