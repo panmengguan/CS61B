@@ -127,14 +127,14 @@ public final class Main {
     /** Return the result of converting LINE to all upper case,
      *  removing all blanks and tabs.  It is an error if LINE contains
      *  characters other than letters and blanks. */
-    private static String standardize(String line) {
+    private static String standardize(String line) throws IOException {
         line = line.replaceAll("\t", "");
         line = line.replaceAll(" ", "");
         line = line.replaceAll("\n", "");
         line = line.toUpperCase();
 
         if (!line.matches("[A-Z]+")) {
-            return "";
+            throw new IOException("Message contains non-character");
         }
 
         return line;

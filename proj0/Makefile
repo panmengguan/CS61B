@@ -44,7 +44,7 @@ check: enigma/*.class
 	echo "Testing correct inputs:"; \
 	if ! $(TEST_CORRECT) $(CORRECT_TESTS); then code=1; fi; \
 	echo; echo "Testing erroneous inputs:"; \
-	if ! $(TEST_ERROR) $(ERROR_TESTS)/*.inp; then code=1; fi; \
+	if ! $(TEST_ERROR) $(ERROR_TESTS); then code=1; fi; \
 	test $$code -eq 0
 	java enigma.MachineTest
 	java enigma.RotorTest
