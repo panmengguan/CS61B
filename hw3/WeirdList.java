@@ -1,9 +1,14 @@
-/** A WeirdList holds a sequence of integers. */
+/** A WeirdList holds a sequence of integers.
+ *  @author Kiet Lam
+ */
 public class WeirdList {
     /** The empty sequence of integers. */
     public static final WeirdList EMPTY = new EmptyList();
 
+    /** The HEAD of the list.*/
     private int _head;
+
+    /** The TAIL of the list.*/
     private WeirdList _tail;
 
     /** A new WeirdList whose head is HEAD and tail is TAIL. */
@@ -32,6 +37,7 @@ public class WeirdList {
         _tail.print();
     }
 
+    /** An empty WeirdList.*/
     private static class EmptyList extends WeirdList {
 
         /** Creates an empty list with HEAD and TAIL.*/
