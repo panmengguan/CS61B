@@ -43,6 +43,10 @@ public final class Main {
                         System.exit(1);
                     }
 
+                    if (line.equals("")) {
+                        continue;
+                    }
+
                     printMessageLine(M.convert(standardize(line)));
                 }
             }
