@@ -1,0 +1,8 @@
+This is a simple <i>mark-up</i>.  Next comes
+one <input value="3"/> that's closed, 
+followed by a list of names:
+<ol color="green">
+<li> Tom </li>
+<li  > Dick </li>
+<li> Harry </li>
+</ol>

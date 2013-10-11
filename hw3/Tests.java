@@ -54,6 +54,48 @@ public class Tests {
         assertEquals(output, "hIgh darEEE what Is up");
     }
 
+    @Test public void trReaderRead2() {
+        String original = "abcde";
+
+        StringReader reader = new StringReader(original);
+        TrReader trReader = new TrReader(reader, "edcab", "EDCAB");
+
+        char[] chs = new char["ZZZZZZZ".length()];
+
+        for (int i = 0; i < chs.length; i += 1) {
+            chs[i] = 'Z';
+        }
+
+        try {
+            trReader.read(chs, 3, 0);
+        } catch (IOException e) {
+            return;
+        }
+
+        String output = new String(chs);
+
+        assertEquals(output, "ZZZZZZZ");
+    }
+
+    @Test public void trReaderRead3() {
+        String original = "azbzczdz";
+
+        StringReader reader = new StringReader(original);
+        TrReader trReader = new TrReader(reader, "edcab", "EDCAB");
+
+        char[] chs = new char["ZZZZZZZ".length()];
+
+        try {
+            trReader.read(chs, 0, 2);
+        } catch (IOException e) {
+            return;
+        }
+
+        String output = new String(chs);
+
+        assertEquals(output, "BzZZZZZZ");
+    }
+
     @Test public void translate() {
         String original = "high dareee what is up";
         String from = "ieee";

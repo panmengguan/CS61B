@@ -1,0 +1,41 @@
+3. Let M = 0, k = 2.
+
+If f(x) is a non-decreasing function, then
+
+k|f(x)| > |f(x)| for all x > M.
+
+Therefore, f(x) is in O(f(x)).
+
+4. Let p(x) = a_0 + a_1*x^1 + a_2*x^2 + ... + a_n*x^n.
+
+Take the biggest term: a_x*x^n
+
+As x is sufficiently big, p(x) is approximately a_n*x^n.
+
+log(a_n*x^n) = log(a_n) + n*log(x)
+
+Since log(a_n) is a constant, we can ignore it.
+
+n*log(x) is in Theta(log(x))
+
+So as x is sufficiently large,
+
+log(p(x)) is in O(log(x))
+
+
+5. Want to find c, d, N such that:
+
+c*log(f(x)) <= log_b(f(x)) <= d*log(f(x)) for all x >= N
+
+Proof:
+log_b(f(x)) = log(f(x)) / log(b)
+
+c*log(f(x)) <= log(f(x)) / log(b) <= d*log(f(x))
+
+c = d = 1 / log(b)
+
+N = 1
+
+Done
+
+6. theta(M)

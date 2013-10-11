@@ -1,0 +1,45 @@
+Problem #1.
+Double: 10.2000
+String: 'hello world'
+Double: 3.00000
+Double: 100.000
+Double: 0.0200000
+Double: 0.100000
+Double: 13.5000
+String: 'goodbye world! '
+Bad string
+
+Problem #2.
+Double: 10.2000
+String: 'hello world'
+Double: 3.00000
+Double: 100.000
+Double: 0.0200000
+Double: 0.100000
+Double: 13.5000
+String: 'goodbye world! '
+Double: 100.000
+
+Problem #3.
+Tag: i
+Tag: i end
+Tag: input, Attribute: value, Value: "3" end
+Tag: ol, Attribute: color, Value: "green"
+Tag: li
+Tag: li end
+Tag: li
+Tag: li end
+Tag: li
+Tag: li end
+Tag: ol end
+
+Problem #4.
+Mercury  |   35.98
+Venus    |   67.23
+Earth    |   92.96
+Mars     |  141.64
+Jupiter  |  483.63
+Saturn   |  888.19
+Uranus   | 1783.95
+Neptune  | 2798.84
+

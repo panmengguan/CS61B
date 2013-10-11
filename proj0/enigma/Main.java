@@ -43,8 +43,15 @@ public final class Main {
                         System.exit(1);
                     }
 
+                    line = standardize(line);
+
                     if (line.equals("")) {
+                        printMessageLine("");
                         continue;
+                    }
+
+                    if (!line.matches("[A-Z]+")) {
+                        System.exit(1);
                     }
 
                     printMessageLine(M.convert(standardize(line)));
@@ -131,15 +138,11 @@ public final class Main {
     /** Return the result of converting LINE to all upper case,
      *  removing all blanks and tabs.  It is an error if LINE contains
      *  characters other than letters and blanks. */
-    private static String standardize(String line) throws IOException {
+    private static String standardize(String line) {
         line = line.replaceAll("\t", "");
         line = line.replaceAll(" ", "");
         line = line.replaceAll("\n", "");
         line = line.toUpperCase();
-
-        if (!line.matches("[A-Z]+")) {
-            throw new IOException("Message contains non-character");
-        }
 
         return line;
     }

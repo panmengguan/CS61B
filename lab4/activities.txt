@@ -1,0 +1,18 @@
+CS61B Lab #4
+
+Please finish this lab by Friday, preferably during the lab period.  It is due
+at midnight Friday.
+
+1. Quizzes
+----------
+
+Do the indicated quizzes given on the lab index page.  The quizzes
+are the only things that needed to be handed in; you don't need to 
+submit anything for lab4 via svn.
+
+
+2. Project Work
+---------------
+
+We expect you're likely to be working feverishly on the project this week, so
+the TAs are here to help you.

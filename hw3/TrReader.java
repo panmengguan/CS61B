@@ -58,7 +58,15 @@ public class TrReader extends Reader {
     /** Returns the reader using CBUF, OFF, and LEN.*/
     public int read(char[] cbuf, int off, int len) throws IOException {
 
+        if (len == 0) {
+            return -1;
+        }
+
         int ch = read();
+
+        for (int i = 1; i < off; i += 1) {
+            ch = read();
+        }
 
         int numRead = 0;
 
