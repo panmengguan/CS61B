@@ -1,0 +1,16 @@
+// Adapted from Sierra and Bates, Head First Java
+
+// Insert lines from the set below into the isLeapYear method of 
+// YearCheck.java (suitably indented).  You need not use all of them, and 
+// you may use duplicates.
+
+// Java Notes: % means "remainder"; != means "not equal to".
+
+}
+} else {
+if (year % 100 != 0) {
+if (year % 4 != 0) {
+if (year % 400 != 0) {
+return true;
+return false;
+
