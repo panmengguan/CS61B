@@ -1,0 +1,378 @@
+package tex61;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+import java.util.ArrayDeque;
+
+import static tex61.FormatException.error;
+
+/** An object that receives a sequence of words of text and formats
+ *  the words into filled and justified text lines that are sent to a receiver.
+ *  @author Kiet Lam
+ */
+class LineAssembler {
+
+    /** Boolean to fill or not.*/
+    private boolean _fill;
+
+    /** Boolean to justify or not.*/
+    private boolean _justify;
+
+    /** Destination given in constructor for formatted lines. */
+    private final PageAssembler _pages;
+
+    /** Width of text.*/
+    private int _textWidth;
+
+    /** Height of text.*/
+    private int _textHeight;
+
+    /** Paragraph indentation.*/
+    private int _parIndent;
+
+    /** Indentation.*/
+    private int _indentation;
+
+    /** Paragraph skip.*/
+    private int _parSkip;
+
+    /** Current word.*/
+    private String _currentWord;
+
+    /** Lines .*/
+    private Queue<Line> _lines;
+
+    /** Current line.*/
+    private Line _currentLine;
+
+    /** Regular space constant between each word, suggested by the guideline.*/
+    private static final int REGULAR_SPACE_CONSTANT = 3;
+
+    /** A new, empty line assembler with default settings of all
+     *  parameters, sending finished lines to PAGES. */
+    LineAssembler(PageAssembler pages) {
+        _pages       = pages;
+        _textWidth   = Defaults.TEXT_WIDTH;
+        _textHeight  = Defaults.TEXT_HEIGHT;
+        _parIndent   = Defaults.PARAGRAPH_INDENTATION;
+        _indentation = Defaults.INDENTATION;
+        _parSkip     = Defaults.PARAGRAPH_SKIP;
+
+        _lines = new ArrayDeque<Line>();
+
+        _currentLine = new Line();
+    }
+
+    /** Add TEXT to the word currently being built. */
+    void addText(String text) {
+        _currentWord += text;
+    }
+
+    /** Finish the current word, if any, and add to words being accumulated. */
+    void finishWord() {
+        _currentLine.addWord(_currentWord);
+        _currentWord = "";
+    }
+
+    /** Add WORD to the formatted text. */
+    void addWord(String word) {
+        if (!_fill) {
+            _currentLine.addWord(word);
+            return;
+        }
+
+        int len = 0;
+
+        if (_lines.size() == 0) {
+            len += _parIndent;
+        }
+
+        len += _indentation;
+        len += _currentLine.getWordsLength();
+        len += _currentLine.getNumWords();
+        len += word.length();
+
+        if (len > _textWidth && _currentLine.isEmpty()) {
+            _currentLine.addWord(word);
+            _lines.add(_currentLine);
+            _currentLine = new Line();
+        } else if (len > _textWidth) {
+            _lines.add(_currentLine);
+            _currentLine = new Line();
+            _currentLine.addWord(word);
+        } else if (len < _textWidth) {
+            _currentLine.addWord(word);
+        } else {
+            _currentLine.addWord(word);
+            _lines.add(_currentLine);
+            _currentLine = new Line();
+        }
+    }
+
+    /** Add LINE to our output, with no preceding paragraph skip.  There must
+     *  not be an unfinished line pending. */
+    void addLine(String line) {
+        if (!_currentLine.isEmpty()) {
+            throw error("Cannot add new line while current is not finished");
+        }
+
+        _lines.add(new Line(line));
+    }
+
+    /** Set the current indentation to VAL. VAL >= 0. */
+    void setIndentation(int val) {
+        if (val < 0) {
+            throw error("Indentation needs to be >= 0");
+        }
+
+        _indentation = val;
+    }
+
+    /** Set the current paragraph indentation to VAL. VAL >= 0. */
+    void setParIndentation(int val) {
+        if (val < 0) {
+            throw error("Paragraph indentation needs to be >= 0");
+        }
+
+        _parIndent = val;
+    }
+
+    /** Set the text width to VAL, where VAL >= 0. */
+    void setTextWidth(int val) {
+        if (val < 0) {
+            throw error("Text width needs to be >= 0");
+        }
+
+        _textWidth = val;
+    }
+
+    /** Iff ON, set fill mode. */
+    void setFill(boolean on) {
+        _fill = on;
+    }
+
+    /** Iff ON, set justify mode (which is active only when filling is
+     *  also on). */
+    void setJustify(boolean on) {
+        _justify = on && _fill;
+    }
+
+    /** Set paragraph skip to VAL.  VAL >= 0. */
+    void setParSkip(int val) {
+        if (val < 0) {
+            throw error("Paragraph skip must be >= 0");
+        }
+
+        _parSkip = val;
+    }
+
+    /** Set page height to VAL > 0. */
+    void setTextHeight(int val) {
+        if (val <= 0) {
+            throw error("Text height must be > 0");
+        }
+
+        _textHeight = val;
+    }
+
+    /** Process the end of the current input line.  No effect if
+     *  current line accumulator is empty or in fill mode.  Otherwise,
+     *  adds a new complete line to the finished line queue and clears
+     *  the line accumulator. */
+    void newLine() {
+        if (_fill || _currentLine.isEmpty()) {
+            return;
+        }
+
+        _lines.add(_currentLine);
+        _currentLine = new Line();
+    }
+
+    /** If there is a current unfinished paragraph pending, close it
+     *  out and start a new one. */
+    void endParagraph() {
+        if (!_currentLine.isEmpty()) {
+            _lines.add(_currentLine);
+            _currentLine = new Line();
+        }
+
+        if (_lines.isEmpty()) {
+            return;
+        }
+
+        int totalIndentation = _parIndent + _indentation;
+
+        if (!_fill) {
+            Line line = _lines.remove();
+
+            outputConstantLine(line, totalIndentation, 1);
+
+            for (Line l: _lines) {
+                outputConstantLine(l, _indentation, 1);
+            }
+            return;
+        }
+
+        Line l = _lines.remove();
+
+        if (!l.isEmpty()) {
+            if (_justify) {
+                outputJustifiedLine(l, totalIndentation, _textWidth
+                                    - l.getWordsLength() - totalIndentation);
+            } else {
+                outputConstantLine(l, totalIndentation, 1);
+            }
+        }
+
+        if (_lines.isEmpty()) {
+            return;
+        }
+
+        Line currentLine = _lines.remove();
+
+        while (!_lines.isEmpty()) {
+            int spaces = _textWidth - currentLine.getWordsLength()
+                - _indentation;
+
+            if (_justify) {
+                outputJustifiedLine(currentLine, _indentation,
+                                    spaces);
+            } else {
+                outputConstantLine(currentLine, _indentation, 1);
+            }
+
+            currentLine = _lines.remove();
+        }
+
+        if (currentLine != null) {
+            outputConstantLine(currentLine, _indentation, 1);
+        }
+    }
+
+    /** Output LINE, adding INDENT characters of indentation, and a total of
+     *  SPACES spaces between words, evenly distributed.*/
+    private void outputJustifiedLine(Line line, int indent, int spaces) {
+
+        int numWords = line.getNumWords();
+
+        if (spaces >= REGULAR_SPACE_CONSTANT * (numWords - 1)) {
+            outputConstantLine(line, indent, REGULAR_SPACE_CONSTANT);
+            return;
+        }
+
+        String str = indentStr("", indent);
+
+        int spacesSoFar = 0;
+
+        for (int i = 0; i < line.getNumWords(); i += 1) {
+            str += line.getWord(i);
+            int spacesNeeded = (int) Math.floor(0.5 + ((float) (spaces
+                                                                * (i + 1))
+                                                       / (numWords - 1)))
+                - spacesSoFar;
+
+            if (i != line.getNumWords() - 1) {
+                for (int j = 0; j < spacesNeeded; j += 1) {
+                    str += " ";
+                }
+            }
+
+            spacesSoFar += spacesNeeded;
+        }
+
+        emitLine(str);
+    }
+
+    /** Output LINE, adding INDENT characters of indentation, and exactly
+     *  SPACES spaces between each word.*/
+    private void outputConstantLine(Line line, int indent, int spaces) {
+        String str = indentStr("", indent);
+
+        for (int i = 0; i < line.getNumWords(); i += 1) {
+            str += line.getWord(i);
+
+            if (i != line.getNumWords() - 1) {
+                for (int j = 0; j < spaces; j += 1) {
+                    str += " ";
+                }
+            }
+        }
+
+        emitLine(str);
+    }
+
+    /** Returns indented STR by INDENT of indentation characters.*/
+    private String indentStr(String str, int indent) {
+        for (int i = 0; i < indent; i += 1) {
+            str = " " + str;
+        }
+
+        return str;
+    }
+
+    /** Emit STR to _pages.*/
+    private void emitLine(String str) {
+        _pages.addLine(str);
+    }
+
+    /** Class representing a line.*/
+    private static class Line {
+
+        /** Stores the current words on a line.*/
+        private List<String> _words = new ArrayList<String>();
+
+        /** The string of the line.*/
+        private String _line = "";
+
+        /** Construct an empty line.*/
+        Line() {
+        }
+
+        /** Construct a line using a string LINE.*/
+        Line(String line) {
+            _line = line;
+        }
+
+        /** Add WORD to a line.*/
+        void addWord(String word) {
+            _words.add(word);
+        }
+
+        /** Returns the length of all the words.*/
+        int getWordsLength() {
+            int len = 0;
+
+            for (String w: _words) {
+                len += w.length();
+            }
+
+            return len;
+        }
+
+        /** Returns the string of this line.*/
+        String getLine() {
+            return _line;
+        }
+
+        /** Returns the number of words on this line.*/
+        int getNumWords() {
+            return _words.size();
+        }
+
+        /** Returns true iff this line is empty.*/
+        boolean isEmpty() {
+            return _words.size() == 0;
+        }
+
+        /** Returns the list of words on this line.*/
+        List<String> getWords() {
+            return _words;
+        }
+
+        /** Returns the word at index I on this line.*/
+        String getWord(int i) {
+            return _words.get(i);
+        }
+    }
+}
