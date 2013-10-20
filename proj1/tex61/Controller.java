@@ -134,6 +134,7 @@ class Controller {
     /** Finish the current formatted document or endnote (depending on mode).
      *  Formats and outputs all pending text. */
     void close() {
+        endWord();
         endParagraph();
 
         if (_assembler != _endnoteAssembler) {
