@@ -83,15 +83,47 @@ class InputParser {
      *  output controller.  Finishes by calling .close on the controller.
      */
     void process() {
-        // while (_input.findWithinHorizon(INPUT_PATTERN, 0) != null) {
-        //     // System.out.println(_input.findWithinHorizon(INPUT_PATTERN, 0));
-        //     MatchResult match = _input.match();
-        //     for (int i = 1; i < 9; i += 1) {
-        //         if (match.group(i) != null) {
-        //             System.out.println(match.group(i));
-        //         }
-        //     }
-        // }
+        while (_input.findWithinHorizon(INPUT_PATTERN, 0) != null) {
+            MatchResult match = _input.match();
+
+            if (match.end(BLANK_TOKEN) > -1
+                || match.end(EOL_TOKEN) > -1) {
+                _out.endWord();
+            }
+
+            if (match.end(EOP_TOKEN) > -1) {
+                _out.endParagraph();
+            }
+
+            if (match.end(ESCAPED_CHAR_TOKEN) > -1) {
+                _out.addText(match.group(ESCAPED_CHAR_TOKEN));
+            }
+
+            if (match.end(COMMAND_TOKEN) > -1) {
+                String command = match.group(COMMAND_TOKEN);
+
+                _input.findWithinHorizon(BALANCED_TEXT, 0);
+
+                MatchResult balancedMatch = _input.match();
+                String args = "";
+
+                if (balancedMatch.group(1) != null) {
+                    args = balancedMatch.group(1);
+                }
+
+                processCommand(command, args);
+            }
+
+            if (match.end(TEXT_TOKEN) > -1) {
+                _out.addText(match.group(TEXT_TOKEN));
+            }
+
+            if (match.end(ERROR_TOKEN) > -1) {
+                reportError("Invalid token");
+            }
+        }
+
+        _out.close();
     }
 
     /** Process \COMMAND{ARG} or (if ARG is null) \COMMAND.  Call the
@@ -100,17 +132,56 @@ class InputParser {
         try {
             switch (command) {
             case "indent":
-                // FIXME
+                _out.setIndentation(Integer.parseInt(arg));
                 break;
-            // FIXME
+            case "parindent":
+                _out.setParIndentation(Integer.parseInt(arg));
+                break;
+            case "textwidth":
+                _out.setTextWidth(Integer.parseInt(arg));
+                break;
+            case "textheight":
+                _out.setTextHeight(Integer.parseInt(arg));
+                break;
+            case "parskip":
+                _out.setParSkip(Integer.parseInt(arg));
+                break;
+            case "\\":
+                _out.addText("\\");
+                break;
+            case "{":
+                _out.addText("{");
+                break;
+            case "}":
+                _out.addText("}");
+                break;
+            case " ":
+                _out.addText(" ");
+                break;
+            case "nofill":
+                _out.setFill(false);
+                break;
+            case "fill":
+                _out.setFill(true);
+                break;
+            case "justify":
+                _out.setJustify(true);
+                break;
+            case "nojustify":
+                _out.setJustify(false);
+                break;
+            case "endnote":
+                _out.formatEndnote(arg);
+                break;
             default:
                 reportError("unknown command: %s", command);
                 break;
             }
         } catch (FormatException e) {
-            // FIXME
+            reportError(e.getMessage());
+        } catch (NumberFormatException e) {
+            reportError(e.getMessage());
         }
-
     }
 
     /** My input source. */

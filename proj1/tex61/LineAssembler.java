@@ -23,25 +23,22 @@ class LineAssembler {
     private final PageAssembler _pages;
 
     /** Width of text.*/
-    private int _textWidth;
-
-    /** Height of text.*/
-    private int _textHeight;
+    protected int _textWidth;
 
     /** Paragraph indentation.*/
-    private int _parIndent;
+    protected int _parIndent;
 
     /** Indentation.*/
-    private int _indentation;
+    protected int _indentation;
 
     /** Paragraph skip.*/
-    private int _parSkip;
+    protected int _parSkip;
 
     /** Current word.*/
     private String _currentWord;
 
     /** Lines .*/
-    private Queue<Line> _lines;
+    protected Queue<Line> _lines;
 
     /** Current line.*/
     private Line _currentLine;
@@ -49,19 +46,52 @@ class LineAssembler {
     /** Regular space constant between each word, suggested by the guideline.*/
     private static final int REGULAR_SPACE_CONSTANT = 3;
 
+    /** Boolean of whether we are still on the first paragraph.*/
+    private boolean isFirstParagraph = true;
+
     /** A new, empty line assembler with default settings of all
-     *  parameters, sending finished lines to PAGES. */
-    LineAssembler(PageAssembler pages) {
+     *  parameters, sending finished lines to PAGES.
+     *
+     *  Parameters: PAGES, TEXTWIDTH, PARINDENT, INDENTATION, PARSKIP,
+     *              TEXTHEIGHT, FILL, JUSTIFY
+     */
+    LineAssembler(PageAssembler pages, int textWidth, int parIndent,
+                  int indentation, int parSkip, int textHeight,
+                  boolean fill, boolean justify) {
         _pages       = pages;
-        _textWidth   = Defaults.TEXT_WIDTH;
-        _textHeight  = Defaults.TEXT_HEIGHT;
-        _parIndent   = Defaults.PARAGRAPH_INDENTATION;
-        _indentation = Defaults.INDENTATION;
-        _parSkip     = Defaults.PARAGRAPH_SKIP;
+        _textWidth   = textWidth;
+        _parIndent   = parIndent;
+        _indentation = indentation;
+        _parSkip     = parSkip;
+        _fill        = fill;
+        _justify     = justify;
 
         _lines = new ArrayDeque<Line>();
+        _pages.setTextHeight(Defaults.TEXT_HEIGHT);
 
         _currentLine = new Line();
+        _currentWord = "";
+    }
+
+    /** Returns a regular line assembler using PRINTER.*/
+    public static LineAssembler createLineAssembler(PageAssembler printer) {
+        return new LineAssembler(printer, Defaults.TEXT_WIDTH,
+                                 Defaults.PARAGRAPH_INDENTATION,
+                                 Defaults.INDENTATION,
+                                 Defaults.PARAGRAPH_SKIP,
+                                 Defaults.TEXT_HEIGHT, true,
+                                 true);
+    }
+
+    /** Returns an endnote assembler using PRINTER.*/
+    public static LineAssembler createEndnoteAssembler(PageAssembler printer) {
+        return new EndnoteAssembler(printer,
+                                    Defaults.ENDNOTE_TEXT_WIDTH,
+                                    Defaults.ENDNOTE_PARAGRAPH_INDENTATION,
+                                    Defaults.ENDNOTE_INDENTATION,
+                                    Defaults.ENDNOTE_PARAGRAPH_SKIP,
+                                    PageAssembler.INFINITE_HEIGHT,
+                                    true, true);
     }
 
     /** Add TEXT to the word currently being built. */
@@ -71,7 +101,10 @@ class LineAssembler {
 
     /** Finish the current word, if any, and add to words being accumulated. */
     void finishWord() {
-        _currentLine.addWord(_currentWord);
+        if (!_currentWord.equals("")) {
+            addWord(_currentWord);
+        }
+
         _currentWord = "";
     }
 
@@ -131,8 +164,8 @@ class LineAssembler {
 
     /** Set the current paragraph indentation to VAL. VAL >= 0. */
     void setParIndentation(int val) {
-        if (val < 0) {
-            throw error("Paragraph indentation needs to be >= 0");
+        if (val + _indentation < 0) {
+            throw error("Paragraph indentation + indentation must be >= 0");
         }
 
         _parIndent = val;
@@ -173,7 +206,7 @@ class LineAssembler {
             throw error("Text height must be > 0");
         }
 
-        _textHeight = val;
+        _pages.setTextHeight(val);
     }
 
     /** Process the end of the current input line.  No effect if
@@ -201,6 +234,14 @@ class LineAssembler {
             return;
         }
 
+        if (!isFirstParagraph) {
+            for (int i = 0; i < _parSkip; i += 1) {
+                emitLine("");
+            }
+        } else {
+            isFirstParagraph = false;
+        }
+
         int totalIndentation = _parIndent + _indentation;
 
         if (!_fill) {
@@ -213,6 +254,13 @@ class LineAssembler {
             }
             return;
         }
+
+        emitFormattedLines();
+    }
+
+    /** Emit formatted (if needed) lines.*/
+    private void emitFormattedLines() {
+        int totalIndentation = _parIndent + _indentation;
 
         Line l = _lines.remove();
 

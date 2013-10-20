@@ -26,7 +26,7 @@ class FormatException extends RuntimeException {
     /** Print error message formed from arguments FORMAT and ARGS, whose
      *  meaning is as for printf. */
     static void reportError(String format, Object... args) {
-        // FIXME
+        System.err.println("There were error!");
         System.err.printf(format, args);
         System.err.println();
         _totalErrors += 1;

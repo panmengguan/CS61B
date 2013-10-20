@@ -1,11 +1,10 @@
 package tex61;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 
 import org.junit.Test;
+import org.junit.Before;
 import static org.junit.Assert.*;
 
 
@@ -43,9 +42,12 @@ public class LineAssemblerTest {
     private void commonSetup() {
         setupWriter();
         pages = new PagePrinter(writer);
-        lineAssembler = new LineAssembler(pages);
-        lineAssembler.setParIndentation(Defaults.PARAGRAPH_INDENTATION);
-        lineAssembler.setFill(true);
+        lineAssembler = new LineAssembler(pages, Defaults.TEXT_WIDTH,
+                                          Defaults.PARAGRAPH_INDENTATION,
+                                          Defaults.INDENTATION,
+                                          Defaults.PARAGRAPH_SKIP,
+                                          Defaults.TEXT_HEIGHT, true,
+                                          false);
         lineAssembler.setTextWidth(COMMON_TEST_WIDTH);
     }
 
@@ -58,13 +60,18 @@ public class LineAssemblerTest {
             lineAssembler.addWord(s);
         }
 
-        lineAssembler.endParagraph();
+        if (end) {
+            lineAssembler.endParagraph();
+        }
+    }
+
+    @Before
+    public void initialize() {
+        commonSetup();
     }
 
     @Test
     public void testEmpty() {
-        commonSetup();
-
         lineAssembler.endParagraph();
 
         String expected = "";
@@ -75,8 +82,6 @@ public class LineAssemblerTest {
 
     @Test
     public void testFill() {
-        commonSetup();
-
         lineAssembler.setJustify(false);
         lineAssembler.addWord("High");
         lineAssembler.addWord("Dare");
@@ -92,8 +97,6 @@ public class LineAssemblerTest {
 
     @Test
     public void testFillAndEndParagraph() {
-        commonSetup();
-
         lineAssembler.setJustify(false);
         lineAssembler.addWord("High");
         lineAssembler.addWord("Dare");
@@ -110,8 +113,6 @@ public class LineAssemblerTest {
 
     @Test
     public void testIndentation() {
-        commonSetup();
-
         lineAssembler.setJustify(false);
         lineAssembler.setIndentation(2);
 
@@ -130,8 +131,6 @@ public class LineAssemblerTest {
 
     @Test
     public void testFillOverflow() {
-        commonSetup();
-
         String excessiveWord = "OMGHOWAREYOUREADINGTHIS";
 
         lineAssembler.addWord(excessiveWord);
@@ -145,8 +144,6 @@ public class LineAssemblerTest {
 
     @Test
     public void testNoFill1() {
-        commonSetup();
-
         lineAssembler.setFill(false);
         assemblerAddWords("BLADITY", "BLAH", "BLAH", "FD", "BLAH",
                           "BLAH");
@@ -159,8 +156,6 @@ public class LineAssemblerTest {
 
     @Test
     public void testNoFill2() {
-        commonSetup();
-
         lineAssembler.setFill(false);
 
         assemblerAddWords("WHA", "IS", "MARK", "????");
@@ -173,8 +168,6 @@ public class LineAssemblerTest {
 
     @Test
     public void testNoJustify() {
-        commonSetup();
-
         lineAssembler.setFill(false);
 
         assemblerAddWords("OMG", "DDD");
@@ -187,8 +180,6 @@ public class LineAssemblerTest {
 
     @Test
     public void testRawJustification1() {
-        commonSetup();
-
         lineAssembler.setJustify(true);
         lineAssembler.setTextWidth(Defaults.TEXT_WIDTH);
         lineAssembler.setParIndentation(Defaults.PARAGRAPH_INDENTATION);
@@ -207,8 +198,6 @@ public class LineAssemblerTest {
 
     @Test
     public void testJustification2() {
-        commonSetup();
-
         lineAssembler.setJustify(true);
 
         lineAssembler.setTextWidth(18);
@@ -221,8 +210,6 @@ public class LineAssemblerTest {
 
     @Test
     public void testUltimateJustification() {
-        commonSetup();
-
         lineAssembler.setJustify(true);
         lineAssembler.setTextWidth(Defaults.TEXT_WIDTH);
         lineAssembler.setParIndentation(4);
@@ -253,8 +240,6 @@ public class LineAssemblerTest {
 
     @Test
     public void testJustificationTriplets() {
-        commonSetup();
-
         lineAssembler.setJustify(true);
         lineAssembler.setTextWidth(EXTRA_TEST_WIDTH);
 
@@ -268,36 +253,26 @@ public class LineAssemblerTest {
 
     @Test(expected = FormatException.class)
     public void testNegativeTextWidth() {
-        commonSetup();
-
         lineAssembler.setTextWidth(-1);
     }
 
     @Test(expected = FormatException.class)
     public void testNegativeParSkip() {
-        commonSetup();
-
         lineAssembler.setParSkip(-1);
     }
 
     @Test(expected = FormatException.class)
     public void testZeroTextHeight() {
-        commonSetup();
-
         lineAssembler.setTextHeight(0);
     }
 
     @Test(expected = FormatException.class)
     public void testNegativeTextHeight() {
-        commonSetup();
-
         lineAssembler.setTextHeight(-1);
     }
 
     @Test
     public void testNewLine() {
-        commonSetup();
-
         lineAssembler.setFill(false);
 
         lineAssembler.addWord("HIGH");
@@ -313,8 +288,6 @@ public class LineAssemblerTest {
 
     @Test
     public void test2NewLines() {
-        commonSetup();
-
         lineAssembler.setFill(false);
 
         lineAssembler.addWord("HIGH");
@@ -331,8 +304,6 @@ public class LineAssemblerTest {
 
     @Test
     public void testNoNewLine() {
-        commonSetup();
-
         lineAssembler.addWord("HIGH");
         lineAssembler.newLine();
         lineAssembler.addWord("DARE");
@@ -343,5 +314,53 @@ public class LineAssemblerTest {
 
         assertEquals("No newline failed", expected,
                      output.toString());
+    }
+
+    @Test
+    public void testParSkip() {
+        lineAssembler.setJustify(false);
+        lineAssembler.setParSkip(2);
+        lineAssembler.addWord("HIGH");
+        lineAssembler.addWord("Dare");
+        lineAssembler.newLine();
+        lineAssembler.addWord("NAP");
+
+        lineAssembler.endParagraph();
+
+        lineAssembler.addWord("WHAT");
+        lineAssembler.addWord("WHAT");
+
+        lineAssembler.endParagraph();
+
+        String expected = "   HIGH Dare\nNAP\n"
+            + "\n\n"
+            + "   WHAT WHAT\n";
+
+        assertEquals("Par skip test failed",
+                     expected, output.toString());
+    }
+
+    @Test
+    public void testNegativeParIndent() {
+        lineAssembler.setFill(false);
+        lineAssembler.setIndentation(3);
+        lineAssembler.setParIndentation(-3);
+
+        lineAssembler.addWord("HIGH");
+        lineAssembler.newLine();
+        lineAssembler.addWord("DARE");
+
+        lineAssembler.endParagraph();
+
+        String expected = "HIGH\n   DARE\n";
+
+        assertEquals("Negative par indent failed",
+                     expected, output.toString());
+    }
+
+    @Test(expected = FormatException.class)
+    public void testNegativeTotalIndent() {
+        lineAssembler.setIndentation(0);
+        lineAssembler.setParIndentation(-3);
     }
 }

@@ -16,7 +16,7 @@ abstract class PageAssembler {
     private int _currentPage = 0;
 
     /** Infinite text height.*/
-    private static final int INFINITE_HEIGHT = -1;
+    public static final int INFINITE_HEIGHT = -1;
 
     /** Text height.*/
     private int _textHeight = INFINITE_HEIGHT;

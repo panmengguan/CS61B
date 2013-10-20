@@ -7,6 +7,7 @@ import java.util.List;
  */
 class PageCollector extends PageAssembler {
 
+    /** The output list of strings.*/
     private List<String> _out;
 
     /** A new PageCollector that stores lines in OUT. */

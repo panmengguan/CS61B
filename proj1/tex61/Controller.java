@@ -2,7 +2,9 @@ package tex61;
 
 import java.io.PrintWriter;
 
-import static tex61.FormatException.reportError;
+import java.util.List;
+import java.util.ArrayList;
+
 
 /** Receives (partial) words and commands, performs commands, and
  *  accumulates and formats words into lines of text, which are sent to a
@@ -14,7 +16,7 @@ import static tex61.FormatException.reportError;
  */
 class Controller {
 
-    /** PrintWriter out*/
+    /** PrintWriter out.*/
     private PrintWriter _out;
 
     /** True iff we are currently processing an endnote. */
@@ -29,105 +31,159 @@ class Controller {
     /** A line assembler.*/
     private LineAssembler _lineAssembler;
 
+    /** An end note assembler.*/
+    private LineAssembler _endnoteAssembler;
+
+    /** Current assembler to use.*/
+    private LineAssembler _assembler;
+
+    /** List of end notes.*/
+    private List<Endnote> _endNotes = new ArrayList<Endnote>();
+
+    /** Current end note number.*/
+    private int _currentEndnoteNum = 0;
+
     /** A new Controller that sends formatted output to OUT. */
     Controller(PrintWriter out) {
         _out = out;
         _printer = new PagePrinter(out);
-        _lineAssembler = new LineAssembler(_printer);
+
+        _lineAssembler    = LineAssembler.createLineAssembler(_printer);
+        _endnoteAssembler = LineAssembler.createEndnoteAssembler(_printer);
+
+        _assembler = _lineAssembler;
     }
 
     /** Add TEXT to the end of the word of formatted text currently
      *  being accumulated. */
     void addText(String text) {
-        // FIXME
+        _assembler.addText(text);
     }
 
     /** Finish any current word of text and, if present, add to the
      *  list of words for the next line.  Has no effect if no unfinished
      *  word is being accumulated. */
     void endWord() {
-        // FIXME
+        _assembler.finishWord();
     }
 
     /** Finish any current word of formatted text and process an end-of-line
      *  according to the current formatting parameters. */
     void addNewline() {
-        // FIXME
+        _assembler.newLine();
     }
 
     /** Finish any current word of formatted text, format and output any
      *  current line of text, and start a new paragraph. */
     void endParagraph() {
-        // FIXME
+        _assembler.endParagraph();
     }
 
     /** If valid, process TEXT into an endnote, first appending a reference
      *  to it to the line currently being accumulated. */
     void formatEndnote(String text) {
-        // FIXME
+        _currentEndnoteNum += 1;
+
+        _endNotes.add(new Endnote(_currentEndnoteNum, text));
+        addText("[" + _currentEndnoteNum + "]");
     }
 
     /** Set the current text height (number of lines per page) to VAL, if
      *  it is a valid setting.  Ignored when accumulating an endnote. */
     void setTextHeight(int val) {
-        // FIXME
+        _assembler.setTextHeight(val);
     }
 
     /** Set the current text width (width of lines including indentation)
      *  to VAL, if it is a valid setting. */
     void setTextWidth(int val) {
-        // FIXME
+        _assembler.setTextWidth(val);
     }
 
     /** Set the current text indentation (number of spaces inserted before
      *  each line of formatted text) to VAL, if it is a valid setting. */
     void setIndentation(int val) {
-        // FIXME
+        _assembler.setIndentation(val);
     }
 
     /** Set the current paragraph indentation (number of spaces inserted before
      *  first line of a paragraph in addition to indentation) to VAL, if it is
      *  a valid setting. */
     void setParIndentation(int val) {
-        // FIXME
+        _assembler.setParIndentation(val);
     }
 
     /** Set the current paragraph skip (number of blank lines inserted before
      *  a new paragraph, if it is not the first on a page) to VAL, if it is
      *  a valid setting. */
     void setParSkip(int val) {
-        // FIXME
+        _assembler.setParSkip(val);
     }
 
     /** Iff ON, begin filling lines of formatted text. */
     void setFill(boolean on) {
-        // FIXME
+        _assembler.setFill(on);
     }
 
     /** Iff ON, begin justifying lines of formatted text whenever filling is
      *  also on. */
     void setJustify(boolean on) {
-        // FIXME
+        _assembler.setJustify(on);
     }
 
     /** Finish the current formatted document or endnote (depending on mode).
      *  Formats and outputs all pending text. */
     void close() {
-        // FIXME
+        endParagraph();
+
+        if (_assembler != _endnoteAssembler) {
+            setEndnoteMode();
+            writeEndnotes();
+        }
     }
 
     /** Start directing all formatted text to the endnote assembler. */
     private void setEndnoteMode() {
-        // FIXME
+        _assembler = _endnoteAssembler;
     }
 
     /** Return to directing all formatted text to _mainText. */
     private void setNormalMode() {
-        // FIXME
+        _assembler = _lineAssembler;
     }
 
     /** Write all accumulated endnotes to _mainText. */
     private void writeEndnotes() {
-        // FIXME
+        for (Endnote endNote: _endNotes) {
+            new InputParser(endNote.getText(), this).process();
+        }
+    }
+
+    /** Class representing end notes.*/
+    private static class Endnote {
+
+        /** The reference number.*/
+        private int _number;
+
+        /** The text.*/
+        private String _text;
+
+        /** Construct an end note out of a NUMBER and a TEXT.
+         *  We pre-pend [number]\ to TEXT to make sure it is not
+         *  justified*/
+        Endnote(int number, String text) {
+            _number = number;
+            _text   = "[" + number + "]\\ " + text + "\n";
+        }
+
+        /** Returns the end note number.*/
+        int getNumber() {
+            return _number;
+        }
+
+        /** Returns the end note's text.*/
+        String getText() {
+            return _text;
+        }
     }
 }
