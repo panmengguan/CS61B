@@ -1,6 +1,6 @@
 The following quotation about writing test programs for 
 a document compiler from an article by Donald Knuth conveys some
-of the right frame \nofill of mind\endnote{(D. E. Knuth, ``The Errors of TEX'',
+of the right frame of mind\endnote{(D. E. Knuth, ``The Errors of TEX'',
 Software Practice & Experience, 19 (7) (July, 1989), pp. 625-626).}:
 
 \parindent{0}\textwidth{68}\indent{4}\parskip{0}

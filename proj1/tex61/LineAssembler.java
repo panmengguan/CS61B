@@ -49,6 +49,9 @@ class LineAssembler {
     /** Boolean of whether we are still on the first paragraph.*/
     private boolean isFirstParagraph = true;
 
+    /** Text height.*/
+    private int _textHeight;
+
     /** A new, empty line assembler with default settings of all
      *  parameters, sending finished lines to PAGES.
      *
@@ -67,7 +70,8 @@ class LineAssembler {
         _justify     = justify;
 
         _lines = new ArrayDeque<Line>();
-        _pages.setTextHeight(Defaults.TEXT_HEIGHT);
+
+        _textHeight = textHeight;
 
         _currentLine = new Line();
         _currentWord = "";
@@ -85,13 +89,13 @@ class LineAssembler {
 
     /** Returns an endnote assembler using PRINTER.*/
     public static LineAssembler createEndnoteAssembler(PageAssembler printer) {
-        return new EndnoteAssembler(printer,
-                                    Defaults.ENDNOTE_TEXT_WIDTH,
-                                    Defaults.ENDNOTE_PARAGRAPH_INDENTATION,
-                                    Defaults.ENDNOTE_INDENTATION,
-                                    Defaults.ENDNOTE_PARAGRAPH_SKIP,
-                                    PageAssembler.INFINITE_HEIGHT,
-                                    true, true);
+        return new LineAssembler(printer,
+                                 Defaults.ENDNOTE_TEXT_WIDTH,
+                                 Defaults.ENDNOTE_PARAGRAPH_INDENTATION,
+                                 Defaults.ENDNOTE_INDENTATION,
+                                 Defaults.ENDNOTE_PARAGRAPH_SKIP,
+                                 PageAssembler.INFINITE_HEIGHT,
+                                 true, true);
     }
 
     /** Add TEXT to the word currently being built. */
@@ -206,7 +210,7 @@ class LineAssembler {
             throw error("Text height must be > 0");
         }
 
-        _pages.setTextHeight(val);
+        _textHeight = val;
     }
 
     /** Process the end of the current input line.  No effect if
@@ -225,6 +229,8 @@ class LineAssembler {
     /** If there is a current unfinished paragraph pending, close it
      *  out and start a new one. */
     void endParagraph() {
+        _pages.setTextHeight(_textHeight);
+
         if (!_currentLine.isEmpty()) {
             _lines.add(_currentLine);
             _currentLine = new Line();

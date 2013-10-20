@@ -16,7 +16,7 @@ abstract class PageAssembler {
     private int _currentPage = 0;
 
     /** Infinite text height.*/
-    public static final int INFINITE_HEIGHT = -1;
+    public static final int INFINITE_HEIGHT = Integer.MAX_VALUE;
 
     /** Text height.*/
     private int _textHeight = INFINITE_HEIGHT;
@@ -43,7 +43,7 @@ abstract class PageAssembler {
             return;
         }
 
-        if (_currentTextHeight == _textHeight && line != null) {
+        if (_currentTextHeight >= _textHeight && line != null) {
             line = "\f" + line;
             _currentTextHeight = 0;
         } else {
