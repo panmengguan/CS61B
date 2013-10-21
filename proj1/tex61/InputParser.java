@@ -105,16 +105,21 @@ class InputParser {
             if (match.end(COMMAND_TOKEN) > -1) {
                 String command = match.group(COMMAND_TOKEN);
 
-                _input.findWithinHorizon(BALANCED_TEXT, 0);
+                if (!match.group(COMMAND_ARG_TOKEN).equals("")) {
 
-                MatchResult balancedMatch = _input.match();
-                String args = "";
+                    _input.findWithinHorizon(BALANCED_TEXT, 0);
 
-                if (balancedMatch.group(1) != null) {
-                    args = balancedMatch.group(1);
+                    MatchResult balancedMatch = _input.match();
+                    String args = "";
+
+                    if (balancedMatch.group(1) != null) {
+                        args = balancedMatch.group(1);
+                    }
+
+                    processCommand(command, args);
+                } else {
+                    processCommand(command, null);
                 }
-
-                processCommand(command, args);
             }
 
             if (match.end(TEXT_TOKEN) > -1) {

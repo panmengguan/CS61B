@@ -1,0 +1,5 @@
+   This time we turn off both filling and justifying.
+Lack of justifying does not stop filling.
+
+   Filling is now back on, but justifying should still be off. It was
+turned off when filling was turned off.
