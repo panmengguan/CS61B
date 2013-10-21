@@ -23,22 +23,22 @@ class LineAssembler {
     private final PageAssembler _pages;
 
     /** Width of text.*/
-    protected int _textWidth;
+    private int _textWidth;
 
     /** Paragraph indentation.*/
-    protected int _parIndent;
+    private int _parIndent;
 
     /** Indentation.*/
-    protected int _indentation;
+    private int _indentation;
 
     /** Paragraph skip.*/
-    protected int _parSkip;
+    private int _parSkip;
 
     /** Current word.*/
     private String _currentWord;
 
     /** Lines .*/
-    protected Queue<Line> _lines;
+    private Queue<Line> _lines;
 
     /** Current line.*/
     private Line _currentLine;
@@ -89,13 +89,13 @@ class LineAssembler {
 
     /** Returns an endnote assembler using PRINTER.*/
     public static LineAssembler createEndnoteAssembler(PageAssembler printer) {
-        return new LineAssembler(printer,
-                                 Defaults.ENDNOTE_TEXT_WIDTH,
-                                 Defaults.ENDNOTE_PARAGRAPH_INDENTATION,
-                                 Defaults.ENDNOTE_INDENTATION,
-                                 Defaults.ENDNOTE_PARAGRAPH_SKIP,
-                                 PageAssembler.INFINITE_HEIGHT,
-                                 true, true);
+        return new EndnoteAssembler(printer,
+                                    Defaults.ENDNOTE_TEXT_WIDTH,
+                                    Defaults.ENDNOTE_PARAGRAPH_INDENTATION,
+                                    Defaults.ENDNOTE_INDENTATION,
+                                    Defaults.ENDNOTE_PARAGRAPH_SKIP,
+                                    PageAssembler.INFINITE_HEIGHT,
+                                    true, true);
     }
 
     /** Add TEXT to the word currently being built. */
@@ -226,15 +226,19 @@ class LineAssembler {
         _currentLine = new Line();
     }
 
-    /** If there is a current unfinished paragraph pending, close it
-     *  out and start a new one. */
-    void endParagraph() {
-        _pages.setTextHeight(_textHeight);
-
+    /** Flush the current line.*/
+    protected void flushLine() {
         if (!_currentLine.isEmpty()) {
             _lines.add(_currentLine);
             _currentLine = new Line();
         }
+    }
+
+    /** If there is a current unfinished paragraph pending, close it
+     *  out and start a new one. */
+    void endParagraph() {
+        _pages.setTextHeight(_textHeight);
+        flushLine();
 
         if (_lines.isEmpty()) {
             return;
@@ -370,8 +374,13 @@ class LineAssembler {
         _pages.addLine(str);
     }
 
+    /** Returns the lines for the paragraph.*/
+    protected Queue<Line> getLines() {
+        return _lines;
+    }
+
     /** Class representing a line.*/
-    private static class Line {
+    protected static class Line {
 
         /** Stores the current words on a line.*/
         private List<String> _words = new ArrayList<String>();
@@ -427,6 +436,11 @@ class LineAssembler {
         /** Returns the word at index I on this line.*/
         String getWord(int i) {
             return _words.get(i);
+        }
+
+        /** Set the I th word to be WORD.*/
+        void setWord(int i, String word) {
+            _words.set(i, word);
         }
     }
 }

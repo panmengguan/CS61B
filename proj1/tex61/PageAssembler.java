@@ -1,6 +1,5 @@
 package tex61;
 
-import static tex61.FormatException.error;
 
 /** A PageAssembler accepts complete lines of text (minus any
  *  terminating newlines) and turns them into pages, adding form
@@ -34,7 +33,6 @@ abstract class PageAssembler {
      *  the previous page is full. A null LINE indicates a skipped line,
      *  and has no effect at the top of a page. */
     void addLine(String line) {
-
         if (line == null && _currentTextHeight == 0) {
             return;
         }
@@ -45,6 +43,9 @@ abstract class PageAssembler {
 
         if (_currentTextHeight >= _textHeight && line != null) {
             line = "\f" + line;
+            _currentTextHeight = 1;
+        } else if (_currentTextHeight >= _textHeight) {
+            line = "\f";
             _currentTextHeight = 0;
         } else {
             _currentTextHeight += 1;
@@ -57,12 +58,8 @@ abstract class PageAssembler {
         }
     }
 
-    /** Set text height to VAL, where VAL > 0. */
+    /** Set text height to VAL. */
     void setTextHeight(int val) {
-        if (val <= 0) {
-            throw error("VAL needs to be > 0 for text height");
-        }
-
         _textHeight = val;
     }
 

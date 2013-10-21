@@ -123,7 +123,11 @@ class InputParser {
             }
         }
 
-        _out.close();
+        try {
+            _out.close();
+        } catch (FormatException e) {
+            reportError(e.getMessage());
+        }
     }
 
     /** Process \COMMAND{ARG} or (if ARG is null) \COMMAND.  Call the

@@ -5,6 +5,8 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.ArrayList;
 
+import static tex61.FormatException.error;
+
 
 /** Receives (partial) words and commands, performs commands, and
  *  accumulates and formats words into lines of text, which are sent to a
@@ -37,8 +39,8 @@ class Controller {
     /** Current assembler to use.*/
     private LineAssembler _assembler;
 
-    /** List of end notes.*/
-    private List<Endnote> _endNotes = new ArrayList<Endnote>();
+    /** List of end notes strings.*/
+    private List<String> _endNotes = new ArrayList<String>();
 
     /** Current end note number.*/
     private int _currentEndnoteNum = 0;
@@ -82,9 +84,13 @@ class Controller {
     /** If valid, process TEXT into an endnote, first appending a reference
      *  to it to the line currently being accumulated. */
     void formatEndnote(String text) {
+        if (_assembler == _endnoteAssembler) {
+            throw error("Cannot have endnote within endnotes");
+        }
+
         _currentEndnoteNum += 1;
 
-        _endNotes.add(new Endnote(_currentEndnoteNum, text));
+        _endNotes.add(text);
         addText("[" + _currentEndnoteNum + "]");
     }
 
@@ -155,36 +161,8 @@ class Controller {
 
     /** Write all accumulated endnotes to _mainText. */
     private void writeEndnotes() {
-        for (Endnote endNote: _endNotes) {
-            new InputParser(endNote.getText(), this).process();
-        }
-    }
-
-    /** Class representing end notes.*/
-    private static class Endnote {
-
-        /** The reference number.*/
-        private int _number;
-
-        /** The text.*/
-        private String _text;
-
-        /** Construct an end note out of a NUMBER and a TEXT.
-         *  We pre-pend [number]\ to TEXT to make sure it is not
-         *  justified*/
-        Endnote(int number, String text) {
-            _number = number;
-            _text   = "[" + number + "]\\ " + text + "\n";
-        }
-
-        /** Returns the end note number.*/
-        int getNumber() {
-            return _number;
-        }
-
-        /** Returns the end note's text.*/
-        String getText() {
-            return _text;
+        for (String endNote: _endNotes) {
+            new InputParser(endNote, this).process();
         }
     }
 }
