@@ -184,13 +184,16 @@ public class LineAssemblerTest {
         lineAssembler.setTextWidth(Defaults.TEXT_WIDTH);
         lineAssembler.setParIndentation(Defaults.PARAGRAPH_INDENTATION);
 
-        assemblerAddWords("The", "following", "quotation", "about",
+        assemblerAddWords(false, "The", "following", "quotation", "about",
                           "writing", "test", "programs",
                           "for", "a", "document");
 
+        assemblerAddWords("compiler");
+
         String expected = PAR_INDENT
             + "The following  quotation about"
-            + " writing  test programs for  a document\n";
+            + " writing  test programs for  a document\n"
+            + "compiler\n";
 
         assertEquals("God damn it, why won't justice work",
                      expected, output.toString());
@@ -201,9 +204,10 @@ public class LineAssemblerTest {
         lineAssembler.setJustify(true);
 
         lineAssembler.setTextWidth(18);
-        assemblerAddWords("SAM", "I", "AM", "NOT");
+        assemblerAddWords("SAM", "I", "AM", "NOT", "SDFDSFS");
 
-        String expected = PAR_INDENT + "SAM  I  AM  NOT\n";
+        String expected = PAR_INDENT + "SAM  I  AM  NOT\n"
+            + "SDFDSFS\n";
 
         assertEquals("Justification failed", expected, output.toString());
     }
@@ -243,9 +247,10 @@ public class LineAssemblerTest {
         lineAssembler.setJustify(true);
         lineAssembler.setTextWidth(EXTRA_TEST_WIDTH);
 
-        assemblerAddWords("I", "CHOOSE", "YOU!");
+        assemblerAddWords("I", "CHOOSE", "YOU!", "SDFDSFDSFDSFDSFSDFDSFSD");
 
-        String expected = PAR_INDENT + "I   CHOOSE   YOU!\n";
+        String expected = PAR_INDENT + "I   CHOOSE   YOU!\n"
+            + "SDFDSFDSFDSFDSFSDFDSFSD\n";
 
         assertEquals("Justification failed for B>=(N-1)",
                      expected, output.toString());

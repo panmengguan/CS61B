@@ -276,6 +276,11 @@ class LineAssembler {
 
         Line l = _lines.remove();
 
+        if (_lines.isEmpty()) {
+            outputConstantLine(l, totalIndentation, 1);
+            return;
+        }
+
         if (!l.isEmpty()) {
             if (_justify) {
                 outputJustifiedLine(l, totalIndentation, _textWidth
