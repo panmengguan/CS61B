@@ -86,9 +86,12 @@ class InputParser {
         while (_input.findWithinHorizon(INPUT_PATTERN, 0) != null) {
             MatchResult match = _input.match();
 
-            if (match.end(BLANK_TOKEN) > -1
-                || match.end(EOL_TOKEN) > -1) {
+            if (match.end(BLANK_TOKEN) > -1) {
                 _out.endWord();
+            }
+
+            if (match.end(EOL_TOKEN) > -1) {
+                _out.addNewline();
             }
 
             if (match.end(EOP_TOKEN) > -1) {

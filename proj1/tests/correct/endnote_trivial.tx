@@ -1,0 +1,5 @@
+\parindent{0}\nojustify
+This is a simple file\endnote{\nojustify Which is not to say trivial.} that has a couple
+of endnotes\endnote{Which should appear after the "Notes" entry.}.
+
+Notes:

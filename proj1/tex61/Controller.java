@@ -72,6 +72,7 @@ class Controller {
     /** Finish any current word of formatted text and process an end-of-line
      *  according to the current formatting parameters. */
     void addNewline() {
+        endWord();
         _assembler.newLine();
     }
 
@@ -123,6 +124,7 @@ class Controller {
      *  a new paragraph, if it is not the first on a page) to VAL, if it is
      *  a valid setting. */
     void setParSkip(int val) {
+        endParagraph();
         _assembler.setParSkip(val);
     }
 

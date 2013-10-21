@@ -1,0 +1,8 @@
+Check that the space between paragraphs can be set by the parskip command.
+
+This is a new paragraph at the default skip distance from the first.  The
+next paragraph should be preceded by three blank lines.
+\parskip{3}
+
+Here is the final paragraph, which should follow the preceding by three
+blank lines.

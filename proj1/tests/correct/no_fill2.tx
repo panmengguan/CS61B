@@ -1,0 +1,8 @@
+\nofill
+These lines are not filled,   but multiple spaces     in the input still count as
+a single
+space.
+
+Paragraphs still continue
+to work
+as before.

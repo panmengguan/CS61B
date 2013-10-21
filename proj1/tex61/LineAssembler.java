@@ -222,12 +222,12 @@ class LineAssembler {
             return;
         }
 
-        _lines.add(_currentLine);
-        _currentLine = new Line();
+        flushLine();
     }
 
     /** Flush the current line.*/
     protected void flushLine() {
+
         if (!_currentLine.isEmpty()) {
             _lines.add(_currentLine);
             _currentLine = new Line();
@@ -262,6 +262,8 @@ class LineAssembler {
             for (Line l: _lines) {
                 outputConstantLine(l, _indentation, 1);
             }
+
+            _lines = new ArrayDeque<Line>();
             return;
         }
 
