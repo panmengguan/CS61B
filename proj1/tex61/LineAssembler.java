@@ -20,7 +20,7 @@ class LineAssembler {
     private boolean _justify;
 
     /** Destination given in constructor for formatted lines. */
-    private final PageAssembler _pages;
+    protected final PageAssembler _pages;
 
     /** Width of text.*/
     private int _textWidth;
@@ -234,10 +234,15 @@ class LineAssembler {
         }
     }
 
+    /** Set the page text height.*/
+    protected void setPageTextHeight() {
+        _pages.setTextHeight(_textHeight);
+    }
+
     /** If there is a current unfinished paragraph pending, close it
      *  out and start a new one. */
     void endParagraph() {
-        _pages.setTextHeight(_textHeight);
+        setPageTextHeight();
         flushLine();
 
         if (_lines.isEmpty()) {

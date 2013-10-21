@@ -26,6 +26,7 @@ class EndnoteAssembler extends LineAssembler {
     }
 
     /** Add WORD pre-pended by [<x>], if needed.*/
+    @Override
     void addWord(String word) {
         if (_isBeginningWord) {
             word = "[" + _currentEndnoteNum + "] " + word;
@@ -36,6 +37,7 @@ class EndnoteAssembler extends LineAssembler {
     }
 
     /** End the paragraph.*/
+    @Override
     void endParagraph() {
         _isBeginningWord = true;
         _currentEndnoteNum += 1;
@@ -43,7 +45,13 @@ class EndnoteAssembler extends LineAssembler {
     }
 
     /** Ignores HEIGHT.*/
+    @Override
     void setTextHeight(int height) {
-        super.setTextHeight(PageAssembler.INFINITE_HEIGHT);
+        _pages.setEndnoteMode(true);
+    }
+
+    @Override
+    protected void setPageTextHeight() {
+        _pages.setEndnoteMode(true);
     }
 }

@@ -23,6 +23,12 @@ abstract class PageAssembler {
     /** Current text height.*/
     private int _currentTextHeight = 0;
 
+    /** Boolean for is end node mode.*/
+    private boolean _isEndnote = false;
+
+    /** Boolean for whether we have page broken once for end notes.*/
+    private boolean _hasPageBreakEndnote = false;
+
     /** Create a new PageAssembler that sends its output to OUT.
      *  Initially, its text height is unlimited. It prepends a form
      *  feed character to the first line of each page except the first. */
@@ -41,14 +47,26 @@ abstract class PageAssembler {
             return;
         }
 
-        if (_currentTextHeight >= _textHeight && line != null) {
-            line = "\f" + line;
-            _currentTextHeight = 1;
-        } else if (_currentTextHeight >= _textHeight) {
-            line = "\f";
-            _currentTextHeight = 0;
+        if (_isEndnote) {
+            if (_currentTextHeight == _textHeight
+                && !_hasPageBreakEndnote) {
+                line = "\f" + line;
+                _currentTextHeight = 1;
+                _hasPageBreakEndnote = true;
+            } else if (!_hasPageBreakEndnote) {
+                _currentTextHeight += 1;
+            }
         } else {
-            _currentTextHeight += 1;
+            if (_currentTextHeight >= _textHeight && line != null) {
+                line = "\f" + line;
+                _currentTextHeight = 1;
+
+            } else if (_currentTextHeight >= _textHeight) {
+                line = "\f";
+                _currentTextHeight = 0;
+            } else {
+                _currentTextHeight += 1;
+            }
         }
 
         if (line == null) {
@@ -61,6 +79,11 @@ abstract class PageAssembler {
     /** Set text height to VAL. */
     void setTextHeight(int val) {
         _textHeight = val;
+    }
+
+    /** Set end note mode based on ISENDNOTE.*/
+    void setEndnoteMode(boolean isEndnote) {
+        _isEndnote = isEndnote;
     }
 
     /** Perform final disposition of LINE, as determined by the
