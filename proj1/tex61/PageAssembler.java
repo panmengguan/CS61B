@@ -39,11 +39,13 @@ abstract class PageAssembler {
      *  the previous page is full. A null LINE indicates a skipped line,
      *  and has no effect at the top of a page. */
     void addLine(String line) {
-        if (line == null && _currentTextHeight == 0) {
+        if ((line == null || line.equals(""))
+            && _currentTextHeight == 0) {
             return;
         }
 
-        if (line == null && _currentTextHeight == _textHeight) {
+        if ((line == null || line.equals(""))
+            && _currentTextHeight == _textHeight) {
             return;
         }
 
