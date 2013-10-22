@@ -12,5 +12,6 @@ public class UnitTest {
         textui.runClasses(tex61.PageAssemblerTest.class);
         textui.runClasses(tex61.LineAssemblerTest.class);
         textui.runClasses(tex61.ControllerTest.class);
+        textui.runClasses(tex61.EndnoteAssemblerTest.class);
     }
 }

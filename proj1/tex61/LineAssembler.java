@@ -52,8 +52,8 @@ class LineAssembler {
     /** Text height.*/
     private int _textHeight;
 
-    /** A new, empty line assembler with default settings of all
-     *  parameters, sending finished lines to PAGES.
+    /** A new, line assembler with parameters, sending finished
+     *  lines to PAGES.
      *
      *  Parameters: PAGES, TEXTWIDTH, PARINDENT, INDENTATION, PARSKIP,
      *              TEXTHEIGHT, FILL, JUSTIFY
@@ -147,16 +147,6 @@ class LineAssembler {
         }
     }
 
-    /** Add LINE to our output, with no preceding paragraph skip.  There must
-     *  not be an unfinished line pending. */
-    void addLine(String line) {
-        if (!_currentLine.isEmpty()) {
-            throw error("Cannot add new line while current is not finished");
-        }
-
-        _lines.add(new Line(line));
-    }
-
     /** Set the current indentation to VAL. VAL >= 0. */
     void setIndentation(int val) {
         if (val < 0) {
@@ -166,7 +156,7 @@ class LineAssembler {
         _indentation = val;
     }
 
-    /** Set the current paragraph indentation to VAL. VAL >= 0. */
+    /** Set the current paragraph indentation to VAL. INDENTATION + VAL >= 0. */
     void setParIndentation(int val) {
         if (val + _indentation < 0) {
             throw error("Paragraph indentation + indentation must be >= 0");
@@ -195,7 +185,7 @@ class LineAssembler {
         _justify = on && _fill;
     }
 
-    /** Set paragraph skip to VAL.  VAL >= 0. */
+    /** Set paragraph skip to VAL. VAL >= 0. */
     void setParSkip(int val) {
         if (val < 0) {
             throw error("Paragraph skip must be >= 0");
@@ -223,20 +213,6 @@ class LineAssembler {
         }
 
         flushLine();
-    }
-
-    /** Flush the current line.*/
-    protected void flushLine() {
-
-        if (!_currentLine.isEmpty()) {
-            _lines.add(_currentLine);
-            _currentLine = new Line();
-        }
-    }
-
-    /** Set the page text height.*/
-    protected void setPageTextHeight() {
-        _pages.setTextHeight(_textHeight);
     }
 
     /** If there is a current unfinished paragraph pending, close it
@@ -269,10 +245,23 @@ class LineAssembler {
             }
 
             _lines = new ArrayDeque<Line>();
-            return;
+        } else {
+            emitFormattedLines();
         }
+    }
 
-        emitFormattedLines();
+    /** Flush the current line.*/
+    protected void flushLine() {
+
+        if (!_currentLine.isEmpty()) {
+            _lines.add(_currentLine);
+            _currentLine = new Line();
+        }
+    }
+
+    /** Set the page text height.*/
+    protected void setPageTextHeight() {
+        _pages.setTextHeight(_textHeight);
     }
 
     /** Emit formatted (if needed) lines.*/
@@ -293,10 +282,6 @@ class LineAssembler {
             } else {
                 outputConstantLine(l, totalIndentation, 1);
             }
-        }
-
-        if (_lines.isEmpty()) {
-            return;
         }
 
         Line currentLine = _lines.remove();
@@ -320,7 +305,7 @@ class LineAssembler {
         }
     }
 
-    /** Output LINE, adding INDENT characters of indentation, and a total of
+    /** Output LINE, adding INDENT characters of indentation, and up to
      *  SPACES spaces between words, evenly distributed.*/
     private void outputJustifiedLine(Line line, int indent, int spaces) {
 
@@ -337,10 +322,10 @@ class LineAssembler {
 
         for (int i = 0; i < line.getNumWords(); i += 1) {
             str += line.getWord(i);
-            int spacesNeeded = (int) Math.floor(0.5 + ((float) (spaces
-                                                                * (i + 1))
-                                                       / (numWords - 1)))
-                - spacesSoFar;
+            int spacesNeeded = (int) (Math.floor(0.5
+                                                + ((float) (spaces * (i + 1))
+                                                   / (numWords - 1)))
+                                      - spacesSoFar);
 
             if (i != line.getNumWords() - 1) {
                 for (int j = 0; j < spacesNeeded; j += 1) {
@@ -386,27 +371,14 @@ class LineAssembler {
         _pages.addLine(str);
     }
 
-    /** Returns the lines for the paragraph.*/
-    protected Queue<Line> getLines() {
-        return _lines;
-    }
-
     /** Class representing a line.*/
     protected static class Line {
 
         /** Stores the current words on a line.*/
         private List<String> _words = new ArrayList<String>();
 
-        /** The string of the line.*/
-        private String _line = "";
-
         /** Construct an empty line.*/
         Line() {
-        }
-
-        /** Construct a line using a string LINE.*/
-        Line(String line) {
-            _line = line;
         }
 
         /** Add WORD to a line.*/
@@ -425,11 +397,6 @@ class LineAssembler {
             return len;
         }
 
-        /** Returns the string of this line.*/
-        String getLine() {
-            return _line;
-        }
-
         /** Returns the number of words on this line.*/
         int getNumWords() {
             return _words.size();
@@ -440,19 +407,9 @@ class LineAssembler {
             return _words.size() == 0;
         }
 
-        /** Returns the list of words on this line.*/
-        List<String> getWords() {
-            return _words;
-        }
-
         /** Returns the word at index I on this line.*/
         String getWord(int i) {
             return _words.get(i);
-        }
-
-        /** Set the I th word to be WORD.*/
-        void setWord(int i, String word) {
-            _words.set(i, word);
         }
     }
 }

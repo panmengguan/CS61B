@@ -85,11 +85,11 @@ public class LineAssemblerTest {
         lineAssembler.setJustify(false);
         lineAssembler.addWord("High");
         lineAssembler.addWord("Dare");
-        lineAssembler.addWord("AJT");
+        lineAssembler.addWord("ADT");
 
         lineAssembler.endParagraph();
 
-        String expected = PAR_INDENT + "High Dare\nAJT\n";
+        String expected = PAR_INDENT + "High Dare\nADT\n";
 
         assertEquals("God damn fill error", expected,
                      output.toString());
@@ -100,12 +100,12 @@ public class LineAssemblerTest {
         lineAssembler.setJustify(false);
         lineAssembler.addWord("High");
         lineAssembler.addWord("Dare");
-        lineAssembler.addWord("AJT");
+        lineAssembler.addWord("ADT");
 
         lineAssembler.endParagraph();
         lineAssembler.endParagraph();
 
-        String expected = PAR_INDENT + "High Dare\nAJT\n";
+        String expected = PAR_INDENT + "High Dare\nADT\n";
 
         assertEquals("God damn fill error", expected,
                      output.toString());
@@ -118,12 +118,12 @@ public class LineAssemblerTest {
 
         lineAssembler.addWord("High");
         lineAssembler.addWord("NP");
-        lineAssembler.addWord("AJT");
+        lineAssembler.addWord("ADT");
 
         lineAssembler.endParagraph();
 
         String expected = PAR_INDENT + "  " + "High NP\n"
-            + "  " + "AJT\n";
+            + "  " + "ADT\n";
 
         assertEquals("God damn indentation test failed",
                      expected, output.toString());

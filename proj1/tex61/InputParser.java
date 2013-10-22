@@ -142,6 +142,7 @@ class InputParser {
      *  appropriate methods in our Controller (_out). */
     private void processCommand(String command, String arg) {
         try {
+            checkNoArgument(command, arg);
             switch (command) {
             case "indent":
                 _out.setIndentation(Integer.parseInt(arg));
@@ -193,6 +194,41 @@ class InputParser {
             reportError(e.getMessage());
         } catch (NumberFormatException e) {
             reportError(e.getMessage());
+        }
+    }
+
+    /** Raises an error if the COMMAND that is not supposed to have argument
+     *  is provided an ARG.*/
+    private void checkNoArgument(String command, String arg) {
+        switch(command) {
+        case "nofill":
+            if (arg != null) {
+                reportError("No fill cannot have argument");
+            }
+
+            break;
+        case "fill":
+            if (arg != null) {
+                reportError("Fill cannot have argument");
+            }
+
+            break;
+
+        case "justify":
+            if (arg != null) {
+                reportError("Justify cannot have argument");
+            }
+
+            break;
+
+        case "nojustify":
+            if (arg != null) {
+                reportError("No justify cannot have argument");
+            }
+
+            break;
+        default:
+            return;
         }
     }
 

@@ -21,17 +21,20 @@ public class ControllerTest {
     /** Controller.*/
     private Controller controller;
 
+    /** Setup the output and writer.*/
     private void setupWriter() {
         output = new StringWriter();
         writer = new PrintWriter(output);
     }
 
+    /** Common setup for tests.*/
     private void commonSetup() {
         setupWriter();
 
         controller = new Controller(writer);
     }
 
+    /** Assemble the words from ARGS and end the paragraph iff END.*/
     private void assemblerAddWords(boolean end, String... args) {
         for (String s : args) {
             controller.addText(s);

@@ -47,7 +47,7 @@ class Controller {
 
     /** A new Controller that sends formatted output to OUT. */
     Controller(PrintWriter out) {
-        _out = out;
+        _out     = out;
         _printer = new PagePrinter(out);
 
         _lineAssembler    = LineAssembler.createLineAssembler(_printer);
@@ -156,12 +156,7 @@ class Controller {
         _assembler = _endnoteAssembler;
     }
 
-    /** Return to directing all formatted text to _mainText. */
-    private void setNormalMode() {
-        _assembler = _lineAssembler;
-    }
-
-    /** Write all accumulated endnotes to _mainText. */
+    /** Write out all accumulated end notes.*/
     private void writeEndnotes() {
         for (String endNote: _endNotes) {
             new InputParser(endNote, this).process();
