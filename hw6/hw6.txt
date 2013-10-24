@@ -1,0 +1,108 @@
+HW #6
+
+Table I.  Cost parameters for various insertion sorting programs.
+----- --  ---- ---------- --- ------- --------- ------- ---------
+
+This table shows the parameters a, b, and c in the formula
+
+          2
+       a N   +  b N  +  c
+
+for the running time (in seconds) of several different programs running on
+random, uniformly distributed data.
+
+Machine: Macbook Air 2012
+
+Program            |    a    |     b    |      c
+-------------------+---------+----------+------------
+                   |         |          |
+Sorter             | 2.3e-10 | -3.6e-7  | -0.0032
+                   |         |          |
+-------------------+---------+----------+------------
+                   |         |          |
+csort (-O2)        | 2.7e-10 | 8.9e-6   | -0.5717
+                   |         |          |
+-------------------+---------+----------+------------
+                   |         |          |
+Sorter2            | -4.0e-9 | 0.0      | -110.6
+                   |         |          |
+-------------------+---------+----------+------------
+                   |         |          |
+csort (-O0)        | 3.0e-10 | -1.2-e6  | 0.1944
+                   |         |          |
+
+
+Table II.  Cost parameters for a different machine
+----- ---  ---- ---------- --- - --------- -------
+
+As for Table I, but with a different architecture.
+
+Machine: sun4v
+
+Program            |    a    |     b    |      c
+-------------------+---------+----------+------------
+                   |         |          |
+Sorter             | 5.1e-9  | -3.5e-5  | 0.8699
+                   |         |          |
+-------------------+---------+----------+------------
+                   |         |          |
+csort (-O2)        | 6.1e-9  | -1.8e-6  | 0.0226
+                   |         |          |
+-------------------+---------+----------+------------
+                   |         |          |
+Sorter2            | 1.7e-8  | 0.0      | 1.6316
+                   |         |          |
+-------------------+---------+----------+------------
+                   |         |          |
+csort (-O0)        | 1.8e-8  | -4.5e-6  | 0.0238
+                   |         |          |
+
+
+
+Table III.  Cost parameters for insertion sorting programs, non-uniform data
+----- ----  ---- ---------- --- --------- ------- --------- ----------- ----
+
+This table shows the parameters a, b, and c in the formula
+
+          2
+       a N   +  b N  +  c
+
+for the running time (in seconds) of several different programs,
+running on random data in which the kth item is computed by k + 20 *
+R, where R is uniformly distributed on 0..1.
+
+
+
+
+Program            |    a    |     b    |      c
+-------------------+---------+----------+------------
+                   |         |          |
+Sorter             | -4e-15  | 2.3e-8   | 0.0047
+                   |         |          |
+-------------------+---------+----------+------------
+                   |         |          |
+csort (-O2)        | -3e-15  | 1.9e-8   | 9.4e-5
+                   |         |          |
+-------------------+---------+----------+------------
+                   |         |          |
+Sorter2            | -8e-12  | 5.3e-6   | -0.4189
+                   |         |          |
+-------------------+---------+----------+------------
+                   |         |          |
+csort (-O0)        | -6e-15  | 3.6e-8   | 0.0
+                   |         |          |
+
+
+
+3. Explanation of differences between Table I and Table III:
+In III, the list has been mostly sorted, so insertion sort will perform close
+to no work to sort the list. In I, the list is uniformly random, so insertion
+sort takes much longer.
+
+
+
+
+4. Expected effect of using a linked list rather than an array:
+It should be much slower than using an array because you going to an element in
+a linked list takes theta(N), so the total time to sort the linked list should
+be theta(N^3)
