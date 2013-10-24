@@ -1,0 +1,85 @@
+Version 2.0 7/29/2013
+
+This directory contains a skeleton for CS61B Project 2.
+
+Although some of what's in here might seem mysterious to you, try to 
+understand what it's all for.  Don't be afraid to ask us about it.
+
+GENERAL NOTE:  EVERYTHING in these files is changeable as you see fit, unless
+   otherwise noted.  Your task is to conform to the spec, period.  While
+   we have suggested, with these files, certain points about the design, we
+   don't require any of it.  
+
+CONTENTS:
+
+README                  This file.  You need not turn this in.
+        
+Makefile                For those of you using the standard Unix tool chain
+                        rather than Eclipse, this file provides for some
+                        simple compilation/testing control.  See the 
+                        comments in it for the targets provided.  Those of
+                        you using Eclipse won't need it.
+
+
+jump61/
+
+    Makefile           A simple makefile that delegates all requests to
+                       the outer directory's makefile.
+                        
+    Main.java          Entry point to program. You may modify this if you
+                       want, but it will work as it stands.
+    UnitTest.java      Main unit-test file, which calls any others.
+
+
+    The following files in jump61 are all optional.  Use them if you see fit,
+    and remove any you don't use.
+
+
+    Color.java          Defines symbolic names for the colors of squares
+                        and players.
+
+    Board.java          The superclass of playing boards.
+
+    ConstantBoard.java  A type of Board that delegates operations to another
+                        Board and does not allow operations that modify a
+                        Board.
+
+    MutableBoard.java   A type of Board whose contents can be changed.
+
+    Game.java           Abstracts the complete state of a game and
+                        solicits moves from Players.
+
+    Player.java         The superclass of all types of Players.  A Player is
+                        something that makes moves.
+
+    HumanPlayer.java    Represents a player who sits at the terminal typing
+                        moves.
+
+    AI.java             An automated (AI) player.
+
+    Defaults.java       Gathering place for default parameters.
+
+    GameException.java  Used for internal signalling of user errors,
+
+    Usage.txt           A resource containing a Usage message.
+    Help.txt            A resource containing a summary of commands.
+
+    BoardTest.java      Some unit tests on Boards.
+
+tests/
+
+    correct/
+
+       test1.in         Simple test, showing the format of test files.
+                        REMINDER: This is a sample only.  It DOESN'T 
+                        constitute an adequate test.  
+       test1.std        Expected boards output by the 'dump' command in
+                        test1.in
+
+    error/
+
+       command1.in      Simple input containing erroneous commands.  The
+                        program must report and ignore these commands without
+                        crashing.
+       command1.std     Expected boards output by the 'dump' command in
+                        command1.in
