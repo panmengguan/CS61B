@@ -3,7 +3,7 @@ package jump61;
 import static jump61.GameException.error;
 
 /** A Player that gets its moves from manual input.
- *  @author
+ *  @author Kiet Lam
  */
 class HumanPlayer extends Player {
 
@@ -11,14 +11,17 @@ class HumanPlayer extends Player {
      *  moves from GAME's input source. */
     HumanPlayer(Game game, Color color) {
         super(game, color);
-        // FIXME
     }
 
     @Override
     void makeMove() {
         Game game = getGame();
         Board board = getBoard();
-        // FIXME
-    }
 
+        int[] move = new int[2];
+
+        if (game.getMove(move)) {
+            board.addSpot(getColor(), move[0], move[1]);
+        }
+    }
 }

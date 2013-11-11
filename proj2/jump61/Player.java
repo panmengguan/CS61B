@@ -6,7 +6,7 @@ import static jump61.Color.*;
  *  Player is attached to a Game and has a Color.  Each call of makeMove()
  *  returns a valid move.
  *
- *  @author P. N. Hilfinger
+ *  @author Kiet Lam
  */
 abstract class Player {
 

@@ -1,6 +1,8 @@
 package jump61;
 
 import java.util.Formatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import static jump61.Color.*;
 
@@ -8,9 +10,16 @@ import static jump61.Color.*;
  *  row and column (between 1 and size()), or by square number, numbering
  *  squares by rows, with squares in row 1 numbered 0 - size()-1, in
  *  row 2 numbered size() - 2*size() - 1, etc.
- *  @author
+ *  @author Kiet Lam
  */
 abstract class Board {
+
+    /** Next player to move.*/
+    private Color _nextPlayer = Color.RED;
+
+    /** The length of an end of line on this system. */
+    private static final int NL_LENGTH =
+        System.getProperty("line.separator").length();
 
     /** (Re)initialize me to a cleared board with N squares on a side. Clears
      *  the undo history and sets the number of moves to 0. */
@@ -49,8 +58,13 @@ abstract class Board {
     /** Returns the Color of the player who would be next to move.  If the
      *  game is won, this will return the loser (assuming legal position). */
     Color whoseMove() {
-        return RED;
-        // FIXME
+        Color winner = getWinner();
+
+        if (winner != null) {
+            return winner.opposite();
+        }
+
+        return _nextPlayer;
     }
 
     /** Return true iff row R and column C denotes a valid square. */
@@ -66,48 +80,59 @@ abstract class Board {
 
     /** Return the row number for square #N. */
     final int row(int n) {
-        return 1;
-        // FIXME
+        return (n / size()) + 1;
     }
 
     /** Return the column number for square #N. */
     final int col(int n) {
-        return 1;
-        // FIXME
+        return (n % size()) + 1;
     }
 
     /** Return the square number of row R, column C. */
     final int sqNum(int r, int c) {
-        return 1;
-        // FIXME
+        return (r - 1) * size() + c - 1;
     }
-
 
     /** Returns true iff it would currently be legal for PLAYER to add a spot
         to square at row R, column C. */
     boolean isLegal(Color player, int r, int c) {
-        return true;
-        // FIXME
+        return isLegal(player, sqNum(r, c));
     }
 
     /** Returns true iff it would currently be legal for PLAYER to add a spot
      *  to square #N. */
     boolean isLegal(Color player, int n) {
-        return true;
-        // FIXME
+        return color(n).equals(Color.WHITE)
+            || color(n).equals(player);
     }
 
     /** Returns true iff PLAYER is allowed to move at this point. */
     boolean isLegal(Color player) {
-        return true;
-        // FIXME
+        return player.equals(_nextPlayer);
     }
 
     /** Returns the winner of the current position, if the game is over,
      *  and otherwise null. */
     final Color getWinner() {
-        return null;
-        // FIXME
+        Color winner = null;
+
+        for (int i = 0; i < size() * size(); i += 1) {
+            if (color(i).equals(Color.WHITE)) {
+                winner = null;
+                break;
+            }
+
+            if (winner == null) {
+                winner = color(i);
+            }
+
+            if (!winner.equals(color(i))) {
+                winner = null;
+                break;
+            }
+        }
+
+        return winner;
     }
 
     /** Return the number of squares of given COLOR. */
@@ -149,11 +174,45 @@ abstract class Board {
         unsupported("undo");
     }
 
+    /** Returns the neighbors of square R:C.*/
+    List<Integer> getNeighbors(int r, int c) {
+        List<Integer> neighbors = new ArrayList<Integer>();
+
+        int prevRow = r - 1;
+        int nextRow = r + 1;
+        int prevCol = c - 1;
+        int nextCol = c + 1;
+
+        if (prevRow >= 1) {
+            neighbors.add(sqNum(prevRow, c));
+        }
+
+        if (prevCol >= 1) {
+            neighbors.add(sqNum(r, prevCol));
+        }
+
+        if (nextRow <= size()) {
+            neighbors.add(sqNum(nextRow, c));
+        }
+
+        if (nextCol <= size()) {
+            neighbors.add(sqNum(r, nextCol));
+        }
+
+        return neighbors;
+    }
+
+    /** Returns the neighbors of square SQNUM.*/
+    List<Integer> getNeighbors(int sqNum) {
+        return getNeighbors(row(sqNum), col(sqNum));
+    }
+
     /** Returns my dumped representation. */
     @Override
     public String toString() {
         Formatter out = new Formatter();
-        // FIXME
+        out.format("size:%i nextPlayer:%s \board:%s", size(),
+                   whoseMove().toString(), toDisplayString());
         return out.toString();
     }
 
@@ -161,21 +220,68 @@ abstract class Board {
      *  human-readable textual display.  This is distinct from the dumped
      *  representation (returned by toString). */
     public String toDisplayString() {
-        StringBuilder out = new StringBuilder(toString());
-        // FIXME
-        return out.toString();
+        String re = "";
+
+        re += "===\n";
+
+        for (int i = 0; i < size(); i += 1) {
+            re += "    ";
+            for (int j = 0; j < size(); j += 1) {
+                int sq = sqNum(i + 1, j + 1);
+
+                switch (color(sq)) {
+                case WHITE:
+                    re += "-- ";
+                    break;
+                case RED:
+                    re += spots(sq) + "r ";
+                    break;
+                case BLUE:
+                    re += spots(sq) + "b ";
+                    break;
+                default:
+                    re += "-- ";
+                }
+            }
+
+            re = re.substring(0, re.length() - 1);
+            re += "\n";
+        }
+
+        re += "===";
+
+        return re;
     }
 
     /** Returns the number of neighbors of the square at row R, column C. */
     int neighbors(int r, int c) {
-        return 2;
-        // FIXME
+        if (r == 1 && c == 1
+            || r == size() && c == 1
+            || r == 1 && c == size()
+            || r == size() && c == size()) {
+            return 2;
+        }
+
+        if (r == 1 || r == size() || c == 1 || c == size()) {
+            return 3;
+        }
+
+        return 4;
     }
 
     /** Returns the number of neighbors of square #N. */
     int neighbors(int n) {
-        return 2;
-        // FIXME
+        return neighbors(row(n), col(n));
+    }
+
+    /** Flip next player to the opposite color.*/
+    protected void flipNextPlayer() {
+        _nextPlayer = _nextPlayer.opposite();
+    }
+
+    /** Sets the next player.*/
+    protected void setNextPlayer(Color player) {
+        _nextPlayer = player;
     }
 
     /** Indicate fatal error: OP is unsupported operation. */
@@ -183,9 +289,4 @@ abstract class Board {
         String msg = String.format("'%s' operation not supported", op);
         throw new UnsupportedOperationException(msg);
     }
-
-    /** The length of an end of line on this system. */
-    private static final int NL_LENGTH =
-        System.getProperty("line.separator").length();
-
 }

@@ -9,7 +9,7 @@ import java.io.Writer;
 import java.io.IOException;
 
 /** The jump61 game.
- * @author
+ * @author Kiet Lam
  */
 public class Main {
 
@@ -55,4 +55,3 @@ public class Main {
     }
 
 }
-

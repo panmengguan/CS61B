@@ -3,7 +3,7 @@ package jump61;
 import java.util.ArrayList;
 
 /** An automated Player.
- *  @author
+ *  @author Kiet Lam
  */
 class AI extends Player {
 
@@ -39,7 +39,4 @@ class AI extends Player {
         return 0;
         // FIXME
     }
-
 }
-
-

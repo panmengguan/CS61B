@@ -1,1 +1,34 @@
-Replace with a help message, summarizing commands.
+clear        Abandons the current game (if one is in progress), and clears
+             the board to its initial configuration (all squares neutral).
+             Playing stops until the next start command.
+
+start        Start playing from current position (has no effect if already
+             playing).
+
+quit         Quit game.
+
+auto P       Stop current game (if needed) until next start command.
+             Cause player P to be played by an automated agent on
+             subsequent moves. The value P must be "red" or "blue"
+             (case-insensitive). Blue is initially automated
+
+manual P     Stops current game (if needed) until next start command.
+             Cause player P to take moves from the terminal on
+             subsequent moves. The value P must be "red" or "blue"
+             (case-insensitive). Red is initially manual.
+
+size N       Stops any current game. Clears the board to the initial
+             configuration and sets the size of the board to N
+             squares. Initially, N=6
+
+move N       Stop any current game, set the number of the next move to
+             N. Initially, the number of the next move is 1.
+
+set R C N P  Stop any current game. Put N spots at row R and column C.
+             P is either 'b' or 'r' (blue or red), indicating the
+             color of the square. If N is 0, P is ignored and the
+             square is cleared.
+
+dump         Print the board in its standard format.
+
+seed N       Seed the random number generated to N for automated players.

@@ -74,5 +74,4 @@ class ConstantBoard extends Board {
 
     /** Board to which all operations delegated. */
     private Board _board;
-
 }

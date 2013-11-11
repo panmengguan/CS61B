@@ -1,7 +1,7 @@
 package jump61;
 
 /** Collected constants used as default or initial values.
- *  @author
+ *  @author Kiet Lam
  */
 class Defaults {
 
