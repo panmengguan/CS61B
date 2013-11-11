@@ -82,7 +82,7 @@ class Game {
         _out = new PrintWriter(output, true);
         _err = new PrintWriter(errorOutput, true);
         _red = new HumanPlayer(this, Color.RED);
-        _red = new AI(this, Color.BLUE);
+        _blue = new AI(this, Color.BLUE);
     }
 
     /** Returns a readonly view of the game board.  This board remains valid
@@ -116,9 +116,10 @@ class Game {
      *  MOVE. Returns true if this is successful, false if game stops
      *  or ends first. */
     boolean getMove(int[] move) {
-        while (_playing && _move[0] == 0 && promptForNext()) {
+        while (_playing && _move[0] == 0 && !_quit && promptForNext()) {
             readExecuteCommand();
         }
+
         if (_move[0] > 0) {
             move[0] = _move[0];
             move[1] = _move[1];
@@ -129,16 +130,13 @@ class Game {
         }
     }
 
-    /** Add a spot to R C, if legal to do so.
-     *  Then check for winner. */
+    /** Add a spot to R C, if legal to do so. */
     void makeMove(int r, int c) {
         if (_board.isLegal(_board.whoseMove(), r, c)) {
             _board.addSpot(_board.whoseMove(), r, c);
         } else {
             throw error("Invalid move");
         }
-
-        checkForWin();
     }
 
     /** Add a spot to square #N, if legal to do so.
@@ -273,7 +271,21 @@ class Game {
      *  immediately print a win message and end the game. */
     private void restartGame() {
         _playing = true;
+
         checkForWin();
+
+        while (_playing && !_quit) {
+            checkForWin();
+
+            switch (_board.whoseMove()) {
+            case RED:
+                _red.makeMove();
+                break;
+            case BLUE:
+                _blue.makeMove();
+                break;
+            }
+        }
     }
 
     /** Save move R C in _move.  Error if R and C do not indicate an
@@ -393,7 +405,7 @@ class Game {
         }
 
         verifyRowColumn(r, c);
-        makeMove(r, c);
+        saveMove(r, c);
 
         return true;
     }

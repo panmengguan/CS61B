@@ -19,7 +19,7 @@ public class HumanTest {
     @Test
     public void testNoMove() {
         Board b = new MutableBoard(5);
-        GameStub game = new GameStub(b, iReader, oWriter, eWriter);
+        GameStub game = new GameStub(b, iReader, oWriter, eWriter, Color.RED);
         Player player = new HumanPlayer(game, Color.RED);
 
         player.makeMove();
@@ -35,7 +35,7 @@ public class HumanTest {
     @Test
     public void testMakeMove() {
         Board b = new MutableBoard(5);
-        GameStub game = new GameStub(b, iReader, oWriter, eWriter);
+        GameStub game = new GameStub(b, iReader, oWriter, eWriter, Color.RED);
         Player player = new HumanPlayer(game, Color.RED);
 
         game.setNextMove(new int[] {3, 3});
@@ -50,7 +50,7 @@ public class HumanTest {
     @Test
     public void testMultipleMoves() {
         Board b = new MutableBoard(5);
-        GameStub game = new GameStub(b, iReader, oWriter, eWriter);
+        GameStub game = new GameStub(b, iReader, oWriter, eWriter, Color.RED);
         Player player = new HumanPlayer(game, Color.RED);
 
         game.setNextMove(new int[] {3, 3});

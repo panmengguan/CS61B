@@ -4,8 +4,9 @@ import java.io.Reader;
 import java.io.Writer;
 
 
-/** Stub for Game to ease testing.
- *  @author Kiet Lam*/
+/** Stub for Game to ease testing. Single player
+ *  This is needed to separate testing of HumanPlayer and Game
+  *  @author Kiet Lam */
 class GameStub extends Game {
 
     /** Next move.*/
@@ -14,17 +15,26 @@ class GameStub extends Game {
     /** Current board.*/
     private Board _board;
 
+    /** The only player of this board.*/
+    private Color _player;
+
     /** Create a Game stub with beginning BOARD.*/
     GameStub(Board board, Reader is, Writer os,
-             Writer err) {
+             Writer err, Color player) {
         super(is, os, os, err);
         _board = board;
+        _player = player;
     }
 
     /** Set the output of getMove() to be NEXTMOVE.
      *  Assumes NEXTMOVE is int[2]*/
     void setNextMove(int[] nextMove) {
         _nextMove = nextMove;
+    }
+
+    @Override
+    void makeMove(int r, int c) {
+        _board.set(r, c, _board.spots(r, c) + 1, _player);
     }
 
     /** Returns true iff _nextMove is not null.

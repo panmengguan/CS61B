@@ -21,7 +21,7 @@ class HumanPlayer extends Player {
         int[] move = new int[2];
 
         if (game.getMove(move)) {
-            board.addSpot(getColor(), move[0], move[1]);
+            game.makeMove(move[0], move[1]);
         }
     }
 }
