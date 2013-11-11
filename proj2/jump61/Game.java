@@ -356,6 +356,7 @@ class Game {
             break;
         case "help":
             help();
+            break;
         default:
             if (!attemptReadMove(cmnd)) {
                 throw error("bad command: '%s'", cmnd);
