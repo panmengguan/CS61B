@@ -65,10 +65,10 @@ class Game {
     private Player _blue;
 
     /** Sampling rate for red.*/
-    private static final double RED_SAMPLING = 0.20;
+    private static final double RED_SAMPLING = 0.08;
 
     /** Sampling rate for blue.*/
-    private static final double BLUE_SAMPLING = 0.20;
+    private static final double BLUE_SAMPLING = 0.08;
 
    /** Used to return a move entered from the console.  Allocated
      *  here to avoid allocations. */
@@ -189,6 +189,7 @@ class Game {
     private void checkForWin() {
         if (_board.getWinner() != null) {
             _playing = false;
+            _board.restetNextPlayer();
             announceWinner();
         }
     }
