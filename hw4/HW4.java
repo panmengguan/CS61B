@@ -38,7 +38,7 @@ public class HW4 {
      *  attribute value (without quotes).  Group 5 matches the closing
      *  '/', if present. */
     public static final String HTML_P3 = "<(/)?\\s*([a-z]+)\\s*"
-        + "([a-z]+)?=?\"?([^/>\"]+)?\"?\\s*(/)?>?.*?<?[a-z]*?\\s*?>?";
+        + "([a-z]+)?=?\"?([^/>\"]+)?\"?\\s*(/)?>?";
 
     /* Problem 4 */
     /** A format (in printf style) that places a string and a double
