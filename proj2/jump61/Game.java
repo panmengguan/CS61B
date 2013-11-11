@@ -189,7 +189,7 @@ class Game {
     private void checkForWin() {
         if (_board.getWinner() != null) {
             _playing = false;
-            _board.restetNextPlayer();
+            _board.resetNextPlayer();
             announceWinner();
         }
     }
