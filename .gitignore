@@ -6,3 +6,5 @@
 *.jar
 *.war
 *.ear
+*.tar.gz
+*.gz
