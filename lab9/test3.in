@@ -1,0 +1,12 @@
+staff-jump61
+None
+===#1===
+seed 3
+size 3
+auto red
+auto blue
+start
+%rb
+%e
+dump
+===#2===

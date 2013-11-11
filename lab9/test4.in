@@ -1,0 +1,20 @@
+staff-jump61
+staff-jump61
+===#1===
+seed 4
+size 3
+auto red
+manual blue
+start
+%mr
+%ir...
+dump
+===#2===
+seed 4
+size 3
+auto blue
+manual red
+start
+%ib
+%mr
+%ib...

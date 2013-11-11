@@ -1,0 +1,3 @@
+HIGH
+HIGH DARE
+export CLASSPATH=:/Users/lam/lib/junit.jar:/Users/lam/lib/ucb.jar:/Users/lam/lib/classes/ucb.jar:/path/to/my/ucb.jar

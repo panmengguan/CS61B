@@ -1,0 +1,69 @@
+Answers to questions from lab.
+
+1. [Explain times for java HashTesting test1].
+
+The runtime is slower because skipping characters for
+hashing causes a lot more collisions.
+
+More characters increase the chance of getting unique hashes, therefore
+fewer collisions.
+
+2. [Explain times for java HashTesting test2 and test3].
+
+The reason why test3 is slower than test2 is because of the way Java is
+hashing Strings.
+
+Since Java hashes String of length n according to:
+      h = s[0]*31^(n-1) + s[1]*31^(n-2) + ... + s[n-1]
+
+every time we have x, X becomes 2**16-31x-1, and Y becomes 2**16-31y-1
+
+Plugging into the String hashing scheme for the word xXyY for Java we get:
+
+      h = x*31^(3) + (2**16-31x-1)*31^(2) + y*31 + (2**16-31y-1)
+
+      y*31 cancels with -31y
+
+      x*31^3 cancels with -31^3*x
+
+      So h becomes
+
+      h = 2**16*31^2-31^2 + 2**16 - 1
+
+      Which is a constant
+
+Since we always get a constant from our hashing function, the hash table
+effectively becomes a linked list and the running time is O(n**2) instead of
+O(1)
+
+3. [Why does HashSet fail to work in java HashTesting test4?]
+
+HashSet fails because the hash of uppercase word is different from lowercase.
+
+FoldedString did not override hashCode() and equals() without ignoring cases,
+so HashSet will fail to find the words.
+
+TreeSet uses compareTo() to build up the tree and FoldedString has
+compareTo() to properly ignore case, so TreeSet is able to find the words.
+
+
+4. Explain how ListTesting program demonstrates that LinkedLists are doubly
+   linked.
+
+The program demonstrates that LinkedLists are doubly linked by traversing
+the linked list all the way to the end.
+
+Then the program uses previous() to traverse backwards and sets each element
+
+The program takes in an argument N, which is the size of the list. It
+then spits out how long it takes to traverse backwards through the list.
+
+With N = 100000, the program takes 0.04 seconds to complete.
+With N = 200000, the program takes 0.06 seconds to complete.
+With N = 500000, the program takes 0.10 seconds to complete.
+
+This shows that the running time is approximately linear in the size of
+the list, which is what we were expecting.
+
+If LinkedList was not doubly linked, the running time would have been
+approximately quadratic in the size of the list.

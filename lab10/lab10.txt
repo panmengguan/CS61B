@@ -1,0 +1,24 @@
+1. Give some parameters and resulting times for Bitsort and Quicksort
+   (don't be afraid to use problem sizes in the tens of megabytes, but use
+   the instructional servers for this purpose).
+
+
+
+   Bitsort (java Bitsort N)           Quicksort (java Quicksort N K)
+   N        Time                      N           K        Time
+---------------------------------------------------------------------------
+1000000   0.213s                     1000000       3     0.141s
+2000000   0.447s                     2000000       3     0.252s
+5000000   0.985s                     5000000       3     0.644s
+8000000   1.773s                     8000000       3     1.156s
+10000000  2.342s                     10000000      3     1.357s
+
+
+
+If possible, explain the results.
+
+The Bitsort is slower than the Quicksort because bitsort requires
+separate blocks of memories to be allocated for store the numbers.
+
+The cost of allocation of memory grows as N grows, so while both step
+up linearly, bitsort steps up with a steeper slope than quicksort
