@@ -317,7 +317,7 @@ abstract class Board {
         _nextPlayer = _nextPlayer.opposite();
     }
 
-    /** Sets the next player.*/
+    /** Sets the next player to be PLAYER.*/
     protected void setNextPlayer(Color player) {
         _nextPlayer = player;
     }

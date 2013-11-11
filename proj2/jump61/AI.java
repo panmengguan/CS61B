@@ -8,7 +8,7 @@ import java.util.ArrayList;
  */
 class AI extends Player {
 
-    /** Evaluation function/*/
+    /** Evaluation function. */
     public interface EvaluationFunction {
 
         /** Returns an evaluation for color P for board B.*/
@@ -18,12 +18,14 @@ class AI extends Player {
     /** Transition function.*/
     public interface TransitionFunction {
 
-        /** Returns the list of legal moves.*/
+        /** Returns the list of legal moves for player P for board B.*/
         List<Integer> legalMoves(Color p, Board b);
     }
 
+    /** The standard transition for a board.*/
     static class StandardTransition implements TransitionFunction {
 
+        /** Returns the list of legal moves for player P for board B.*/
         public List<Integer> legalMoves(Color p, Board b) {
 
             List<Integer> re = new ArrayList<Integer>();
@@ -46,27 +48,62 @@ class AI extends Player {
     /** Class to store the value of a game tree node,
      *  and he current alpha and beta values. */
     static class ValueAlphaBeta {
-        int _value;
-        int _alpha;
-        int _beta;
 
-        /** Store VALUE, ALPHA, BETA into this class. */
-        ValueAlphaBeta(int value, int alpha, int beta) {
-            _value = value;
-            _alpha = alpha;
-            _beta = beta;
+        /** The current value for the node.*/
+        private int _value;
+
+        /** The alpha value. */
+        private int _alpha;
+
+        /** The beta value. */
+        private int _beta;
+
+        /** Store value VAL, alpha ALP, and beta BET into this class. */
+        ValueAlphaBeta(int val, int alp, int bet) {
+            _value = val;
+            _alpha = alp;
+            _beta = bet;
+        }
+
+        /** Returns the value of this node. */
+        public int value() {
+            return _value;
+        }
+
+        /** Returns the alpha of this node. */
+        public int alpha() {
+            return _alpha;
+        }
+
+        /** Returns the beta of this node. */
+        public int beta() {
+            return _beta;
         }
     }
 
     /** Class to store the action and its value of a game tree node. */
     static class ActionValue {
-        int _action;
-        int _value;
 
-        /** Store action and its value into this class. */
-        ActionValue(int action, int value) {
-            _action = action;
-            _value = value;
+        /** The action. */
+        private int _action;
+
+        /** The value of this action. */
+        private int _value;
+
+        /** Store action ACT and its value VAL into this class. */
+        ActionValue(int act, int val) {
+            _action = act;
+            _value = val;
+        }
+
+        /** Returns the action. */
+        public int action() {
+            return _action;
+        }
+
+        /** Returns the value of the action. */
+        public int value() {
+            return _value;
         }
     }
 
@@ -86,8 +123,12 @@ class AI extends Player {
     private int _depth = 3;
 
 
+    /** The evaluation function for our minimax algorithm
+     *  Uses the color of square, the position of the square
+     *  and the opposing's color and position of the square to evaluate. */
     static class DeltaSquareEvaluation implements EvaluationFunction {
 
+        /** Returns the value of this node for player PLAYER for board BOARD. */
         @Override
         public int value(Color player, Board board) {
             if (board.numOfColor(player) == board.size() * board.size()) {
@@ -105,6 +146,7 @@ class AI extends Player {
             return playerValue - oppValue;
         }
 
+        /** Returns the evaluation of COLOR for BOARD. */
         int evaluateColor(Color color, Board board) {
             int value = 0;
 
@@ -138,8 +180,10 @@ class AI extends Player {
     }
 
 
-    /** A new player of GAME initially playing COLOR that chooses
-     *  moves automatically.
+    /** An AI player of GAME initially playing COLOR that chooses
+     *  moves automatically. DEPTH is used to limit the depth of the
+     *  minimax search. EVALFN is used to evaluate a board given a color.
+     *  TRANFN is to get the transition given a board and a color.
      */
     AI(Game game, Color color, int depth, EvaluationFunction evalFn,
        TransitionFunction tranFn) {
@@ -149,6 +193,7 @@ class AI extends Player {
         _depth = depth;
     }
 
+    /** An AI player of GAME initially playing COLOR that uses minimax.*/
     AI(Game game, Color color) {
         this(game, color, Defaults.MINIMAX_DEPTH, new DeltaSquareEvaluation(),
              new StandardTransition());
@@ -163,18 +208,20 @@ class AI extends Player {
     ActionValue bestAction() {
         int value = NEGATIVE_INF;
 
-        int act = 0;
-
         int alpha = NEGATIVE_INF;
         int beta = POSITIVE_INF;
 
-        for (Integer action: _tranFn.legalMoves(getColor(), getBoard())) {
+        List<Integer> actions = _tranFn.legalMoves(getColor(), getBoard());
+
+        int act = actions.get(0);
+
+        for (Integer action: actions) {
             Board nextBoard = successor(getBoard(), action, getColor());
 
             ValueAlphaBeta vab = value(nextBoard, getColor().opposite(),
                                        1, alpha, beta);
 
-            if (vab._value > value) {
+            if (vab._value >= value) {
                 act = action;
                 value = vab._value;
             }
@@ -185,8 +232,10 @@ class AI extends Player {
         return new ActionValue(act, alpha);
     }
 
-    /** Returns the minimax value for current board for player COLOR.
-     *  The game tree evaluation will be limited to _depth. */
+    /** Returns the minimax value for current BOARD for player PLAYER.
+     *  The game tree evaluation will be limited to _depth.
+     *  Evaluate immediately if DEPTH == _depth, otherwise pass
+     *  ALPHA and BETA further down to evaluate children nodes. */
     ValueAlphaBeta value(Board board, Color player, int depth,
                                  int alpha, int beta) {
         if (depth == _depth) {

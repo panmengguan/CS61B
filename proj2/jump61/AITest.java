@@ -35,8 +35,8 @@ public class AITest {
 
         private Color _color;
 
-        BoardColor(Board board, Color color) {
-            _board = board;
+        BoardColor(Board bo, Color color) {
+            _board = bo;
             _color = color;
         }
 
@@ -54,10 +54,11 @@ public class AITest {
     }
 
     /** Custom evaluation map.*/
-    Map<BoardColor, Integer> evalMap = new HashMap<BoardColor, Integer>();
+    private Map<BoardColor, Integer> evalMap
+        = new HashMap<BoardColor, Integer>();
 
     /** Transition map.*/
-    Map<BoardColor, List<Integer>> tranMap = new HashMap<BoardColor,
+    private Map<BoardColor, List<Integer>> tranMap = new HashMap<BoardColor,
         List<Integer>>();
 
 
@@ -65,12 +66,12 @@ public class AITest {
     private StringWriter oWriter = new StringWriter();
     private StringWriter eWriter = new StringWriter();
 
-    private Board board = new MutableBoard(2);
-    private Game game = new GameStub(board, iReader, oWriter, eWriter);
+    private Board _board = new MutableBoard(2);
+    private Game game = new GameStub(_board, iReader, oWriter, eWriter);
 
     private int _numEvalCalled = 0;
 
-    AI.EvaluationFunction customEval = new AI.EvaluationFunction() {
+    private AI.EvaluationFunction customEval = new AI.EvaluationFunction() {
 
             @Override
             public int value(Color p, Board b) {
@@ -79,7 +80,7 @@ public class AITest {
             }
         };
 
-    AI.TransitionFunction customTran = new AI.StandardTransition() {
+    private AI.TransitionFunction customTran = new AI.StandardTransition() {
 
             @Override
             public List<Integer> legalMoves(Color p, Board b) {
@@ -104,7 +105,7 @@ public class AITest {
     public void testBestAction() {
         setup();
         AI ai = new AI(game, Color.RED, 2, customEval, customTran);
-        int action = ai.bestAction()._action;
+        int action = ai.bestAction().action();
 
         assertEquals("Action was not the best",
                      1, action);
@@ -118,7 +119,7 @@ public class AITest {
     public void testAlphaBetaEvaluatedNodes() {
         setup();
         AI ai = new AI(game, Color.RED, 2, customEval, customTran);
-        int minimax = ai.bestAction()._value;
+        int minimax = ai.bestAction().value();
         assertEquals("minimax value incorrect",
                      3, minimax);
         assertEquals("# of evaluated nodes incorrect, alpha-beta pruning "

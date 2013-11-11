@@ -4,8 +4,6 @@ package jump61;
 import static jump61.Color.*;
 
 import java.util.Stack;
-import java.util.ArrayList;
-
 import java.util.List;
 
 
@@ -29,7 +27,7 @@ class MutableBoard extends Board {
         }
 
         /** Create default square with WHITE and 0 spots.*/
-        Square() {}
+        Square() { }
     }
 
     /** Total combined number of moves by both sides. */

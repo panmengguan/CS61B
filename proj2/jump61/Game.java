@@ -52,7 +52,7 @@ class Game {
     private String _cmd = "";
 
     /** String delimimter pattern.*/
-    private String DELIMITER_PATTERN
+    private static final String DELIMITER_PATTERN
         = "(?m)\\p{Blank}*$|^\\p{Blank}*|\\p{Blank}+";
 
     /** Command Scanner.*/
@@ -64,6 +64,11 @@ class Game {
     /** Blue player.*/
     private Player _blue;
 
+    /** Sampling rate for red.*/
+    private static final double RED_SAMPLING = 0.20;
+
+    /** Sampling rate for blue.*/
+    private static final double BLUE_SAMPLING = 0.20;
 
    /** Used to return a move entered from the console.  Allocated
      *  here to avoid allocations. */
@@ -94,7 +99,7 @@ class Game {
     /** Returns a readonly view of the game board.  This board remains valid
      *  throughout the session. */
     Board getBoard() {
-        return _readonlyBoard;
+        return _board;
     }
 
     /** Play a session of Jump61.  This may include multiple games,
@@ -199,11 +204,14 @@ class Game {
             _out.println("Red wins.");
             _out.flush();
             break;
+        default:
+            break;
         }
     }
 
     /** Make PLAYER an AI for subsequent moves. */
     private void setAuto(Color player) {
+        _playing = false;
         switch (player) {
         case RED:
             _red = new AI(this, Color.RED);
@@ -211,17 +219,22 @@ class Game {
         case BLUE:
             _blue = new AI(this, Color.BLUE);
             break;
+        default:
+            break;
         }
     }
 
     /** Make PLAYER take manual input from the user for subsequent moves. */
     private void setManual(Color player) {
+        _playing = false;
         switch (player) {
         case RED:
             _red = new HumanPlayer(this, Color.RED);
             break;
         case BLUE:
             _blue = new HumanPlayer(this, Color.BLUE);
+            break;
+        default:
             break;
         }
     }
@@ -247,6 +260,8 @@ class Game {
 
     /** Stop any current game and set the move number to N. */
     private void setMoveNumber(int n) {
+        _playing = false;
+
         if (n < 1) {
             throw error("Move number needs to be >= 1");
         }
@@ -334,6 +349,9 @@ class Game {
                     }
 
                     break;
+
+                default:
+                    break;
                 }
             } catch (GameException e) {
                 message(e.getMessage());
@@ -361,7 +379,7 @@ class Game {
     private Color readColor() {
         try {
             String colorName = _cmdScanner.next("[rR][eE][dD]|[Bb][Ll][Uu]"
-                                                +"[Ee]");
+                                                + "[Ee]");
             return Color.parseColor(colorName);
         } catch (NoSuchElementException e) {
             throw error("Cannot parse color");
@@ -441,20 +459,25 @@ class Game {
             help();
             break;
         default:
-            if (_playing) {
-                attemptReadMove(cmnd);
-            } else {
-                throw error("bad command: '%s'", cmnd);
-            }
+            readOrThrowMove(cmnd);
+        }
+    }
+
+    /** Try to parse a move from CMND, if failed, throw an error.*/
+    private void readOrThrowMove(String cmnd) {
+        if (_playing) {
+            attemptReadMove(cmnd);
+        } else {
+            throw error("bad command: '%s'", cmnd);
         }
     }
 
     /** Randomly seed the board.*/
     private void seedBoard() {
         for (int i = 0; i < _board.size() * _board.size(); i += 1) {
-            if (random() < 0.20) {
+            if (random() < RED_SAMPLING) {
                 _board.set(i, 1, Color.RED);
-            } else if (random() < 0.40) {
+            } else if (random() < RED_SAMPLING + BLUE_SAMPLING) {
                 _board.set(i, 1, Color.BLUE);
             } else {
                 _board.set(i, 0, Color.WHITE);
@@ -462,7 +485,7 @@ class Game {
         }
     }
 
-    /** Try to parse a move of the form R C
+    /** Try to parse a move of the form R C given an initial ROWSTR
      *  Throws an IllegalArgumentException if R is an integer and C is not.
      *  Throws a GameException if the move is not legal or game is not
      *      playing or R C is out of range or if N is negative.*/

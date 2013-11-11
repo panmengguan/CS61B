@@ -1,6 +1,5 @@
 package jump61;
 
-import static jump61.GameException.error;
 
 /** A Player that gets its moves from manual input.
  *  @author Kiet Lam

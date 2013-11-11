@@ -20,8 +20,6 @@ public class Main {
      *  '--display' to indicate that the game is played using a GUI. Prints
      *  a usage message if the arguments are wrong. */
     public static void main(String[] args0) {
-        // FIXME?
-
         Writer output = new OutputStreamWriter(System.out);
         Game game = new Game(new InputStreamReader(System.in),
                              output, output,
