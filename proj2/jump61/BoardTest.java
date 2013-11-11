@@ -223,6 +223,11 @@ public class BoardTest {
             assertEquals("isLegal for Color.BLUE incorrect", blueLegal,
                          b.isLegal(Color.BLUE, row, col));
         }
+
+        assertFalse("isLegal should be false",
+                    b.isLegal(Color.RED, -1, -3));
+        assertFalse("isLegal should be false",
+                    b.isLegal(Color.RED, 100, 99));
     }
 
     @Test

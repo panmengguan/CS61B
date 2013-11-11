@@ -18,12 +18,18 @@ class GameStub extends Game {
     /** The only player of this board.*/
     private Color _player;
 
-    /** Create a Game stub with beginning BOARD.*/
+    /** Create a Game stub with BOARD, IS, OS, ERR and optional PLAYER.*/
     GameStub(Board board, Reader is, Writer os,
              Writer err, Color player) {
         super(is, os, os, err);
         _board = board;
         _player = player;
+    }
+
+    /** Create a Game stub with BOARD, IS, OS, ERR.*/
+    GameStub(Board board, Reader is, Writer os,
+             Writer err) {
+        this(board, is, os, err, null);
     }
 
     /** Set the output of getMove() to be NEXTMOVE.

@@ -69,6 +69,12 @@ class Game {
      *  here to avoid allocations. */
     private final int[] _move = new int[2];
 
+    /** Previous move. This is so that we are able to display for AI*/
+    private final int[] _previousMove = new int[2];
+
+    /** Automatically dumps the board after every move.*/
+    private boolean _autodump = false;
+
     /** A new Game that takes command/move input from INPUT, prints
      *  normal output on OUTPUT, prints prompts for input on PROMPTS,
      *  and prints error messages on ERROROUTPUT. The Game now "owns"
@@ -134,7 +140,16 @@ class Game {
     void makeMove(int r, int c) {
         if (_board.isLegal(_board.whoseMove(), r, c)) {
             _board.addSpot(_board.whoseMove(), r, c);
+
+            if (_autodump) {
+                _out.println(_board.toDisplayString());
+                _out.flush();
+            }
+
+            _previousMove[0] = r;
+            _previousMove[1] = c;
         } else {
+            _move[0] = 0;
             throw error("Invalid move");
         }
     }
@@ -149,6 +164,11 @@ class Game {
      *  distributed.  Requires N > 0. */
     int randInt(int n) {
         return _random.nextInt(n);
+    }
+
+    /** Return a random double in the range [0..1], uniformly distributed.*/
+    double random() {
+        return _random.nextDouble();
     }
 
     /** Send a message to the user as determined by FORMAT and ARGS, which
@@ -173,9 +193,11 @@ class Game {
         switch (_board.getWinner()) {
         case BLUE:
             _out.println("Blue wins.");
+            _out.flush();
             break;
         case RED:
             _out.println("Red wins.");
+            _out.flush();
             break;
         }
     }
@@ -209,6 +231,7 @@ class Game {
     private void clear() {
         _playing = false;
         _board.clear(_board.size());
+        _board.resetNextPlayer();
     }
 
     /** Print the current board using standard board-dump format. */
@@ -277,16 +300,51 @@ class Game {
         while (_playing && !_quit) {
             checkForWin();
 
-            switch (_board.whoseMove()) {
-            case RED:
-                _red.makeMove();
-                break;
-            case BLUE:
-                _blue.makeMove();
-                break;
+            try {
+                switch (_board.whoseMove()) {
+                case RED:
+                    _red.makeMove();
+
+                    checkForWin();
+
+                    if (!_playing) {
+                        break;
+                    }
+
+                    if (_red instanceof AI) {
+                        _out.printf("Red moves %d %d.\n", _previousMove[0],
+                                    _previousMove[1]);
+                        _out.flush();
+                    }
+
+                    break;
+                case BLUE:
+                    _blue.makeMove();
+
+                    checkForWin();
+
+                    if (!_playing) {
+                        break;
+                    }
+
+                    if (_blue instanceof AI) {
+                        _out.printf("Blue moves %d %d.\n", _previousMove[0],
+                                    _previousMove[1]);
+                        _out.flush();
+                    }
+
+                    break;
+                }
+            } catch (GameException e) {
+                message(e.getMessage());
+            } catch (IllegalArgumentException e) {
+                message(e.getMessage());
+            } catch (InputMismatchException e) {
+                message(e.getMessage());
             }
         }
     }
+
 
     /** Save move R C in _move.  Error if R and C do not indicate an
      *  existing square on the current board. */
@@ -313,8 +371,15 @@ class Game {
     /** Read and execute one command.  Leave the input at the start of
      *  a line, if there is more input. */
     private void readExecuteCommand() {
-        _cmdScanner = getScanner(_cmd);
-        String command = _cmdScanner.next();
+        String command;
+
+        try {
+            _cmdScanner = getScanner(_cmd);
+            command = _cmdScanner.next();
+        } catch (NoSuchElementException e) {
+            return;
+        }
+
         executeCommand(command);
     }
 
@@ -360,33 +425,54 @@ class Game {
         case "dump":
             dump();
             break;
+        case "autodump":
+            _autodump = !_autodump;
+            break;
         case "seed":
             if (!_cmdScanner.hasNextInt()) {
                 throw error("seed needs an integer as argument");
             }
             setSeed(_cmdScanner.nextInt());
             break;
+        case "random":
+            seedBoard();
+            break;
         case "help":
             help();
             break;
         default:
-            if (!attemptReadMove(cmnd)) {
+            if (_playing) {
+                attemptReadMove(cmnd);
+            } else {
                 throw error("bad command: '%s'", cmnd);
             }
         }
     }
 
-    /** Returns true if we were able to parse a move of the form R C
+    /** Randomly seed the board.*/
+    private void seedBoard() {
+        for (int i = 0; i < _board.size() * _board.size(); i += 1) {
+            if (random() < 0.20) {
+                _board.set(i, 1, Color.RED);
+            } else if (random() < 0.40) {
+                _board.set(i, 1, Color.BLUE);
+            } else {
+                _board.set(i, 0, Color.WHITE);
+            }
+        }
+    }
+
+    /** Try to parse a move of the form R C
      *  Throws an IllegalArgumentException if R is an integer and C is not.
      *  Throws a GameException if the move is not legal or game is not
      *      playing or R C is out of range or if N is negative.*/
-    private boolean attemptReadMove(String rowStr) {
+    private void attemptReadMove(String rowStr) {
         int r, c;
 
         try {
             r = Integer.parseInt(rowStr);
         } catch (NumberFormatException e) {
-            return false;
+            throw error("R C both need to be integers for a move");
         }
 
         if (!_cmdScanner.hasNextInt()) {
@@ -406,8 +492,6 @@ class Game {
 
         verifyRowColumn(r, c);
         saveMove(r, c);
-
-        return true;
     }
 
     /** Read and execute a set command.

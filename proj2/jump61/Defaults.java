@@ -11,5 +11,6 @@ class Defaults {
     /** Default board size. */
     static final int BOARD_SIZE = 6;
 
-    // FIXME ?
+    /** Default minimax search depth.*/
+    static final int MINIMAX_DEPTH = 3;
 }

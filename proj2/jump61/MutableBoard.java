@@ -182,7 +182,7 @@ class MutableBoard extends Board {
 
     /** Do all jumping (if necessary) on this board, starting with square S.*/
     private void jump(int s) {
-        if (s == size() * size() - 1) {
+        if (s == size() * size()) {
             return;
         }
 

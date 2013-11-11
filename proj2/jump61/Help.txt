@@ -31,4 +31,9 @@ set R C N P  Stop any current game. Put N spots at row R and column C.
 
 dump         Print the board in its standard format.
 
-seed N       Seed the random number generated to N for automated players.
+seed N       Seed the random number generated to N for automated
+             players and for random board generation.
+
+autodump     Toggle automatically dump the board after every move.
+
+random       Randomly populate the board.

@@ -32,6 +32,40 @@ abstract class Board {
         unsupported("copy");
     }
 
+    @Override
+    public boolean equals(Object other) {
+        Board board = (Board) other;
+
+        if (size() * size() != board.size() * board.size()) {
+            return false;
+        }
+
+        for (int i = 0; i < size() * size(); i += 1) {
+            if (spots(i) != board.spots(i)
+                || !color(i).equals(board.color(i))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+
+        for (int i = 0; i < size() * size(); i += 1) {
+            hash += spots(i) + color(i).hashCode();
+        }
+
+        return hash;
+    }
+
+    /** Resets the next player to be red. */
+    public void resetNextPlayer() {
+        _nextPlayer = Color.RED;
+    }
+
     /** Return the number of rows and of columns of THIS. */
     abstract int size();
 
@@ -96,6 +130,10 @@ abstract class Board {
     /** Returns true iff it would currently be legal for PLAYER to add a spot
         to square at row R, column C. */
     boolean isLegal(Color player, int r, int c) {
+        if (r < 1 || r > size() || c < 1 || r > size()) {
+            return false;
+        }
+
         return isLegal(player, sqNum(r, c));
     }
 
@@ -255,10 +293,10 @@ abstract class Board {
 
     /** Returns the number of neighbors of the square at row R, column C. */
     int neighbors(int r, int c) {
-        if (r == 1 && c == 1
-            || r == size() && c == 1
-            || r == 1 && c == size()
-            || r == size() && c == size()) {
+        if ((r == 1 && c == 1)
+            || (r == size() && c == 1)
+            || (r == 1 && c == size())
+            || (r == size() && c == size())) {
             return 2;
         }
 

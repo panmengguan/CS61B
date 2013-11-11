@@ -12,5 +12,6 @@ public class UnitTest {
         textui.runClasses(jump61.BoardTest.class);
         textui.runClasses(jump61.HumanTest.class);
         textui.runClasses(jump61.GameTest.class);
+        textui.runClasses(jump61.AITest.class);
     }
 }
