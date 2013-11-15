@@ -8,6 +8,8 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.io.IOException;
 
+import javax.swing.SwingUtilities;
+
 /** The jump61 game.
  * @author Kiet Lam
  */
@@ -20,11 +22,23 @@ public class Main {
      *  '--display' to indicate that the game is played using a GUI. Prints
      *  a usage message if the arguments are wrong. */
     public static void main(String[] args0) {
-        Writer output = new OutputStreamWriter(System.out);
-        Game game = new Game(new InputStreamReader(System.in),
-                             output, output,
-                             new OutputStreamWriter(System.err));
-        System.exit(game.play());
+        if (args0.length == 1) {
+            if (args0[0].equals("--display")) {
+                SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            GUI gui = new GUI();
+                            gui.setVisible(true);
+                        }
+                    });
+            }
+        } else {
+            Writer output = new OutputStreamWriter(System.out);
+            Game game = new Game(new InputStreamReader(System.in),
+                                 output, output,
+                                 new OutputStreamWriter(System.err));
+            System.exit(game.play());
+        }
     }
 
     /** Print the contents of the resource named NAME on OUT.

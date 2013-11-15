@@ -5,7 +5,7 @@ import java.io.Writer;
 
 
 /** Stub for Game to ease testing. Single player
- *  This is needed to separate testing of HumanPlayer and Game
+ *  This is needed to separate testing of HumanPlayer / AI and Game
   *  @author Kiet Lam */
 class GameStub extends Game {
 

@@ -30,6 +30,14 @@ enum Color {
     /** Return the color named COLORNAME, ignoring case differences (convenience
      *  method). */
     static Color parseColor(String colorName) {
+        if (colorName.equalsIgnoreCase("r")
+            || colorName.equalsIgnoreCase("red")) {
+            return valueOf("RED");
+        } else if (colorName.equalsIgnoreCase("b")
+                   || colorName.equalsIgnoreCase("blue")) {
+            return valueOf("BLUE");
+        }
+
         return valueOf(colorName.toUpperCase());
     }
 

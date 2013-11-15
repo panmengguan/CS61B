@@ -125,7 +125,8 @@ class AI extends Player {
 
     /** The evaluation function for our minimax algorithm
      *  Uses the color of square, the position of the square
-     *  and the opposing's color and position of the square to evaluate. */
+     *  and the opposing's color, position of the square
+     *  and its neighbors to evaluate. */
     static class DeltaSquareEvaluation implements EvaluationFunction {
 
         /** Returns the value of this node for player PLAYER for board BOARD. */
@@ -204,12 +205,20 @@ class AI extends Player {
         getGame().makeMove(bestAction()._action);
     }
 
-    /** Returns the best square # in the board for this player to play.*/
+    /** Returns the best square # in the board for this player to play.
+     *  Only go to the depth of 3 when we are near the initial phase
+     *  of the game and if the size of the board is >=4. */
     ActionValue bestAction() {
         int value = NEGATIVE_INF;
 
         int alpha = NEGATIVE_INF;
         int beta = POSITIVE_INF;
+
+        if (getBoard().numOfColor(Color.RED) + getBoard().numOfColor(Color.BLUE)
+            < getBoard().size() * getBoard().size() / 2
+            && getBoard().size() > 3) {
+            _depth = 3;
+        }
 
         List<Integer> actions = _tranFn.legalMoves(getColor(), getBoard());
 
@@ -220,6 +229,8 @@ class AI extends Player {
 
             ValueAlphaBeta vab = value(nextBoard, getColor().opposite(),
                                        1, alpha, beta);
+
+            nextBoard.undo();
 
             if (vab._value >= value) {
                 act = action;
@@ -271,6 +282,8 @@ class AI extends Player {
 
             tempAlpha = Math.max(tempAlpha, val);
 
+            nextBoard.undo();
+
             if (tempAlpha > beta) {
                 return new ValueAlphaBeta(tempAlpha, alpha, beta);
             }
@@ -302,6 +315,8 @@ class AI extends Player {
 
             tempBeta = Math.min(tempBeta, val);
 
+            nextBoard.undo();
+
             if (tempBeta < alpha) {
                 return new ValueAlphaBeta(tempBeta, alpha, beta);
             }
@@ -314,8 +329,7 @@ class AI extends Player {
 
     /** Returns the successor for PLAYER adding spot at SQ for BOARD.*/
     private Board successor(Board board, int sq, Color player) {
-        Board newBoard = new MutableBoard(board);
-        newBoard.addSpot(player, sq);
-        return newBoard;
+        board.addSpot(player, sq);
+        return board;
     }
 }

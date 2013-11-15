@@ -640,6 +640,29 @@ public class BoardTest {
     }
 
     @Test
+    public void testSetMoves() {
+        Board b = new MutableBoard(5);
+
+        assertEquals("incorrect next player's color",
+                     Color.RED, b.whoseMove());
+
+        b.setMoves(2);
+
+        assertEquals("incorrect next player's color",
+                     Color.BLUE, b.whoseMove());
+
+        b.setMoves(4);
+
+        assertEquals("incorrect next player's color",
+                     Color.BLUE, b.whoseMove());
+
+        b.setMoves(5);
+
+        assertEquals("incorrect next player's color",
+                     Color.RED, b.whoseMove());
+    }
+
+    @Test
     public void testMove() {
         Board B = new MutableBoard(6);
         B.addSpot(Color.RED, 1, 1);

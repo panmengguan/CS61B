@@ -1,1 +1,5 @@
-Replace with a Usage message, describing how to run this program
+To run via command line
+java jump61.Main
+
+To run via GUI
+java jump61.Main --display

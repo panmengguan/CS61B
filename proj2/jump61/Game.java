@@ -96,6 +96,18 @@ class Game {
         _blue = new AI(this, Color.BLUE);
     }
 
+    /** Default constructor. */
+    Game() {
+        _prompter = null;
+        _board = null;
+        _readonlyBoard = null;
+        _inp = null;
+        _out = null;
+        _err = null;
+        _red = null;
+        _blue = null;
+    }
+
     /** Returns a readonly view of the game board.  This board remains valid
      *  throughout the session. */
     Board getBoard() {
@@ -111,11 +123,11 @@ class Game {
                 try {
                     readExecuteCommand();
                 } catch (GameException e) {
-                    message(e.getMessage());
+                    reportError(e.getMessage());
                 } catch (IllegalArgumentException e) {
-                    message(e.getMessage());
+                    reportError(e.getMessage());
                 } catch (InputMismatchException e) {
-                    message(e.getMessage());
+                    reportError(e.getMessage());
                 }
             }
         }
@@ -147,8 +159,7 @@ class Game {
             _board.addSpot(_board.whoseMove(), r, c);
 
             if (_autodump) {
-                _out.println(_board.toDisplayString());
-                _out.flush();
+                dump();
             }
 
             _previousMove[0] = r;
@@ -198,12 +209,10 @@ class Game {
     private void announceWinner() {
         switch (_board.getWinner()) {
         case BLUE:
-            _out.println("Blue wins.");
-            _out.flush();
+            message("Blue wins.");
             break;
         case RED:
-            _out.println("Red wins.");
-            _out.flush();
+            message("Red wins.");
             break;
         default:
             break;
@@ -250,8 +259,7 @@ class Game {
 
     /** Print the current board using standard board-dump format. */
     private void dump() {
-        _out.println(_board.toDisplayString());
-        _out.flush();
+        message(_board.toDisplayString());
     }
 
     /** Print a help message. */
@@ -321,45 +329,42 @@ class Game {
                 case RED:
                     _red.makeMove();
 
+                    if (_red instanceof AI) {
+                        message("Red moves %d %d.", _previousMove[0],
+                                _previousMove[1]);
+                    }
+
                     checkForWin();
 
                     if (!_playing) {
                         break;
-                    }
-
-                    if (_red instanceof AI) {
-                        _out.printf("Red moves %d %d.\n", _previousMove[0],
-                                    _previousMove[1]);
-                        _out.flush();
                     }
 
                     break;
                 case BLUE:
                     _blue.makeMove();
 
+                    if (_blue instanceof AI) {
+                        message("Blue moves %d %d.", _previousMove[0],
+                                _previousMove[1]);
+                    }
+
                     checkForWin();
 
                     if (!_playing) {
                         break;
                     }
 
-                    if (_blue instanceof AI) {
-                        _out.printf("Blue moves %d %d.\n", _previousMove[0],
-                                    _previousMove[1]);
-                        _out.flush();
-                    }
-
                     break;
-
                 default:
                     break;
                 }
             } catch (GameException e) {
-                message(e.getMessage());
+                reportError(e.getMessage());
             } catch (IllegalArgumentException e) {
-                message(e.getMessage());
+                reportError(e.getMessage());
             } catch (InputMismatchException e) {
-                message(e.getMessage());
+                reportError(e.getMessage());
             }
         }
     }
@@ -580,7 +585,12 @@ class Game {
         _prompter.print(prompt);
         _prompter.flush();
 
-        _cmd = _inp.nextLine();
+        try {
+            _cmd = _inp.nextLine();
+        } catch (NoSuchElementException e) {
+            _quit = true;
+            return false;
+        }
 
         return !_cmd.equals("");
     }

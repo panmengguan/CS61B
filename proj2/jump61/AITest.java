@@ -14,8 +14,8 @@ import java.util.HashMap;
 
 
 /** Unit test for AI
- *  Use custom evaluation and transition functions so we can
- *  independently test our Alpha-Beta agent.
+ *  Use custom evaluation and transition functions and a GameStub
+ *  so we can independently test our Alpha-Beta AI agent.
  *
  *  Generate custom evaluation and transition mappings
  *  Use an extremely simple board of 2x2. Though the board is
@@ -26,7 +26,7 @@ import java.util.HashMap;
  *
  *  Also includes some tests for the evaluation function.
  *
- *  @author Kiet Lam.*/
+ *  @author Kiet Lam. */
 public class AITest {
 
     private class BoardColor {
@@ -101,6 +101,8 @@ public class AITest {
     }
 
 
+    /** Test whether we are taking the best action
+     *  The best action is hard-coded to be 1. */
     @Test
     public void testBestAction() {
         setup();

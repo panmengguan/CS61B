@@ -168,6 +168,12 @@ class MutableBoard extends Board {
     void setMoves(int num) {
         assert num > 0;
         _moves = num;
+
+        if (_moves % 2 == 0) {
+            setNextPlayer(Color.BLUE);
+        } else {
+            setNextPlayer(Color.RED);
+        }
     }
 
     @Override

@@ -12,5 +12,5 @@ class Defaults {
     static final int BOARD_SIZE = 6;
 
     /** Default minimax search depth.*/
-    static final int MINIMAX_DEPTH = 3;
+    static final int MINIMAX_DEPTH = 5;
 }

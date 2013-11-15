@@ -1,0 +1,8 @@
+java -ea jump61.Main
+None
+===#1===
+size 3
+move 0
+move -1
+quit
+===#2===
