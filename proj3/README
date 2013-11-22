@@ -1,0 +1,119 @@
+Project 3: Fun with Graphs
+
+The files in this directory form a very skimpy skeleton that you are flesh
+out into a full system.  You may not add or delete public types, nor
+may you add or delete public or protected members (nested classes or
+interfaces, methods, constructors, class variables, or instance
+variables) or change their types or signatures.  Otherwise, you are
+free to add package private types and private or package private
+members to classes, and generally to change anything else.
+
+
+
+Files:
+
+Makefile:      Does standard tasks such as building the application,
+               cleaning up unneeded files, running tests, and
+               performing style checks.  Used as a configuration file by 
+               the 'gmake' program.
+
+staff-version:
+               A file containing just the name of the current public release
+               version in the public/proj1/tags directory.  (Helpful when
+               trying to figure out what merges to do.)
+
+graph/         Package containing general graph-related data types.
+               
+        Makefile:
+               See above.
+               
+        Graph.java:
+               Interface defining what a "graph" is.
+               
+        DirectedGraph.java:
+               Implementation of directed graphs.
+               
+        UndirectedGraph.java
+               Implementation of undirected graphs.
+               
+        Edge.java:
+               Represents edges in a graph.
+
+        Vertex.java
+               Represents vertices in a graph.
+
+        DepthFirst.java:
+               Represents a depth-first graph traversal.
+
+        Traversal.java:
+               Represents breadth-first and other general graph traversals.
+
+        Graphs.java:
+               A* search algorithms on graphs.
+
+        NoLabel.java:
+               Convenience type representing absent labels (for unlabeled 
+               vertices and edges).
+
+        StopException.java:
+        RejectException.java:
+               Unchecked exception classes that may be used by specialized
+               graph trsversals to modify the course of the traversal.
+
+        Iteration.java:
+               Abstract class that allows Iterators to be used in foreach
+	       loops (for (T x : E) { ... }).
+
+    Classes related to graphs with weighted vertices and edges.
+               
+        Weighted.java:
+               An interface describing types that have a (readable) weight.
+               
+        Weightable.java:
+               An interface describing types (specifically types of graph label)
+               that have a settable numeric weight.
+               
+        Weighting.java
+               An interface describing a functional object that can read
+               the weights of labels.
+
+        Weighter.java:
+               An interface describing a functional object that can read and
+               set the weights of labels.
+
+	Distancer.java:
+	       An interface describing a functional object that computes a
+	       distance between two objects.
+
+      Test-related:
+               
+        Testing.java:
+                JUnit tests for graph package
+               
+make (subdirectory): Package containing the 'make' application.
+
+        Makefile:
+                See above.
+
+        Main.java:  Contains main program for 'make'.
+
+        Testing.java:
+                JUnit tests for make package
+               
+trip (subdirectory): Package containing the 'trip' application.
+
+        Makefile:
+                See above.
+
+        Main.java:  Contains main program for 'trip'.
+
+        Testing.java:
+                JUnit tests for trip package
+
+
+test-app:       A general-purpose test script.  See the comment at the beginning
+                for usage.
+
+make-tests:     Regression tests for the make application (currently empty).
+
+trip-tests:     Regression tests for the make application (currently empty).
