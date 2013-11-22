@@ -31,6 +31,8 @@ public class Main {
                             gui.setVisible(true);
                         }
                     });
+            } else {
+                usage();
             }
         } else {
             Writer output = new OutputStreamWriter(System.out);

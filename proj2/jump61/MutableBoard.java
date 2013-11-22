@@ -59,6 +59,7 @@ class MutableBoard extends Board {
         _N = N;
         _moves = 0;
 
+        resetNextPlayer();
         clearHistory();
         initializeBoard();
     }
