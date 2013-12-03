@@ -1,0 +1,38 @@
+CS61B Lab #11
+
+First, initialize your project 3 directory if you haven't already.
+
+Getting Started: Input
+----------------------
+
+The two applications for this semster, make and trip, both require that you
+do some input.  Since this always seems to get people confused, let's get it
+over with.
+
+A. Augment make.Main (possibly adding more classes or methods if it seems
+   to clean things up) so that it reads from the file named fileInfoName
+   according to the spec.  Set it up to build two things:
+       1. A mapping from NAME to CHANGEDATE, where CHANGEDATEs are integers,
+          and NAMEs are Strings, as per the spec, and
+       2. A current time (an integer) from the first line of the file.
+   Put these into variables in Main for now.
+
+B. Augment make.Main (again, adding more classes or methods if desired) so that
+   it reads all of the file MAKEFILENAME, written as per the specification.
+   Design a suitable type, Rule, to hold the contents of any rule (which
+   consists of a target, a list of dependences, and a list of (non-empty)
+   command lines).  Be sure to ignore comments and blank lines, as per the spec.
+   Leave a list of Rules in a variable in Main for now.
+
+C. Augment trip.Main.trip to read in the file mapFileName.  For now, create
+   two suitable classes, Location and Distance, and create two lists
+   (of Locations and Distances) in trip.Main to hold them.  The classes
+   should have fields for the parts of a Location and Distance that you
+   you read.
+
+You might throw some of this away in the real project, but at least it will
+be done!  I suggest that you NOT stuff everything into the make and trip
+methods, since reading data is just one step in what they do.
+
+When done, simply commit your updated project 3 directories (no need to
+submit them).
