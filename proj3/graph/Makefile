@@ -1,14 +1,14 @@
 # This a Makefile, an input file for the 'make' program.  For you 
 # command-line and Emacs enthusiasts, this makes it possible to build
 # this program with a single command:
-#     gmake 
+#     make 
 # (or just 'make' if you are on a system that uses GNU make by default,
 # such as Linux.) You can also clean up junk files and .class files with
-#     gmake clean
+#     make clean
 # To run style61b (our style enforcer) over your source files, type
-#     gmake style
+#     make style
 # Finally, you can run tests with
-#     gmake check
+#     make check
 
 # This is not an especially efficient Makefile, because it's not easy to
 # figure out the minimal set of Java files that need to be recompiled.  
@@ -16,7 +16,7 @@
 # we just remove all the .class files, compile the main class, and 
 # then compile everything in the plugin directory.  
 
-SKELSTYLE = style61b
+STYLEPROG = style61b
 
 # All source files
 SRCS := $(wildcard *.java)
@@ -39,11 +39,18 @@ TESTING_CLASSES = $(TESTING_SRCS:.java=.class)
 # changed since the last build.
 default: $(CLASSES)
 
+# Classes must exist and be up to date with a marker file indicating the time
+# of last compilation.  We do it this way as a trick to prevent multiple
+# recompilations when there are errors.
+$(CLASSES): sentinel
+
 # If any class is missing, or any source changed since the main classes were
 # compiled, remove all class files and recompile.
-$(CLASSES): $(SRCS)	
+sentinel: $(SRCS)	
+	$(RM) $@
 	$(RM) $(CLASSES)
 	javac $(JFLAGS) $(SRCS) || { $(RM) $(CLASSES); false; }
+	touch $@
 
 # Run Tests.
 check: unit-test
@@ -59,6 +66,6 @@ style:
 # Find and remove all *~, *.class, and testing output files.
 # Do not touch .svn directories.
 clean :
-	$(RM) *~ *.class
+	$(RM) *~ *.class sentinel
 
 

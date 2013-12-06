@@ -3,7 +3,7 @@ package graph;
 import java.util.List;
 
 /** Assorted graph algorithms.
- *  @author
+ *  @author Kiet Lam
  */
 public final class Graphs {
 
@@ -26,13 +26,13 @@ public final class Graphs {
      *  unreachable from V0, returns null and sets the minimum path weights of
      *  all reachable nodes.  The distance to a node unreachable from V0 is
      *  Double.POSITIVE_INFINITY. */
-    public static <VLabel, ELabel> List<Edge<VLabel, ELabel>>
-    shortestPath(Graph<VLabel, ELabel> G,
-                 Vertex<VLabel> V0,
-                 Vertex<VLabel> V1,
-                 Distancer<? super VLabel> h,
-                 Weighter<? super VLabel> vweighter,
-                 Weighting<? super ELabel> eweighter) {
+    public static <VLabel, ELabel> List<Graph<VLabel, ELabel>.Edge>
+        shortestPath(Graph<VLabel, ELabel> G,
+                     Graph<VLabel, ELabel>.Vertex V0,
+                     Graph<VLabel, ELabel>.Vertex V1,
+                     Distancer<? super VLabel> h,
+                     Weighter<? super VLabel> vweighter,
+                     Weighting<? super ELabel> eweighter) {
         return null;
         // FIX ME
     }
@@ -60,10 +60,11 @@ public final class Graphs {
      *  to a node unreachable from V0 is Double.POSITIVE_INFINITY. */
     public static
     <VLabel extends Weightable, ELabel extends Weighted>
-    List<Edge<VLabel, ELabel>> shortestPath(Graph<VLabel, ELabel> G,
-                                            Vertex<VLabel> V0,
-                                            Vertex<VLabel> V1,
-                                            Distancer<? super VLabel> h) {
+    List<Graph<VLabel, ELabel>.Edge>
+    shortestPath(Graph<VLabel, ELabel> G,
+                 Graph<VLabel, ELabel>.Vertex V0,
+                 Graph<VLabel, ELabel>.Vertex V1,
+                 Distancer<? super VLabel> h) {
         return null;
         // FIX ME
     }

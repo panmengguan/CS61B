@@ -30,14 +30,17 @@ import java.util.Comparator;
  *  RejectException to prevent a vertex from being added to the
  *  fringe, and the visit method may throw a RejectException to
  *  prevent its successors from being added to the fringe.
- *  @author
+ *  @author Kiet Lam
  */
 public class Traversal<VLabel, ELabel> {
 
     /** Perform a traversal of G over all vertices reachable from V.
      *  ORDER determines the ordering in which the fringe of
-     *  untraversed vertices is visited. */
-    public void traverse(Graph<VLabel, ELabel> G, Vertex<VLabel> v,
+     *  untraversed vertices is visited.  The effect of specifying an
+     *  ORDER whose results change as a result of modifications made during the
+     *  traversal is undefined. */
+    public void traverse(Graph<VLabel, ELabel> G,
+                         Graph<VLabel, ELabel>.Vertex v,
                          Comparator<VLabel> order) {
         // FILL IN
     }
@@ -49,7 +52,7 @@ public class Traversal<VLabel, ELabel> {
      *  a node is complete, the node itself is revisited by calling
      *  the postVisit method on it. */
     public void depthFirstTraverse(Graph<VLabel, ELabel> G,
-                                   Vertex<VLabel> v) {
+                                   Graph<VLabel, ELabel>.Vertex v) {
         // FILL IN
     }
 
@@ -60,33 +63,33 @@ public class Traversal<VLabel, ELabel> {
      *  a node is complete, the node itself is revisited by calling
      *  the postVisit method on it. */
     public void breadthFirstTraverse(Graph<VLabel, ELabel> G,
-                                     Vertex<VLabel> v) {
+                                     Graph<VLabel, ELabel>.Vertex v) {
         // FILL IN
     }
 
     /** Continue the previous traversal starting from V.
      *  Continuing a traversal means that we do not traverse
-     *  vertices or edges that have been traversed previously. */
-    public void continueTraversing(Vertex<VLabel> v) {
+     *  vertices that have been traversed previously. */
+    public void continueTraversing(Graph<VLabel, ELabel>.Vertex v) {
         // FILL IN
     }
 
     /** If the traversal ends prematurely, returns the Vertex argument to
-     *  preVisit that caused a Visit routine to return false.  Otherwise,
-     *  returns null. */
-    public Vertex<VLabel> finalVertex() {
+     *  preVisit, visit, or postVisit that caused a Visit routine to
+     *  return false.  Otherwise, returns null. */
+    public Graph<VLabel, ELabel>.Vertex finalVertex() {
         return _finalVertex;
     }
 
     /** If the traversal ends prematurely, returns the Edge argument to
      *  preVisit that caused a Visit routine to return false. If it was not
      *  an edge that caused termination, returns null. */
-    public Edge<VLabel, ELabel> finalEdge() {
+    public Graph<VLabel, ELabel>.Edge finalEdge() {
         return _finalEdge;
     }
 
-    /** Returns the graph currently being traversed.  Undefined if no traversal
-     *  is in progress. */
+    /** Returns the last graph argument to a traverse routine, or null if none
+     *  of these methods have been called. */
     protected Graph<VLabel, ELabel> theGraph() {
         return _graph;
     }
@@ -96,13 +99,14 @@ public class Traversal<VLabel, ELabel> {
      *  the traversal ends.  If it throws a RejectException, the edge
      *  E is not traversed. The default does nothing.
      */
-    protected void preVisit(Edge<VLabel, ELabel> e, Vertex<VLabel> v0) {
+    protected void preVisit(Graph<VLabel, ELabel>.Edge e,
+                            Graph<VLabel, ELabel>.Vertex v0) {
     }
 
     /** Method to be called when visiting vertex V.  If this routine throws
      *  a StopException, the traversal ends.  If it throws a RejectException,
      *  successors of V do not get visited from V. The default does nothing. */
-    protected void visit(Vertex<VLabel> v) {
+    protected void visit(Graph<VLabel, ELabel>.Vertex v) {
     }
 
     /** Method to be called immediately after finishing the traversal
@@ -110,14 +114,14 @@ public class Traversal<VLabel, ELabel> {
      *  If this routine throws a StopException, the traversal ends.
      *  Throwing a RejectException has no effect. The default does nothing.
      */
-    protected void postVisit(Vertex<VLabel> v) {
+    protected void postVisit(Graph<VLabel, ELabel>.Vertex v) {
     }
 
     /** The Vertex (if any) that terminated the last traversal. */
-    protected Vertex<VLabel> _finalVertex;
+    protected Graph<VLabel, ELabel>.Vertex _finalVertex;
     /** The Edge (if any) that terminated the last traversal. */
-    protected Edge<VLabel, ELabel> _finalEdge;
-    /** The graph currently being traversed. */
+    protected Graph<VLabel, ELabel>.Edge _finalEdge;
+    /** The last graph traversed. */
     protected Graph<VLabel, ELabel> _graph;
 
 }

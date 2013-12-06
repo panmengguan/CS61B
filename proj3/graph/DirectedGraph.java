@@ -6,7 +6,7 @@ package graph;
 
 /** A directed graph with vertices labeled with VLABEL and edges
  *  labeled with ELABEL.
- *  @author
+ *  @author Kiet Lam
  */
 public class DirectedGraph<VLabel, ELabel> extends Graph<VLabel, ELabel> {
 
@@ -18,7 +18,4 @@ public class DirectedGraph<VLabel, ELabel> extends Graph<VLabel, ELabel> {
     public boolean isDirected() {
         return true;
     }
-
-    // FILL IN
-
 }

@@ -1,14 +1,14 @@
 # This a Makefile, an input file for the 'make' program.  For you 
 # command-line and Emacs enthusiasts, this makes it possible to build
 # this program with a single command:
-#     gmake 
+#     make 
 # (or just 'make' if you are on a system that uses GNU make by default,
 # such as Linux.) You can also clean up junk files and .class files with
-#     gmake clean
+#     make clean
 # To run style61b (our style enforcer) over your source files, type
-#     gmake style
+#     make style
 # Finally, you can run tests with
-#     gmake check
+#     make check
 
 # This is not an especially efficient Makefile, because it's not easy to
 # figure out the minimal set of Java files that need to be recompiled.  

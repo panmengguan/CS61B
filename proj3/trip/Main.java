@@ -1,9 +1,17 @@
 package trip;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.io.FileNotFoundException;
+import java.util.NoSuchElementException;
+import java.io.IOException;
+
+import java.util.List;
+import java.util.ArrayList;
 
 /** Initial class for the 'trip' program.
  *  @author
@@ -81,7 +89,40 @@ public final class Main {
      *  output, using the map data in MAPFILENAME.
      */
     private static void trip(String mapFileName) {
-        // FILL IN
+        InputStream iStream = null;
+        try {
+            iStream = new FileInputStream(mapFileName);
+        } catch (FileNotFoundException e) {
+            // TODO: Report error here...
+        }
+
+        BufferedReader reader = new BufferedReader(new
+                                                   InputStreamReader(iStream));
+
+        List<Location> locations = new ArrayList<Location>();
+        List<Distance> distances = new ArrayList<Distance>();
+
+        try {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.equals("")) {
+                    continue;
+                }
+
+                String locationPat = "^L\\s+[^\\s]+\\s+[.0-9]+\\s+[.0-9]+\\s+";
+                String distancePat = "^R\\s+([^\\s]+\\s+[.0-9]+\\s+[.0-9]+\\s+)+";
+
+                if (line.matches(locationPat)) {
+                    locations.add(new Location(line));
+                } else if (line.matches(distancePat)) {
+                    distances.add(new Distance(line));
+                }
+            }
+        } catch (NoSuchElementException e) {
+            // TODO: Handle exception
+        } catch (IOException e) {
+            // TODO: Handle exception
+        }
     }
 
     /** Print a brief usage message and exit program abnormally. */
@@ -89,5 +130,4 @@ public final class Main {
         // FILL THIS IN
         System.exit(1);
     }
-
 }

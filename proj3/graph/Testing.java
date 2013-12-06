@@ -9,12 +9,16 @@ import static org.junit.Assert.*;
  * may not be part of your graph package per se (that is, it must be
  * possible to remove them and still have your package work). */
 
-/** Unit tests for the graph package. */
+/** Unit tests for the graph package.
+ *  @author Kiet Lam
+ */
 public class Testing {
 
     /** Run all JUnit tests in the graph package. */
     public static void main(String[] ignored) {
-        System.exit(textui.runClasses(graph.Testing.class));
+        textui.runClasses(graph.Testing.class);
+        textui.runClasses(graph.UndirectedGraphTesting.class);
+        textui.runClasses(graph.DirectedGraphTesting.class);
     }
 
     // Add tests.  Here's a sample.
@@ -25,6 +29,4 @@ public class Testing {
         assertEquals("Initial graph has vertices", 0, g.vertexSize());
         assertEquals("Initial graph has edges", 0, g.edgeSize());
     }
-
-
 }

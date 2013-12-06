@@ -22,4 +22,36 @@ public abstract class Iteration<Type>
     public void remove() {
         throw new UnsupportedOperationException("remove not supported");
     }
+
+    /** A wrapper class that turns an Iterator<TYPE> into an Iteration<TYPE>. */
+    private static class SimpleIteration<Type> extends Iteration<Type> {
+        /** ITER as an iteration. */
+        SimpleIteration(Iterator<Type> iter) {
+            _iter = iter;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return _iter.hasNext();
+        }
+
+        @Override
+        public Type next() {
+            return _iter.next();
+        }
+
+        /** The iterator with which I was constructed. */
+        private Iterator<Type> _iter;
+    }
+
+    /** Returns an Iteration<TYPE> that delegates to IT. */
+    static <Type> Iteration<Type> iteration(Iterator<Type> it) {
+        return new SimpleIteration<>(it);
+    }
+
+    /** Returns an Iteration<TYPE> that delegates to ITERABLE. */
+    static <Type> Iteration<Type> iteration(Iterable<Type> iterable) {
+        return new SimpleIteration<>(iterable.iterator());
+    }
+
 }
