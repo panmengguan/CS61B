@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 
 /** Unit tests for UndirectedGraph.
  *  @author Kiet Lam
@@ -70,7 +72,7 @@ public class UndirectedGraphTesting {
     }
 
     @Test
-    public void testDegree(){
+    public void testDegree() {
         Graph<String, String> g = new UndirectedGraph<String, String>();
         Graph<String, String>.Vertex G = g.add("G");
         Graph<String, String>.Vertex A = g.add("A");
@@ -78,6 +80,7 @@ public class UndirectedGraphTesting {
         Graph<String, String>.Vertex B = g.add("B");
         Graph<String, String>.Vertex D = g.add("D");
         Graph<String, String>.Vertex E = g.add("E");
+        Graph<String, String>.Vertex F = g.add("F");
 
         g.add(G, A);
         g.add(G, C);
@@ -92,6 +95,7 @@ public class UndirectedGraphTesting {
         assertEquals("incorrect number of degree", 3, g.degree(A));
         assertEquals("incorrect number of degree", 2, g.degree(D));
         assertEquals("incorrect number of degree", 1, g.degree(E));
+        assertEquals("incorrect number of degree", 0, g.degree(F));
     }
 
     @Test
@@ -102,6 +106,17 @@ public class UndirectedGraphTesting {
         g.add(A, A);
 
         assertEquals("incorrect number of degree", 2, g.degree(A));
+    }
+
+    @Test
+    public void testDegreeSelfLoopLabeled() {
+        Graph<String, String> g = new UndirectedGraph<String, String>();
+        Graph<String, String>.Vertex A = g.add("A");
+
+        g.add(A, A, "A1");
+        g.add(A, A, "A2");
+
+        assertEquals("incorrect number of degree", 4, g.degree(A));
     }
 
     @Test
@@ -143,7 +158,8 @@ public class UndirectedGraphTesting {
         assertTrue("graph does contain edge from D to A", g.contains(D, A));
         assertTrue("graph does contain edge from E to D", g.contains(E, D));
 
-        assertFalse("graph does not contain edge from C to E", g.contains(C, E));
+        assertFalse("graph does not contain edge from C to E",
+                    g.contains(C, E));
     }
 
     @Test
@@ -202,6 +218,7 @@ public class UndirectedGraphTesting {
         Graph<String, String>.Vertex B = g.add("B");
         Graph<String, String>.Vertex D = g.add("D");
         Graph<String, String>.Vertex E = g.add("E");
+        Graph<String, String>.Vertex F = g.add("F");
 
         g.add(G, A);
         g.add(G, C);
@@ -211,12 +228,15 @@ public class UndirectedGraphTesting {
         g.add(D, E);
 
         g.remove(A);
+        g.remove(F);
 
         assertEquals("incorrect vertex size", 5, g.vertexSize());
         assertEquals("incorrect edge size", 3, g.edgeSize());
 
-        assertFalse("Graph does not contain edge from G to A", g.contains(G, A));
-        assertFalse("Graph does not contain edge from A to G", g.contains(A, G));
+        assertFalse("Graph does not contain edge from G to A",
+                    g.contains(G, A));
+        assertFalse("Graph does not contain edge from A to G",
+                    g.contains(A, G));
 
         assertTrue("Graph does contain edge G to C", g.contains(G, C));
     }
@@ -243,8 +263,10 @@ public class UndirectedGraphTesting {
         assertEquals("incorrect number of vertices", 6, g.vertexSize());
         assertEquals("incorrect number of edges", 5, g.edgeSize());
 
-        assertFalse("Graph does not contain edge from G to A", g.contains(G, A));
-        assertFalse("Graph does not contain edge from A to G", g.contains(A, G));
+        assertFalse("Graph does not contain edge from G to A",
+                    g.contains(G, A));
+        assertFalse("Graph does not contain edge from A to G",
+                    g.contains(A, G));
 
         assertTrue("Graph does contain edge from A to B", g.contains(A, B));
         assertTrue("Graph does contain edge from A to D", g.contains(A, D));
@@ -266,23 +288,26 @@ public class UndirectedGraphTesting {
         g.add(A, B);
         g.add(A, D);
         g.add(D, E);
+        g.add(G, E);
 
-        g.add(B, A);
-        g.remove(A, B);
+        g.remove(A, G);
 
         assertEquals("incorrect vertex size", 6, g.vertexSize());
-        assertEquals("incorrect edge size", 5, g.edgeSize());
+        assertEquals("incorrect edge size", 6, g.edgeSize());
 
-        assertFalse("Graph does not contain edge from G to A", g.contains(G, A));
-        assertFalse("Graph does not contain edge from A to G", g.contains(A, G));
+        assertFalse("Graph does not contain edge from G to A",
+                    g.contains(G, A));
+        assertFalse("Graph does not contain edge from A to G",
+                    g.contains(A, G));
 
         assertTrue("Graph does contain edge G to E", g.contains(G, E));
+
         g.remove(G, E);
 
         assertEquals("incorrect vertex size", 6, g.vertexSize());
         assertEquals("incorrect edge size", 5, g.edgeSize());
 
-        assertTrue("Graph does contain edge G to E", g.contains(G, E));
+        assertFalse("Graph does not contain edge G to E", g.contains(G, E));
     }
 
     @Test
@@ -364,7 +389,7 @@ public class UndirectedGraphTesting {
             neighbors.add(e);
         }
 
-        assertEquals("Successors should be equivalent", expectedNeighbors,
+        assertEquals("Neighbors should be equivalent", expectedNeighbors,
                      neighbors);
     }
 
@@ -407,8 +432,8 @@ public class UndirectedGraphTesting {
             new HashSet<Graph<String, String>.Edge>();
 
         expectedEdges.add(e1);
-        expectedEdges.add(e2);
         expectedEdges.add(e4);
+        expectedEdges.add(e5);
 
         Set<Graph<String, String>.Edge> edges =
             new HashSet<Graph<String, String>.Edge>();
@@ -420,5 +445,80 @@ public class UndirectedGraphTesting {
         assertEquals("Edges should be equivalent", expectedEdges, edges);
     }
 
-    // TODO: Test orderEdges()
+    @Test
+    public void testAllEdges() {
+        Graph<String, String> g = new UndirectedGraph<String, String>();
+        Graph<String, String>.Vertex G = g.add("G");
+        Graph<String, String>.Vertex A = g.add("A");
+        Graph<String, String>.Vertex C = g.add("C");
+        Graph<String, String>.Vertex B = g.add("B");
+        Graph<String, String>.Vertex D = g.add("D");
+        Graph<String, String>.Vertex E = g.add("E");
+
+        Graph<String, String>.Edge e1 = g.add(G, A);
+        Graph<String, String>.Edge e2 = g.add(G, C);
+        Graph<String, String>.Edge e3 = g.add(C, B);
+        Graph<String, String>.Edge e4 = g.add(A, B);
+        Graph<String, String>.Edge e5 = g.add(A, D);
+        Graph<String, String>.Edge e6 = g.add(D, E);
+
+        Set<Graph<String, String>.Edge> expectedEdges =
+            new HashSet<Graph<String, String>.Edge>();
+
+        expectedEdges.add(e1);
+        expectedEdges.add(e2);
+        expectedEdges.add(e3);
+        expectedEdges.add(e4);
+        expectedEdges.add(e5);
+        expectedEdges.add(e6);
+
+        Set<Graph<String, String>.Edge> edges =
+            new HashSet<Graph<String, String>.Edge>();
+
+        for (Graph<String, String>.Edge e: g.edges()) {
+            edges.add(e);
+        }
+
+        assertEquals("Edges should be equivalent", expectedEdges, edges);
+    }
+
+    @Test
+    public void testOrderEdges() {
+        Graph<String, String> g = new UndirectedGraph<String, String>();
+        Graph<String, String>.Vertex G = g.add("G");
+        Graph<String, String>.Vertex A = g.add("A");
+        Graph<String, String>.Vertex C = g.add("C");
+        Graph<String, String>.Vertex B = g.add("B");
+        Graph<String, String>.Vertex D = g.add("D");
+        Graph<String, String>.Vertex E = g.add("E");
+
+        Graph<String, String>.Edge e3 = g.add(C, B, "3");
+        Graph<String, String>.Edge e6 = g.add(D, E, "6");
+        Graph<String, String>.Edge e2 = g.add(G, C, "2");
+        Graph<String, String>.Edge e4 = g.add(A, B, "4");
+        Graph<String, String>.Edge e1 = g.add(G, A, "1");
+        Graph<String, String>.Edge e5 = g.add(A, D, "5");
+
+        g.orderEdges(g.<String>naturalOrder());
+
+        List<Graph<String, String>.Edge> expectedEdges =
+            new ArrayList<Graph<String, String>.Edge>();
+
+        expectedEdges.add(e1);
+        expectedEdges.add(e2);
+        expectedEdges.add(e3);
+        expectedEdges.add(e4);
+        expectedEdges.add(e5);
+        expectedEdges.add(e6);
+
+        List<Graph<String, String>.Edge> edges =
+            new ArrayList<Graph<String, String>.Edge>();
+
+        for (Graph<String, String>.Edge e: g.edges()) {
+            edges.add(e);
+        }
+
+        assertEquals("list of edges incorrect", expectedEdges,
+                     edges);
+    }
 }

@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Collection;
+import java.util.Collections;
 
 /* Do not add or remove public or protected members, or modify the signatures of
  * any public methods.  You may make changes that don't affect the API as seen
@@ -116,14 +120,22 @@ public abstract class Graph<VLabel, ELabel> {
 
     /** Returns the number of vertices in me. */
     public int vertexSize() {
-        // FIXME
-        return 0;
+        return matrix.keySet().size();
     }
 
     /** Returns the number of edges in me. */
     public int edgeSize() {
-        // FIXME
-        return 0;
+        Set<Edge> edges = new HashSet<Edge>();
+
+        for (Map.Entry<Vertex, Map<Vertex, Set<Edge>>> entry: matrix.entrySet())
+        {
+            for (Vertex vertex: entry.getValue().keySet()) {
+                Set<Edge> eds = entry.getValue().get(vertex);
+                edges.addAll(eds);
+            }
+        }
+
+        return edges.size();
     }
 
     /** Returns true iff I am a directed graph. */
@@ -132,15 +144,20 @@ public abstract class Graph<VLabel, ELabel> {
     /** Returns the number of outgoing edges incident to V. Assumes V is one of
      *  my vertices.  */
     public int outDegree(Vertex v) {
-        // FIXME
-        return 0;
+        Collection<Edge> edges = createCollection(outEdges(v));
+
+        if (!isDirected()) {
+            return edges.size() + matrix.get(v).get(v).size();
+        }
+
+        return edges.size();
     }
 
     /** Returns the number of incoming edges incident to V. Assumes V is one of
      *  my vertices. */
     public int inDegree(Vertex v) {
-        // FIXME
-        return 0;
+        Collection<Edge> edges = createCollection(inEdges(v));
+        return edges.size();
     }
 
     /** Returns outDegree(V). This is simply a synonym, intended for
@@ -151,14 +168,36 @@ public abstract class Graph<VLabel, ELabel> {
 
     /** Returns true iff there is an edge (U, V) in me with any label. */
     public boolean contains(Vertex u, Vertex v) {
-        // FIXME
-        return false;
+        if (!matrix.containsKey(u)) {
+            return false;
+        }
+
+        if (!matrix.get(u).containsKey(v)) {
+            return false;
+        }
+
+        return matrix.get(u).get(v).size() > 0;
     }
 
     /** Returns true iff there is an edge (U, V) in me with label LABEL. */
     public boolean contains(Vertex u, Vertex v,
                             ELabel label) {
-        // FIXME
+        if (!matrix.containsKey(u)) {
+            return false;
+        }
+
+        if (!matrix.get(u).containsKey(v)) {
+            return false;
+        }
+
+        Set<Edge> edges = matrix.get(u).get(v);
+
+        for (Edge edge: edges) {
+            if (edge.getLabel().equals(label)) {
+                return true;
+            }
+        }
+
         return false;
     }
 
@@ -167,15 +206,20 @@ public abstract class Graph<VLabel, ELabel> {
     public Vertex add(VLabel label) {
         Vertex vertex = new Vertex(label);
 
-        Map<Vertex, Integer> edgeCounts = new HashMap<Vertex, Integer>();
-
-        for (Map.Entry<Vertex, Integer> entry: edgeCounts.entrySet()) {
-            edgeCounts.put(entry.getKey(), 0);
+        for (Map.Entry<Vertex, Map<Vertex, Set<Edge>>> entry: matrix.entrySet())
+        {
+            Map<Vertex, Set<Edge>> edgeMap = entry.getValue();
+            edgeMap.put(vertex, new HashSet<Edge>());
         }
 
-        edgeCounts.put(vertex, 0);
-        matrix.put(vertex, edgeCounts);
+        Map<Vertex, Set<Edge>> edgeSetMap = new HashMap<Vertex, Set<Edge>>();
 
+        for (Vertex v: matrix.keySet()) {
+            edgeSetMap.put(v, new HashSet<Edge>());
+        }
+
+        edgeSetMap.put(vertex, new HashSet<Edge>());
+        matrix.put(vertex, edgeSetMap);
         return vertex;
     }
 
@@ -191,29 +235,25 @@ public abstract class Graph<VLabel, ELabel> {
             return null;
         }
 
-        if (isDirected()) {
-            addEdge(to, from, label);
+        Edge edge =  addEdge(from, to, label);
+
+        if (!isDirected()) {
+            addEdge(to, from, edge);
         }
 
-        return addEdge(from, to, label);
+        return edge;
     }
 
     /** Returns an edge created from FROM to TO with LABEL.*/
     private Edge addEdge(Vertex from, Vertex to, ELabel label) {
         Edge edge = new Edge(from, to, label);
-        Map<Vertex, Integer> edgesTo = matrix.get(from);
-        edgesTo.put(to, edgesTo.get(to) + 1);
-        VertexFromTo vft = new VertexFromTo(from, to);
-
-        List<Edge> edges = new ArrayList<Edge>();
-
-        if (edgeMap.containsKey(vft)) {
-            edges = edgeMap.get(vft);
-        }
-
-        edges.add(edge);
-        edgeMap.put(vft, edges);
+        addEdge(from, to, edge);
         return edge;
+    }
+
+    /** Add an edge from FROM to TO with EDGE edge.*/
+    private void addEdge(Vertex from, Vertex to, Edge edge) {
+        matrix.get(from).get(to).add(edge);
     }
 
     /** Returns an edge incident on FROM and TO with a null label
@@ -226,20 +266,14 @@ public abstract class Graph<VLabel, ELabel> {
 
     /** Remove V and all adjacent edges, if present. */
     public void remove(Vertex v) {
-        matrix.remove(v);
-
-        for (Vertex vertex: matrix.keySet()) {
-            Map<Vertex, Integer> edgeCount = matrix.get(vertex);
-            edgeCount.remove(v);
+        if (matrix.containsKey(v)) {
+            matrix.remove(v);
         }
 
-        for (VertexFromTo vft: edgeMap.keySet()) {
-            if (vft.containsV1(v)) {
-                remove(v, vft.getV2());
-            }
-
-            if (vft.containsV2(v)) {
-                remove(vft.getV1(), v);
+        for (Vertex vertex: matrix.keySet()) {
+            Map<Vertex, Set<Edge>> edgeMap = matrix.get(vertex);
+            if (edgeMap.containsKey(v)) {
+                edgeMap.remove(v);
             }
         }
     }
@@ -247,35 +281,94 @@ public abstract class Graph<VLabel, ELabel> {
     /** Remove E from me, if present.  E must be between my vertices,
      *  or the result is undefined.  */
     public void remove(Edge e) {
-        remove(e.getV0(), e.getV1());
+        remove(e.getV0(), e.getV1(), e);
 
-        if (isDirected()) {
-            remove(e.getV1(), e.getV0());
+        if (!isDirected()) {
+            remove(e.getV1(), e.getV0(), e);
+        }
+    }
+
+    /** Remove an EDGE with vertice FROM, TO.*/
+    private void remove(Vertex from, Vertex to, Edge edge) {
+        if (matrix.containsKey(from)) {
+            Map<Vertex, Set<Edge>> edgeMap = matrix.get(from);
+            if (edgeMap.containsKey(to)) {
+                Set<Edge> edges = edgeMap.get(to);
+                edges.remove(edge);
+            }
+        }
+    }
+
+    /** Remove all edges in EDGESTOREMOVE on FROM and TO.*/
+    private void removeEdges(Vertex from, Vertex to) {
+        if (matrix.containsKey(from)) {
+            Map<Vertex, Set<Edge>> edgeMap = matrix.get(from);
+            if (edgeMap.containsKey(to)) {
+                Set<Edge> edges = edgeMap.get(to);
+                edges.clear();
+            }
         }
     }
 
     /** Remove all edges from V1 to V2 from me, if present.  The result is
      *  undefined if V1 and V2 are not among my vertices.  */
     public void remove(Vertex v1, Vertex v2) {
-        // FIXME
+        removeEdges(v1, v2);
+
+        if (!isDirected()) {
+            removeEdges(v2, v1);
+        }
     }
 
     /** Returns an Iterator over all vertices in arbitrary order. */
     public Iteration<Vertex> vertices() {
-        // FIXME
-        return null;
+        Set<Vertex> vertices = new HashSet<Vertex>();
+
+        for (Vertex vertex: matrix.keySet()) {
+            vertices.add(vertex);
+        }
+
+        return Iteration.iteration(vertices.iterator());
     }
 
     /** Returns an iterator over all successors of V. */
     public Iteration<Vertex> successors(Vertex v) {
-        // FIXME
-        return null;
+        Set<Edge> outEdges = new HashSet<Edge>(createCollection(outEdges(v)));
+        Set<Vertex> vertices = new HashSet<Vertex>();
+
+        for (Edge e: outEdges) {
+            if (!isDirected()) {
+                if (e.getV0().equals(v)) {
+                    vertices.add(e.getV1());
+                } else {
+                    vertices.add(e.getV0());
+                }
+            } else {
+                vertices.add(e.getV1());
+            }
+        }
+
+        return Iteration.iteration(vertices.iterator());
     }
 
     /** Returns an iterator over all predecessors of V. */
     public Iteration<Vertex> predecessors(Vertex v) {
-        return null;
-        // FIXME
+        Set<Edge> inEdges = new HashSet<Edge>(createCollection(inEdges(v)));
+        Set<Vertex> vertices = new HashSet<Vertex>();
+
+        for (Edge e: inEdges) {
+            if (!isDirected()) {
+                if (e.getV0().equals(v)) {
+                    vertices.add(e.getV1());
+                } else {
+                    vertices.add(e.getV0());
+                }
+            } else {
+                vertices.add(e.getV0());
+            }
+        }
+
+        return Iteration.iteration(vertices.iterator());
     }
 
     /** Returns successors(V).  This is a synonym typically used on
@@ -286,20 +379,59 @@ public abstract class Graph<VLabel, ELabel> {
 
     /** Returns an iterator over all edges in me. */
     public Iteration<Edge> edges() {
-        return null;
-        // FIXME
+        Set<Edge> inEdges = new HashSet<Edge>();
+
+        for (Vertex vertex: matrix.keySet()) {
+            inEdges.addAll(createCollection(inEdges(vertex)));
+        }
+
+        Set<Edge> outEdges = new HashSet<Edge>();
+
+        for (Vertex vertex: matrix.keySet()) {
+            outEdges.addAll(createCollection(outEdges(vertex)));
+        }
+
+        inEdges.addAll(outEdges);
+
+        List<Edge> edges = new ArrayList<Edge>(inEdges);
+
+        if (comparator != null) {
+            Collections.sort(edges, new Comparator<Edge>() {
+                    @Override
+                    public int compare(Edge e1, Edge e2) {
+                        return comparator.compare(e1.getLabel(), e2.getLabel());
+                    }
+                });
+        }
+
+        return Iteration.iteration(edges.iterator());
     }
 
     /** Returns iterator over all outgoing edges from V. */
     public Iteration<Edge> outEdges(Vertex v) {
-        return null;
-        // FIXME
+        Set<Edge> edges = new HashSet<Edge>();
+        Map<Vertex, Set<Edge>> edgeMap = matrix.get(v);
+
+        for (Map.Entry<Vertex, Set<Edge>> entry: edgeMap.entrySet()) {
+            edges.addAll(entry.getValue());
+        }
+
+        return Iteration.iteration(edges.iterator());
     }
 
     /** Returns iterator over all incoming edges to V. */
     public Iteration<Edge> inEdges(Vertex v) {
-        return null;
-        // FIXME
+        Set<Edge> edges = new HashSet<Edge>();
+
+        for (Vertex vertex: matrix.keySet()) {
+            Map<Vertex, Set<Edge>> edgeMap = matrix.get(vertex);
+
+            if (edgeMap.containsKey(v)) {
+                edges.addAll(edgeMap.get(v));
+            }
+        }
+
+        return Iteration.iteration(edges.iterator());
     }
 
     /** Returns outEdges(V). This is a synonym typically used
@@ -323,87 +455,29 @@ public abstract class Graph<VLabel, ELabel> {
     }
 
     /** Cause subsequent calls to edges() to visit or deliver
-     *  edges in sorted order, according to COMPARATOR. Subsequent
+     *  edges in sorted order, according to COMP. Subsequent
      *  addition of edges may cause the edges to be reordered
      *  arbitrarily.  */
-    public void orderEdges(Comparator<ELabel> comparator) {
-        // FIXME
+    public void orderEdges(Comparator<ELabel> comp) {
+        comparator = comp;
     }
 
     /** Class representing a vertices coming to.*/
-    private class VertexFromTo {
-
-        /** Vertex from.*/
-        private Vertex _v1;
-
-        /** Vertex to.*/
-        private Vertex _v2;
-
-        /** Create a vertices representing from V1 to V2.*/
-        VertexFromTo(Vertex v1, Vertex v2) {
-            _v1 = v1;
-            _v2 = v2;
-        }
-
-        /** Returns vertex 1.*/
-        Vertex getV1() {
-            return _v1;
-        }
-
-        /** Returns vertex 2.*/
-        Vertex getV2() {
-            return _v2;
-        }
-
-        /** Returns true iff contains V1 as v1.*/
-        boolean containsV1(Vertex v1) {
-            return _v1.equals(v1);
-        }
-
-        /** Returns true iff contains V2 as v2.*/
-        boolean containsV2(Vertex v2) {
-            return _v2.equals(v2);
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            if (other == null) {
-                return false;
-            }
-
-            if (other == this) {
-                return true;
-            }
-
-            if (other instanceof Graph<?, ?>.VertexFromTo) {
-                Graph<?, ?>.VertexFromTo pair =
-                    (Graph<?, ?>.VertexFromTo) other;
-                return _v1.equals(pair._v1) && _v2.equals(pair._v2);
-            }
-
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + _v1.hashCode();
-            result = prime * result + _v2.hashCode();
-            return result;
-        }
-    }
-
-    /** Creates a VertexFromTo object from V1 and V2.*/
-    private VertexFromTo createFromTo(Vertex v1, Vertex v2) {
-        return new VertexFromTo(v1, v2);
-    }
-
     /** Matrix of which node has an edge to another node.*/
-    private Map<Vertex, Map<Vertex, List<Edge>>> matrix =
-        new HashMap<Vertex, Map<Vertex, List<Edge>>>();
+    private Map<Vertex, Map<Vertex, Set<Edge>>> matrix =
+        new HashMap<Vertex, Map<Vertex, Set<Edge>>>();
 
-    /** Map of vertex-from-to to a list of edges.*/
-    private Map<VertexFromTo, List<Edge>> edgeMap =
-        new HashMap<VertexFromTo, List<Edge>>();
+    /** Comparator for the edges.*/
+    private Comparator<ELabel> comparator;
+
+    /** Returns a collection from ITERABLE<T>.*/
+    private static <T> Collection<T> createCollection(Iterable<T> iterable) {
+        Collection<T> collection = new ArrayList<T>();
+
+        for (T t: iterable) {
+            collection.add(t);
+        }
+
+        return collection;
+    }
 }

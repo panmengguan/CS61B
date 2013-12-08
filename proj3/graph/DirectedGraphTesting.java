@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 
 /** Unit tests for DirectedGraph.
  *  @author Kiet Lam
@@ -71,7 +73,7 @@ public class DirectedGraphTesting {
     }
 
     @Test
-    public void testOutDegree(){
+    public void testOutDegree() {
         Graph<String, String> g = new DirectedGraph<String, String>();
         Graph<String, String>.Vertex G = g.add("G");
         Graph<String, String>.Vertex A = g.add("A");
@@ -79,6 +81,7 @@ public class DirectedGraphTesting {
         Graph<String, String>.Vertex B = g.add("B");
         Graph<String, String>.Vertex D = g.add("D");
         Graph<String, String>.Vertex E = g.add("E");
+        Graph<String, String>.Vertex F = g.add("F");
 
         g.add(A, B);
         g.add(B, C);
@@ -95,7 +98,7 @@ public class DirectedGraphTesting {
         assertEquals("incorrect number of outdegree", 2, g.outDegree(C));
         assertEquals("incorrect number of outdegree", 1, g.outDegree(D));
         assertEquals("incorrect number of outdegree", 1, g.outDegree(E));
-        assertEquals("incorrect number of outdegree", 1, g.outDegree(G));
+        assertEquals("incorrect number of outdegree", 0, g.outDegree(F));
     }
 
     @Test
@@ -107,6 +110,7 @@ public class DirectedGraphTesting {
         Graph<String, String>.Vertex B = g.add("B");
         Graph<String, String>.Vertex D = g.add("D");
         Graph<String, String>.Vertex E = g.add("E");
+        Graph<String, String>.Vertex F = g.add("F");
 
         g.add(A, B);
         g.add(B, C);
@@ -124,6 +128,7 @@ public class DirectedGraphTesting {
         assertEquals("incorrect number of indegree", 2, g.inDegree(D));
         assertEquals("incorrect number of indegree", 1, g.inDegree(E));
         assertEquals("incorrect number of indegree", 1, g.inDegree(G));
+        assertEquals("incorrect number of indegree", 0, g.inDegree(F));
     }
 
     @Test
@@ -234,6 +239,7 @@ public class DirectedGraphTesting {
         Graph<String, String>.Vertex B = g.add("B");
         Graph<String, String>.Vertex D = g.add("D");
         Graph<String, String>.Vertex E = g.add("E");
+        Graph<String, String>.Vertex F = g.add("F");
 
         g.add(A, B, "A-B");
         g.add(B, C, "B-C");
@@ -246,6 +252,7 @@ public class DirectedGraphTesting {
         g.add(G, D, "G-D");
 
         g.remove(A);
+        g.remove(F);
 
         assertEquals("incorrect vertex size", 5, g.vertexSize());
         assertEquals("incorrect edge size", 6, g.edgeSize());
@@ -283,7 +290,8 @@ public class DirectedGraphTesting {
         assertEquals("incorrect number of vertices", 6, g.vertexSize());
         assertEquals("incorrect number of edges", 7, g.edgeSize());
 
-        assertFalse("Graph does not contain edge from B to C", g.contains(B, C));
+        assertFalse("Graph does not contain edge from B to C",
+                    g.contains(B, C));
 
         assertTrue("Graph does contain edge from A to B", g.contains(A, B));
         assertTrue("Graph does contain edge from C to B", g.contains(C, B));
@@ -314,7 +322,7 @@ public class DirectedGraphTesting {
         assertEquals("incorrect vertex size", 6, g.vertexSize());
         assertEquals("incorrect edge size", 8, g.edgeSize());
 
-        assertTrue("Graph does contain edge A to B", g.contains(G, E));
+        assertTrue("Graph does contain edge A to B", g.contains(A, B));
 
         g.remove(B, C);
 
@@ -459,9 +467,14 @@ public class DirectedGraphTesting {
                      predecessors);
 
         expectedPredecessors = new HashSet<Graph<String, String>.Vertex>();
+        predecessors = new HashSet<Graph<String, String>.Vertex>();
+
+        for (Graph<String, String>.Vertex e: g.predecessors(A)) {
+            predecessors.add(e);
+        }
 
         assertEquals("A should have no predecesssors",
-                     expectedPredecessors, g.predecessors(A));
+                     expectedPredecessors, predecessors);
 
         expectedPredecessors.add(A);
         expectedPredecessors.add(G);
@@ -503,6 +516,7 @@ public class DirectedGraphTesting {
 
         Set<Graph<String, String>.Edge> edges =
             new HashSet<Graph<String, String>.Edge>();
+
         for (Graph<String, String>.Edge e: g.outEdges(A)) {
             edges.add(e);
         }
@@ -556,5 +570,89 @@ public class DirectedGraphTesting {
         assertEquals("incorrect inedges", expectedEdges, edges);
     }
 
-    // TODO: Test orderEdges()
+    @Test
+    public void testAllEdges() {
+        Graph<String, String> g = new DirectedGraph<String, String>();
+        Graph<String, String>.Vertex G = g.add("G");
+        Graph<String, String>.Vertex A = g.add("A");
+        Graph<String, String>.Vertex C = g.add("C");
+        Graph<String, String>.Vertex B = g.add("B");
+        Graph<String, String>.Vertex D = g.add("D");
+        Graph<String, String>.Vertex E = g.add("E");
+
+        Graph<String, String>.Edge e5 = g.add(A, B, "A-B");
+        Graph<String, String>.Edge e6 = g.add(B, C, "B-C");
+        Graph<String, String>.Edge e7 = g.add(C, C, "C-C");
+        Graph<String, String>.Edge e8 = g.add(C, B, "C-B");
+
+        Graph<String, String>.Edge e1 = g.add(A, D, "A-D");
+        Graph<String, String>.Edge e2 = g.add(D, E, "D-E");
+        Graph<String, String>.Edge e3 = g.add(E, G, "E-G");
+        Graph<String, String>.Edge e4 = g.add(G, D, "G-D");
+
+        Set<Graph<String, String>.Edge> expectedEdges =
+            new HashSet<Graph<String, String>.Edge>();
+
+        expectedEdges.add(e1);
+        expectedEdges.add(e2);
+        expectedEdges.add(e3);
+        expectedEdges.add(e4);
+        expectedEdges.add(e5);
+        expectedEdges.add(e6);
+        expectedEdges.add(e7);
+        expectedEdges.add(e8);
+
+        Set<Graph<String, String>.Edge> edges =
+            new HashSet<Graph<String, String>.Edge>();
+
+        for (Graph<String, String>.Edge e: g.edges()) {
+            edges.add(e);
+        }
+
+        assertEquals("incorrect inedges", expectedEdges, edges);
+    }
+
+    @Test
+    public void testOrderEdges() {
+        Graph<String, String> g = new DirectedGraph<String, String>();
+        Graph<String, String>.Vertex G = g.add("G");
+        Graph<String, String>.Vertex A = g.add("A");
+        Graph<String, String>.Vertex C = g.add("C");
+        Graph<String, String>.Vertex B = g.add("B");
+        Graph<String, String>.Vertex D = g.add("D");
+        Graph<String, String>.Vertex E = g.add("E");
+
+        Graph<String, String>.Edge e5 = g.add(A, B, "5");
+        Graph<String, String>.Edge e6 = g.add(B, C, "6");
+        Graph<String, String>.Edge e7 = g.add(C, C, "7");
+        Graph<String, String>.Edge e8 = g.add(C, B, "8");
+
+        Graph<String, String>.Edge e1 = g.add(A, D, "1");
+        Graph<String, String>.Edge e2 = g.add(D, E, "2");
+        Graph<String, String>.Edge e3 = g.add(E, G, "3");
+        Graph<String, String>.Edge e4 = g.add(G, D, "4");
+
+        g.orderEdges(g.<String>naturalOrder());
+
+        List<Graph<String, String>.Edge> expectedEdges =
+            new ArrayList<Graph<String, String>.Edge>();
+
+        expectedEdges.add(e1);
+        expectedEdges.add(e2);
+        expectedEdges.add(e3);
+        expectedEdges.add(e4);
+        expectedEdges.add(e5);
+        expectedEdges.add(e6);
+        expectedEdges.add(e7);
+        expectedEdges.add(e8);
+
+        List<Graph<String, String>.Edge> edges =
+            new ArrayList<Graph<String, String>.Edge>();
+
+        for (Graph<String, String>.Edge e: g.edges()) {
+            edges.add(e);
+        }
+
+        assertEquals("incorrect inedges", expectedEdges, edges);
+    }
 }

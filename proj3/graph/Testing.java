@@ -21,8 +21,6 @@ public class Testing {
         textui.runClasses(graph.DirectedGraphTesting.class);
     }
 
-    // Add tests.  Here's a sample.
-
     @Test
     public void emptyGraph() {
         DirectedGraph g = new DirectedGraph();
