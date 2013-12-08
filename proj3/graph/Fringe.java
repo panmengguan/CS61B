@@ -2,13 +2,13 @@ package graph;
 
 /** Fringe class for graph traversal.
  *  @author Kiet Lam*/
-interface Fringe<Vertex> {
+interface Fringe<V> {
 
     /** Push V onto the fringe.*/
-    void push(Vertex v);
+    void push(V v);
 
     /** Pop and returns a vertex from the fringe.*/
-    Vertex pop();
+    V pop();
 
     /** Returns if the fringe is empty.*/
     boolean isEmpty();

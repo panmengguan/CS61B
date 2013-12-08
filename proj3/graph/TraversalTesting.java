@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 /** Unit tests for Traversal.
  *  @author Kiet Lam
@@ -269,7 +270,7 @@ public class TraversalTesting {
         ListTraversal traverser = new ListTraversal();
         traverser.breadthFirstTraverse(g, A);
 
-        assertEquals("incorrect BFS visit", preVertices,
+        assertEquals("incorrect BFS previsit", preVertices,
                      traverser.getPrevisited());
     }
 
@@ -303,8 +304,234 @@ public class TraversalTesting {
         ListTraversal traverser = new ListTraversal();
         traverser.breadthFirstTraverse(g, A);
 
-        assertEquals("incorrect BFS visit", postVertices,
+        assertEquals("incorrect BFS postvisit", postVertices,
                      traverser.getPostvisited());
+    }
+
+    @Test
+    public void testStopException() {
+        Graph<String, String> g = new UndirectedGraph<String, String>();
+        Graph<String, String>.Vertex A = g.add("A");
+        Graph<String, String>.Vertex B = g.add("B");
+        Graph<String, String>.Vertex C = g.add("C");
+        final Graph<String, String>.Vertex D = g.add("D");
+        Graph<String, String>.Vertex E = g.add("E");
+        Graph<String, String>.Vertex F = g.add("F");
+
+        g.add(A, B);
+        g.add(A, C);
+        g.add(A, D);
+
+        g.add(D, E);
+        g.add(D, F);
+
+        ListTraversal traverser = new ListTraversal() {
+                @Override
+                protected void visit(Graph<String, String>.Vertex v) {
+                    if (v.equals(D)) {
+                        throw new StopException();
+                    } else {
+                        super.visit(v);
+                    }
+                }
+            };
+
+        traverser.breadthFirstTraverse(g, A);
+
+        List<Graph<String, String>.Vertex> vertices =
+            new ArrayList<Graph<String, String>.Vertex>();
+
+        vertices.add(A);
+        vertices.add(B);
+        vertices.add(C);
+
+        assertEquals("incorrect stoppage", vertices,
+                     traverser.getVertices());
+    }
+
+    @Test
+    public void testStopResume() {
+        Graph<String, String> g = new UndirectedGraph<String, String>();
+        Graph<String, String>.Vertex A = g.add("A");
+        Graph<String, String>.Vertex B = g.add("B");
+        Graph<String, String>.Vertex C = g.add("C");
+        Graph<String, String>.Vertex D = g.add("D");
+        Graph<String, String>.Vertex E = g.add("E");
+        Graph<String, String>.Vertex F = g.add("F");
+
+        g.add(A, B);
+        g.add(A, C);
+        g.add(A, D);
+
+        g.add(D, E);
+        g.add(D, F);
+
+        final List<Integer> sentinel = new ArrayList<Integer>();
+
+        ListTraversal traverser = new ListTraversal() {
+                @Override
+                protected void visit(Graph<String, String>.Vertex v) {
+                    if (sentinel.isEmpty()) {
+                        throw new StopException();
+                    } else {
+                        super.visit(v);
+                    }
+                }
+            };
+
+        traverser.breadthFirstTraverse(g, A);
+
+        sentinel.add(1);
+
+        traverser.continueTraversing(A);
+
+        List<Graph<String, String>.Vertex> vertices =
+            new ArrayList<Graph<String, String>.Vertex>();
+
+        vertices.add(A);
+        vertices.add(B);
+        vertices.add(C);
+        vertices.add(D);
+        vertices.add(E);
+        vertices.add(F);
+
+        assertEquals("incorrect stoppage", vertices,
+                     traverser.getVertices());
+    }
+
+    @Test
+    public void testRejectPrevisit() {
+        Graph<String, String> g = new UndirectedGraph<String, String>();
+        Graph<String, String>.Vertex A = g.add("A");
+        Graph<String, String>.Vertex B = g.add("B");
+        Graph<String, String>.Vertex C = g.add("C");
+        Graph<String, String>.Vertex D = g.add("D");
+        final Graph<String, String>.Vertex E = g.add("E");
+        Graph<String, String>.Vertex F = g.add("F");
+
+        g.add(A, B);
+        g.add(A, C);
+        g.add(A, D);
+
+        g.add(D, E);
+        g.add(D, F);
+
+        ListTraversal traverser = new ListTraversal() {
+                @Override
+                protected void preVisit(Graph<String, String>.Edge e,
+                                        Graph<String, String>.Vertex v0) {
+                    Graph<String, String>.Vertex v1 = e.getV(v0);
+                    if (v1.equals(E)) {
+                        throw new RejectException();
+                    } else {
+                        super.preVisit(e, v0);
+                    }
+                }
+            };
+
+        traverser.breadthFirstTraverse(g, A);
+
+        List<Graph<String, String>.Vertex> vertices =
+            new ArrayList<Graph<String, String>.Vertex>();
+
+        vertices.add(A);
+        vertices.add(B);
+        vertices.add(C);
+        vertices.add(D);
+        vertices.add(F);
+
+        assertEquals("incorrect traverse rejection", vertices,
+                     traverser.getVertices());
+    }
+
+    @Test
+    public void testRejectSuccessors() {
+        Graph<String, String> g = new UndirectedGraph<String, String>();
+        Graph<String, String>.Vertex A = g.add("A");
+        Graph<String, String>.Vertex B = g.add("B");
+        Graph<String, String>.Vertex C = g.add("C");
+        final Graph<String, String>.Vertex D = g.add("D");
+        Graph<String, String>.Vertex E = g.add("E");
+        Graph<String, String>.Vertex F = g.add("F");
+
+        g.add(A, B);
+        g.add(A, C);
+        g.add(A, D);
+
+        g.add(D, E);
+        g.add(D, F);
+
+        ListTraversal traverser = new ListTraversal() {
+                @Override
+                protected void visit(Graph<String, String>.Vertex v) {
+                    super.visit(v);
+
+                    if (v.equals(D)) {
+                        throw new RejectException();
+                    }
+                }
+            };
+
+        traverser.breadthFirstTraverse(g, A);
+
+        List<Graph<String, String>.Vertex> vertices =
+            new ArrayList<Graph<String, String>.Vertex>();
+
+        vertices.add(A);
+        vertices.add(B);
+        vertices.add(C);
+        vertices.add(D);
+
+        assertEquals("incorrect traverse rejection", vertices,
+                     traverser.getVertices());
+    }
+
+    @Test
+    public void testCustomTraverse() {
+        Graph<String, String> g = new UndirectedGraph<String, String>();
+        Graph<String, String>.Vertex A = g.add("A");
+        Graph<String, String>.Vertex D = g.add("D");
+        Graph<String, String>.Vertex E = g.add("E");
+        Graph<String, String>.Vertex F = g.add("F");
+        Graph<String, String>.Vertex C = g.add("C");
+        Graph<String, String>.Vertex B = g.add("B");
+
+        g.add(A, D);
+        g.add(D, E);
+        g.add(D, F);
+
+        g.add(A, C);
+        g.add(A, B);
+
+        Comparator<String> comparator = String.CASE_INSENSITIVE_ORDER;
+
+        List<Graph<String, String>.Vertex> vertices =
+            new ArrayList<Graph<String, String>.Vertex>();
+
+        vertices.add(A);
+        vertices.add(B);
+        vertices.add(C);
+        vertices.add(D);
+        vertices.add(E);
+        vertices.add(F);
+
+        ListTraversal traverser = new ListTraversal();
+        traverser.traverse(g, A, comparator);
+
+        assertEquals("incorrect custom visit", vertices,
+                     traverser.getVertices());
+
+        List<Graph<String, String>.Vertex> preVertices =
+            new ArrayList<Graph<String, String>.Vertex>();
+
+        preVertices.add(D);
+        preVertices.add(C);
+        preVertices.add(B);
+        preVertices.add(E);
+        preVertices.add(F);
+
+        assertEquals("incorrect custom previsit", preVertices,
+                     traverser.getPrevisited());
     }
 
     /** Build up a list of vertices traversed.*/
