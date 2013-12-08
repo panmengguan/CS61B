@@ -10,7 +10,7 @@ class StackFringe<Vertex> implements Fringe<Vertex> {
     private Stack<Vertex> stack;
 
     /** Construct a new stack fringe.*/
-    public StackFringe() {
+    StackFringe() {
         stack = new Stack<Vertex>();
     }
 
@@ -27,5 +27,15 @@ class StackFringe<Vertex> implements Fringe<Vertex> {
     @Override
     public boolean isEmpty() {
         return stack.empty();
+    }
+
+    @Override
+    public void empty() {
+        stack.clear();
+    }
+
+    @Override
+    public String toString() {
+        return stack.toString();
     }
 }

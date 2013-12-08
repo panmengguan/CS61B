@@ -12,4 +12,7 @@ interface Fringe<Vertex> {
 
     /** Returns if the fringe is empty.*/
     boolean isEmpty();
+
+    /** Empty our fringe.*/
+    void empty();
 }

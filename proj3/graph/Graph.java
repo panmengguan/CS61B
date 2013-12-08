@@ -2,12 +2,12 @@ package graph;
 
 import java.util.Comparator;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -125,7 +125,7 @@ public abstract class Graph<VLabel, ELabel> {
 
     /** Returns the number of edges in me. */
     public int edgeSize() {
-        Set<Edge> edges = new HashSet<Edge>();
+        Set<Edge> edges = new LinkedHashSet<Edge>();
 
         for (Map.Entry<Vertex, Map<Vertex, Set<Edge>>> entry: matrix.entrySet())
         {
@@ -209,16 +209,16 @@ public abstract class Graph<VLabel, ELabel> {
         for (Map.Entry<Vertex, Map<Vertex, Set<Edge>>> entry: matrix.entrySet())
         {
             Map<Vertex, Set<Edge>> edgeMap = entry.getValue();
-            edgeMap.put(vertex, new HashSet<Edge>());
+            edgeMap.put(vertex, new LinkedHashSet<Edge>());
         }
 
-        Map<Vertex, Set<Edge>> edgeSetMap = new HashMap<Vertex, Set<Edge>>();
+        Map<Vertex, Set<Edge>> edgeSetMap = new LinkedHashMap<Vertex, Set<Edge>>();
 
         for (Vertex v: matrix.keySet()) {
-            edgeSetMap.put(v, new HashSet<Edge>());
+            edgeSetMap.put(v, new LinkedHashSet<Edge>());
         }
 
-        edgeSetMap.put(vertex, new HashSet<Edge>());
+        edgeSetMap.put(vertex, new LinkedHashSet<Edge>());
         matrix.put(vertex, edgeSetMap);
         return vertex;
     }
@@ -322,7 +322,7 @@ public abstract class Graph<VLabel, ELabel> {
 
     /** Returns an Iterator over all vertices in arbitrary order. */
     public Iteration<Vertex> vertices() {
-        Set<Vertex> vertices = new HashSet<Vertex>();
+        Set<Vertex> vertices = new LinkedHashSet<Vertex>();
 
         for (Vertex vertex: matrix.keySet()) {
             vertices.add(vertex);
@@ -333,19 +333,12 @@ public abstract class Graph<VLabel, ELabel> {
 
     /** Returns an iterator over all successors of V. */
     public Iteration<Vertex> successors(Vertex v) {
-        Set<Edge> outEdges = new HashSet<Edge>(createCollection(outEdges(v)));
-        Set<Vertex> vertices = new HashSet<Vertex>();
+        Set<Edge> outEdges =
+            new LinkedHashSet<Edge>(createCollection(outEdges(v)));
+        Set<Vertex> vertices = new LinkedHashSet<Vertex>();
 
         for (Edge e: outEdges) {
-            if (!isDirected()) {
-                if (e.getV0().equals(v)) {
-                    vertices.add(e.getV1());
-                } else {
-                    vertices.add(e.getV0());
-                }
-            } else {
-                vertices.add(e.getV1());
-            }
+            vertices.add(e.getV(v));
         }
 
         return Iteration.iteration(vertices.iterator());
@@ -353,19 +346,12 @@ public abstract class Graph<VLabel, ELabel> {
 
     /** Returns an iterator over all predecessors of V. */
     public Iteration<Vertex> predecessors(Vertex v) {
-        Set<Edge> inEdges = new HashSet<Edge>(createCollection(inEdges(v)));
-        Set<Vertex> vertices = new HashSet<Vertex>();
+        Set<Edge> inEdges =
+            new LinkedHashSet<Edge>(createCollection(inEdges(v)));
+        Set<Vertex> vertices = new LinkedHashSet<Vertex>();
 
         for (Edge e: inEdges) {
-            if (!isDirected()) {
-                if (e.getV0().equals(v)) {
-                    vertices.add(e.getV1());
-                } else {
-                    vertices.add(e.getV0());
-                }
-            } else {
-                vertices.add(e.getV0());
-            }
+            vertices.add(e.getV(v));
         }
 
         return Iteration.iteration(vertices.iterator());
@@ -379,13 +365,13 @@ public abstract class Graph<VLabel, ELabel> {
 
     /** Returns an iterator over all edges in me. */
     public Iteration<Edge> edges() {
-        Set<Edge> inEdges = new HashSet<Edge>();
+        Set<Edge> inEdges = new LinkedHashSet<Edge>();
 
         for (Vertex vertex: matrix.keySet()) {
             inEdges.addAll(createCollection(inEdges(vertex)));
         }
 
-        Set<Edge> outEdges = new HashSet<Edge>();
+        Set<Edge> outEdges = new LinkedHashSet<Edge>();
 
         for (Vertex vertex: matrix.keySet()) {
             outEdges.addAll(createCollection(outEdges(vertex)));
@@ -409,7 +395,7 @@ public abstract class Graph<VLabel, ELabel> {
 
     /** Returns iterator over all outgoing edges from V. */
     public Iteration<Edge> outEdges(Vertex v) {
-        Set<Edge> edges = new HashSet<Edge>();
+        Set<Edge> edges = new LinkedHashSet<Edge>();
         Map<Vertex, Set<Edge>> edgeMap = matrix.get(v);
 
         for (Map.Entry<Vertex, Set<Edge>> entry: edgeMap.entrySet()) {
@@ -421,7 +407,7 @@ public abstract class Graph<VLabel, ELabel> {
 
     /** Returns iterator over all incoming edges to V. */
     public Iteration<Edge> inEdges(Vertex v) {
-        Set<Edge> edges = new HashSet<Edge>();
+        Set<Edge> edges = new LinkedHashSet<Edge>();
 
         for (Vertex vertex: matrix.keySet()) {
             Map<Vertex, Set<Edge>> edgeMap = matrix.get(vertex);
@@ -465,7 +451,7 @@ public abstract class Graph<VLabel, ELabel> {
     /** Class representing a vertices coming to.*/
     /** Matrix of which node has an edge to another node.*/
     private Map<Vertex, Map<Vertex, Set<Edge>>> matrix =
-        new HashMap<Vertex, Map<Vertex, Set<Edge>>>();
+        new LinkedHashMap<Vertex, Map<Vertex, Set<Edge>>>();
 
     /** Comparator for the edges.*/
     private Comparator<ELabel> comparator;

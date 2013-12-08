@@ -11,7 +11,7 @@ class QueueFringe<Vertex> implements Fringe<Vertex> {
     private Queue<Vertex> queue;
 
     /** Construct a new stack fringe.*/
-    public QueueFringe() {
+    QueueFringe() {
          queue = new LinkedList<Vertex>();
     }
 
@@ -28,5 +28,15 @@ class QueueFringe<Vertex> implements Fringe<Vertex> {
     @Override
     public boolean isEmpty() {
         return queue.isEmpty();
+    }
+
+    @Override
+    public void empty() {
+        queue.clear();
+    }
+
+    @Override
+    public String toString() {
+        return queue.toString();
     }
 }

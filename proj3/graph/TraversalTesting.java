@@ -21,7 +21,7 @@ public class TraversalTesting {
         Graph<String, String>.Vertex C = g.add("C");
         Graph<String, String>.Vertex D = g.add("D");
         Graph<String, String>.Vertex E = g.add("E");
-        Graph<String, String>.Vertex G = g.add("G");
+        Graph<String, String>.Vertex F = g.add("F");
 
         g.add(A, B);
         g.add(A, C);
@@ -38,20 +38,21 @@ public class TraversalTesting {
         allVertices.add(C);
         allVertices.add(D);
         allVertices.add(B);
-        allVertices.add(C);
-        allVertices.add(D);
-        allVertices.add(E);
-        allVertices.add(F);
-        allVertices.add(A);
         allVertices.add(B);
         allVertices.add(C);
         allVertices.add(E);
+        allVertices.add(E);
+        allVertices.add(D);
+        allVertices.add(D);
+        allVertices.add(F);
+        allVertices.add(F);
         allVertices.add(F);
         allVertices.add(D);
         allVertices.add(E);
-        allVertices.add(F);
+        allVertices.add(C);
+        allVertices.add(A);
 
-        ListTraversal<String, String> traverser = new ListTraversal();
+        ListTraversal traverser = new ListTraversal();
         traverser.depthFirstTraverse(g, A);
 
         assertEquals("incorrect traversal", allVertices,
@@ -66,12 +67,12 @@ public class TraversalTesting {
         Graph<String, String>.Vertex C = g.add("C");
         Graph<String, String>.Vertex D = g.add("D");
         Graph<String, String>.Vertex E = g.add("E");
-        Graph<String, String>.Vertex G = g.add("G");
+        Graph<String, String>.Vertex F = g.add("F");
 
         g.add(A, B);
         g.add(A, C);
-        g.add(A, D);
         g.add(C, E);
+        g.add(A, D);
         g.add(D, E);
         g.add(D, F);
 
@@ -82,9 +83,10 @@ public class TraversalTesting {
         preVertices.add(C);
         preVertices.add(D);
         preVertices.add(E);
+        preVertices.add(D);
         preVertices.add(F);
 
-        ListTraversal<String, String> traverser = new ListTraversal();
+        ListTraversal traverser = new ListTraversal();
         traverser.depthFirstTraverse(g, A);
 
         assertEquals("previsit vertices incorrect", preVertices,
@@ -99,12 +101,12 @@ public class TraversalTesting {
         Graph<String, String>.Vertex C = g.add("C");
         Graph<String, String>.Vertex D = g.add("D");
         Graph<String, String>.Vertex E = g.add("E");
-        Graph<String, String>.Vertex G = g.add("G");
+        Graph<String, String>.Vertex F = g.add("F");
 
         g.add(A, B);
         g.add(A, C);
-        g.add(A, D);
         g.add(C, E);
+        g.add(A, D);
         g.add(D, E);
         g.add(D, F);
 
@@ -114,11 +116,11 @@ public class TraversalTesting {
         vertices.add(A);
         vertices.add(B);
         vertices.add(C);
-        vertices.add(D);
         vertices.add(E);
+        vertices.add(D);
         vertices.add(F);
 
-        ListTraversal<String, String> traverser = new ListTraversal();
+        ListTraversal traverser = new ListTraversal();
         traverser.depthFirstTraverse(g, A);
 
         assertEquals("visit vertices incorrect", vertices,
@@ -133,7 +135,7 @@ public class TraversalTesting {
         Graph<String, String>.Vertex C = g.add("C");
         Graph<String, String>.Vertex D = g.add("D");
         Graph<String, String>.Vertex E = g.add("E");
-        Graph<String, String>.Vertex G = g.add("G");
+        Graph<String, String>.Vertex F = g.add("F");
 
         g.add(A, B);
         g.add(A, C);
@@ -145,12 +147,18 @@ public class TraversalTesting {
         List<Graph<String, String>.Vertex> postVertices =
             new ArrayList<Graph<String, String>.Vertex>();
 
-        postVertices.add(A);
         postVertices.add(B);
-        postVertices.add(C);
+        postVertices.add(F);
         postVertices.add(D);
         postVertices.add(E);
-        postVertices.add(F);
+        postVertices.add(C);
+        postVertices.add(A);
+
+        ListTraversal traverser = new ListTraversal();
+        traverser.depthFirstTraverse(g, A);
+
+        assertEquals("visit vertices incorrect", postVertices,
+                     traverser.getPostvisited());
     }
 
     @Test
@@ -191,8 +199,11 @@ public class TraversalTesting {
         allVertices.add(E);
         allVertices.add(F);
 
+        ListTraversal traverser = new ListTraversal();
+        traverser.breadthFirstTraverse(g, A);
+
         assertEquals("incorrect BFS visit", allVertices,
-                     traverser.getVertices());
+                     traverser.getAllVertices());
     }
 
     @Test
@@ -222,7 +233,7 @@ public class TraversalTesting {
         vertices.add(E);
         vertices.add(F);
 
-        ListTraversal<String, String> traverser = new ListTraversal();
+        ListTraversal traverser = new ListTraversal();
         traverser.breadthFirstTraverse(g, A);
 
         assertEquals("incorrect BFS visit", vertices,
@@ -255,7 +266,7 @@ public class TraversalTesting {
         preVertices.add(E);
         preVertices.add(F);
 
-        ListTraversal<String, String> traverser = new ListTraversal();
+        ListTraversal traverser = new ListTraversal();
         traverser.breadthFirstTraverse(g, A);
 
         assertEquals("incorrect BFS visit", preVertices,
@@ -289,7 +300,7 @@ public class TraversalTesting {
         postVertices.add(E);
         postVertices.add(F);
 
-        ListTraversal<String, String> traverser = new ListTraversal();
+        ListTraversal traverser = new ListTraversal();
         traverser.breadthFirstTraverse(g, A);
 
         assertEquals("incorrect BFS visit", postVertices,
@@ -314,6 +325,9 @@ public class TraversalTesting {
         /** Construct a list traversal object.*/
         ListTraversal() {
             vertices = new ArrayList<Graph<String, String>.Vertex>();
+            preVertices = new ArrayList<Graph<String, String>.Vertex>();
+            postVertices = new ArrayList<Graph<String, String>.Vertex>();
+            allVertices = new ArrayList<Graph<String, String>.Vertex>();
         }
 
         /** Returns a list of vertices traversed.*/
@@ -343,14 +357,19 @@ public class TraversalTesting {
         }
 
         @Override
-        protected void preVisit(Graph<VLabel, ELabel>.Edge e,
-                                Graph<VLabel, ELabel>.Vertex v0) {
-            preVertices.add(v0);
-            allVertices.add(v0);
+        protected void preVisit(Graph<String, String>.Edge e,
+                                Graph<String, String>.Vertex v0) {
+            if (e.getV0().equals(v0)) {
+                preVertices.add(e.getV1());
+                allVertices.add(e.getV1());
+            } else {
+                preVertices.add(e.getV0());
+                allVertices.add(e.getV0());
+            }
         }
 
         @Override
-        protected void postVisit(Graph<VLabel, ELabel>.Vertex v) {
+        protected void postVisit(Graph<String, String>.Vertex v) {
             postVertices.add(v);
             allVertices.add(v);
         }
