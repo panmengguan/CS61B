@@ -2,7 +2,7 @@ package graph;
 
 import java.util.Stack;
 
-/** A fringe backed by a stack
+/** A fringe backed by a stack.
  * @author Kiet Lam */
 class StackFringe<Vertex> implements Fringe<Vertex> {
 

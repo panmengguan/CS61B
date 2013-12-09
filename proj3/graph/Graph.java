@@ -212,7 +212,8 @@ public abstract class Graph<VLabel, ELabel> {
             edgeMap.put(vertex, new LinkedHashSet<Edge>());
         }
 
-        Map<Vertex, Set<Edge>> edgeSetMap = new LinkedHashMap<Vertex, Set<Edge>>();
+        Map<Vertex, Set<Edge>> edgeSetMap =
+            new LinkedHashMap<Vertex, Set<Edge>>();
 
         for (Vertex v: matrix.keySet()) {
             edgeSetMap.put(v, new LinkedHashSet<Edge>());

@@ -20,6 +20,7 @@ public class Testing {
         textui.runClasses(graph.UndirectedGraphTesting.class);
         textui.runClasses(graph.DirectedGraphTesting.class);
         textui.runClasses(graph.TraversalTesting.class);
+        textui.runClasses(graph.GraphsTesting.class);
     }
 
     @Test

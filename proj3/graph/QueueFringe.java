@@ -3,7 +3,7 @@ package graph;
 import java.util.LinkedList;
 import java.util.Queue;
 
-/** A fringe backed by a queue
+/** A fringe backed by a queue.
  * @author Kiet Lam */
 class QueueFringe<Vertex> implements Fringe<Vertex> {
 
@@ -12,7 +12,7 @@ class QueueFringe<Vertex> implements Fringe<Vertex> {
 
     /** Construct a new stack fringe.*/
     QueueFringe() {
-         queue = new LinkedList<Vertex>();
+        queue = new LinkedList<Vertex>();
     }
 
     @Override

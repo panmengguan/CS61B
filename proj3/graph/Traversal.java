@@ -45,7 +45,7 @@ public class Traversal<VLabel, ELabel> {
                          Graph<VLabel, ELabel>.Vertex v,
                          Comparator<VLabel> order) {
         Fringe<Graph<VLabel, ELabel>.Vertex> fringe =
-            new PriorityQueueFringe<VLabel, ELabel>(order);
+            new VertexPriorityQueueFringe<VLabel, ELabel>(order);
         fringe.push(v);
         universalTraverse(G, fringe, null, null);
     }
