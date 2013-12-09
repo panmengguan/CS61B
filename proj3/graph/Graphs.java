@@ -35,10 +35,10 @@ public final class Graphs {
      *  Double.POSITIVE_INFINITY. */
     public static <VLabel, ELabel> List<Graph<VLabel, ELabel>.Edge>
     shortestPath(Graph<VLabel, ELabel> G, Graph<VLabel, ELabel>.Vertex V0,
-                     Graph<VLabel, ELabel>.Vertex V1,
-                     Distancer<? super VLabel> h,
-                     Weighter<? super VLabel> vweighter,
-                     Weighting<? super ELabel> eweighter) {
+                 Graph<VLabel, ELabel>.Vertex V1,
+                 Distancer<? super VLabel> h,
+                 Weighter<? super VLabel> vweighter,
+                 Weighting<? super ELabel> eweighter) {
         Set<Graph<VLabel, ELabel>.Vertex> closed =
             new HashSet<Graph<VLabel, ELabel>.Vertex>();
         Comparator<VertexCost<VLabel, ELabel>> comparator = getComparator();
@@ -84,6 +84,7 @@ public final class Graphs {
                     || totalCost < totalCostMap.get(child)) {
                     from.put(child, vertex);
                     costMap.put(child, backwardCost);
+                    vweighter.setWeight(child.getLabel(), backwardCost);
                     totalCostMap.put(child, totalCost);
 
                     fringe.push(new VertexCost<VLabel, ELabel>(child,
@@ -124,7 +125,8 @@ public final class Graphs {
     /** Returns the path given a map FROM and the CURRENT vertex
      *  in a Graph made up of VLABEL vertices
      *  and ELABEL edges.*/
-    private static <VLabel, ELabel> List<Graph<VLabel, ELabel>.Vertex>
+    private static <VLabel, ELabel>
+    List<Graph<VLabel, ELabel>.Vertex>
     buildPath(Map<Graph<VLabel, ELabel>.Vertex,
               Graph<VLabel, ELabel>.Vertex> from,
               Graph<VLabel, ELabel>.Vertex current) {
@@ -139,6 +141,32 @@ public final class Graphs {
             ls.add(current);
             return ls;
         }
+    }
+
+    /** Returns the edges from a list of PATH given GRAPH,
+     *  BEGIN and EWEIGHTER in a Graph made up of VLABEL vertices
+     *  and ELABEL weighted edges.*/
+    private static <VLabel, ELabel extends Weighted>
+    List<Graph<VLabel, ELabel>.Edge>
+    buildWeightedEdges(Graph<VLabel, ELabel> graph,
+               List<Graph<VLabel, ELabel>.Vertex> path,
+               Graph<VLabel, ELabel>.Vertex begin) {
+
+        List<Graph<VLabel, ELabel>.Edge> edges =
+            new ArrayList<Graph<VLabel, ELabel>.Edge>();
+
+        Graph<VLabel, ELabel>.Vertex current = begin;
+
+        for (Graph<VLabel, ELabel>.Vertex v: path) {
+            Graph<VLabel, ELabel>.Edge lowestE =
+                getMinWeightedEdge(graph, current, v);
+            edges.add(lowestE);
+            current = v;
+        }
+
+        edges.removeAll(Collections.singleton(null));
+
+        return edges;
     }
 
     /** Returns the minimum edge to connect V0 to V1 in a GRAPH
@@ -157,6 +185,31 @@ public final class Graphs {
             }
 
             double cost = eweighter.weight(e.getLabel());
+
+            if (cost < lowestCost) {
+                lowestE = e;
+                lowestCost = cost;
+            }
+        }
+
+        return lowestE;
+    }
+
+    /** Returns the minimum edge to connect V0 to V1 in a GRAPH
+     *  made up of VLABEL vertices and ELABEL edges using an EWEIGHTER.*/
+    private static <VLabel, ELabel extends Weighted> Graph<VLabel, ELabel>.Edge
+    getMinWeightedEdge(Graph<VLabel, ELabel> graph,
+                           Graph<VLabel, ELabel>.Vertex v0,
+                           Graph<VLabel, ELabel>.Vertex v1) {
+        Graph<VLabel, ELabel>.Edge lowestE = null;
+        double lowestCost = Double.POSITIVE_INFINITY;
+
+        for (Graph<VLabel, ELabel>.Edge e: graph.inEdges(v1)) {
+            if (!e.getV(v1).equals(v0)) {
+                continue;
+            }
+
+            double cost = e.getLabel().weight();
 
             if (cost < lowestCost) {
                 lowestE = e;
@@ -195,6 +248,59 @@ public final class Graphs {
                  Graph<VLabel, ELabel>.Vertex V0,
                  Graph<VLabel, ELabel>.Vertex V1,
                  Distancer<? super VLabel> h) {
+        Set<Graph<VLabel, ELabel>.Vertex> closed =
+            new HashSet<Graph<VLabel, ELabel>.Vertex>();
+        Comparator<VertexCost<VLabel, ELabel>> comparator = getComparator();
+        Fringe<VertexCost<VLabel, ELabel>> fringe
+            = new PriorityQueueFringe<VertexCost<VLabel,
+            ELabel>>(comparator);
+        fringe.push(new VertexCost<VLabel, ELabel>(V0, 0.0));
+        Map<Graph<VLabel, ELabel>.Vertex, Graph<VLabel, ELabel>.Vertex> from =
+            new HashMap<Graph<VLabel, ELabel>.Vertex, Graph<VLabel,
+            ELabel>.Vertex>();
+
+        Map<Graph<VLabel, ELabel>.Vertex, Double> costMap
+            = new HashMap<Graph<VLabel, ELabel>.Vertex, Double>();
+        costMap.put(V0, 0.0);
+
+        Map<Graph<VLabel, ELabel>.Vertex, Double> totalCostMap
+            = new HashMap<Graph<VLabel, ELabel>.Vertex, Double>();
+
+        totalCostMap.put(V0, costMap.get(V0) + h.dist(V0.getLabel(),
+                                                      V1.getLabel()));
+        while (!fringe.isEmpty()) {
+            VertexCost<VLabel, ELabel> vc = fringe.pop();
+            Graph<VLabel, ELabel>.Vertex vertex = vc.getVertex();
+
+            if (vertex.equals(V1)) {
+                return buildWeightedEdges(G, buildPath(from, V1), V0);
+            }
+
+            closed.add(vertex);
+
+            for (Graph<VLabel, ELabel>.Edge e: G.outEdges(vertex)) {
+                Graph<VLabel, ELabel>.Vertex child = e.getV(vertex);
+                double backwardCost = costMap.get(vertex)
+                    + e.getLabel().weight();
+                double totalCost = backwardCost
+                    + h.dist(e.getV(vertex).getLabel(), V1.getLabel());
+
+                if (closed.contains(e.getV(vertex))) {
+                    continue;
+                }
+
+                if (!totalCostMap.containsKey(child)
+                    || totalCost < totalCostMap.get(child)) {
+                    from.put(child, vertex);
+                    costMap.put(child, backwardCost);
+                    child.getLabel().setWeight(backwardCost);
+                    totalCostMap.put(child, totalCost);
+
+                    fringe.push(new VertexCost<VLabel, ELabel>(child,
+                                                               totalCost));
+                }
+            }
+        }
 
         return null;
     }
