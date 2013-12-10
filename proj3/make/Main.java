@@ -217,7 +217,7 @@ public final class Main {
 
                     currentRule = new Rule(name, dependencies);
                     currentCommands = new ArrayList<String>();
-                } else if (line.matches("^\\s*.*") && currentRule != null) {
+                } else if (line.matches("^[ \\t].*") && currentRule != null) {
                     currentCommands.add(line);
                 } else {
                     reportErrorExit("Invalid syntax");

@@ -1,9 +1,8 @@
 A: B
-Make A
+    Make A
 B: C
-Make B
+    Make B
 C:
-Make C
-
+    Make C
 B:
-Make B2x
+    Make B2
