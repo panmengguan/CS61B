@@ -125,8 +125,13 @@ public final class Main {
 
         int currentTime = 0;
         try {
+            try {
             currentTime = Integer.parseInt(reader.readLine().replaceAll("\\s+",
                                                                         ""));
+            } catch (NumberFormatException e) {
+                reportErrorExit("Fileinfo missing current time!");
+            }
+
             Map<String, Integer> nameDateMap = createNameDateMap(reader);
             List<Rule> rules = parseRules(makefileName);
 
@@ -141,9 +146,7 @@ public final class Main {
             }
 
         } catch (IOException e) {
-            reportError("Failed to read from file");
-        } catch (NumberFormatException e) {
-            reportError("Invalid syntax");
+            reportErrorExit("Failed to read from file");
         }
     }
 
@@ -180,7 +183,7 @@ public final class Main {
         try {
             iStream = new FileInputStream(filename);
         } catch (FileNotFoundException e) {
-            reportError("Make file not found");
+            reportErrorExit("Make file not found");
             return rules;
         }
         BufferedReader reader = new BufferedReader(new
@@ -247,11 +250,11 @@ public final class Main {
                 map.put(strs[0], Integer.parseInt(strs[1]));
             }
         } catch (NoSuchElementException e) {
-            reportError("Invalid line");
+            reportErrorExit("Invalid line");
         } catch (NumberFormatException e) {
-            reportError("Cannot read number");
+            reportErrorExit("Invalid syntax");
         } catch (IOException e) {
-            reportError("Cannot read file");
+            reportErrorExit("Cannot read file");
         }
 
         return map;
