@@ -399,8 +399,12 @@ public abstract class Graph<VLabel, ELabel> {
         Set<Edge> edges = new LinkedHashSet<Edge>();
         Map<Vertex, Set<Edge>> edgeMap = matrix.get(v);
 
-        for (Map.Entry<Vertex, Set<Edge>> entry: edgeMap.entrySet()) {
-            edges.addAll(entry.getValue());
+        if (edgeMap != null) {
+            Set<Map.Entry<Vertex, Set<Edge>>> entries = edgeMap.entrySet();
+
+            for (Map.Entry<Vertex, Set<Edge>> entry: entries) {
+                edges.addAll(entry.getValue());
+            }
         }
 
         return Iteration.iteration(edges.iterator());

@@ -34,7 +34,8 @@ public final class Graphs {
      *  all reachable nodes.  The distance to a node unreachable from V0 is
      *  Double.POSITIVE_INFINITY. */
     public static <VLabel, ELabel> List<Graph<VLabel, ELabel>.Edge>
-    shortestPath(Graph<VLabel, ELabel> G, Graph<VLabel, ELabel>.Vertex V0,
+    shortestPath(Graph<VLabel, ELabel> G,
+                 Graph<VLabel, ELabel>.Vertex V0,
                  Graph<VLabel, ELabel>.Vertex V1,
                  Distancer<? super VLabel> h,
                  Weighter<? super VLabel> vweighter,

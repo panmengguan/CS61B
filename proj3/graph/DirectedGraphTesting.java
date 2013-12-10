@@ -242,6 +242,7 @@ public class DirectedGraphTesting {
         Graph<String, String>.Vertex F = g.add("F");
 
         g.add(A, B, "A-B");
+        g.add(B, A, "B-A");
         g.add(B, C, "B-C");
         g.add(C, C, "C-C");
         g.add(C, B, "C-B");
@@ -259,6 +260,8 @@ public class DirectedGraphTesting {
 
         assertFalse("Graph does not contain edge from A to B",
                     g.contains(A, B));
+        assertFalse("Graph does not contain edge from B to A",
+                    g.contains(B, A));
         assertFalse("Graph does not contain edge from A to D",
                     g.contains(A, D));
 

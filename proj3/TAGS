@@ -1,0 +1,411 @@
+
+graph/DirectedGraph.java,223
+package graph;graph1,0
+public class DirectedGraph<VLabel, ELabel> extends Graph<VLabel, ELabel> {DirectedGraph11,339
+    public DirectedGraph() {DirectedGraph14,442
+    public boolean isDirected() {isDirected18,492
+
+graph/DirectedGraphTesting.java,1386
+package graph;graph1,0
+public class DirectedGraphTesting {DirectedGraphTesting14,233
+    public void emptyGraph() {emptyGraph17,280
+    public void testGraphNumVertices() {testGraphNumVertices24,536
+    public void testGraphNumEdges() {testGraphNumEdges32,778
+    public void testGraphMultipleEdges() {testGraphMultipleEdges41,1110
+    public void testGraphDuplicatedEdges() {testGraphDuplicatedEdges55,1587
+    public void testSelfLoop() {testSelfLoop65,1958
+    public void testOutDegree() {testOutDegree76,2311
+    public void testInDegree() {testInDegree105,3419
+    public void testNotContain() {testNotContain135,4586
+    public void testContains() {testContains164,5688
+    public void testContainsEdgeLabel() {testContainsEdgeLabel194,6818
+    public void testRemoveVertex() {testRemoveVertex234,8748
+    public void testRemoveEdge() {testRemoveEdge269,9920
+    public void testRemoveVertices() {testRemoveVertices301,11266
+    public void testVerticesIteration() {testVerticesIteration337,12724
+    public void testSuccessors() {testSuccessors385,14137
+    public void testPredecessors() {testPredecessors434,15732
+    public void testOutEdge() {testOutEdge492,17658
+    public void testInEdges() {testInEdges531,19148
+    public void testAllEdges() {testAllEdges574,20795
+    public void testOrderEdges() {testOrderEdges616,22340
+
+graph/Distancer.java,123
+package graph;graph1,0
+public interface Distancer<Type> {Distancer7,151
+    double dist(Type v0, Type v1);dist10,234
+
+graph/Fringe.java,183
+package graph;graph1,0
+interface Fringe<V> {Fringe5,77
+    void push(V v);push8,134
+    V pop();pop11,207
+    boolean isEmpty();isEmpty14,263
+    void empty();empty17,315
+
+graph/Graph.java,2907
+package graph;graph1,0
+public abstract class Graph<VLabel, ELabel> {Graph40,1635
+    public class Vertex {Vertex43,1724
+        Vertex(VLabel label) {Vertex46,1818
+        public VLabel getLabel() {getLabel51,1937
+        public String toString() {toString56,2028
+        private final VLabel _label;_label61,2158
+    public class Edge {Edge66,2242
+        Edge(Vertex v0, Vertex v1, ELabel label) {Edge70,2388
+        public ELabel getLabel() {getLabel77,2569
+        public Vertex getV0() {getV083,2766
+        public Vertex getV1() {getV189,2970
+        public final Vertex getV(Vertex v) {getV94,3103
+        public String toString() {toString106,3434
+        private final Vertex _v0, _v1;_v0112,3653
+        private final Vertex _v0, _v1;_v1112,3653
+        private final ELabel _label;_label115,3732
+    public int vertexSize() {vertexSize122,3879
+    public int edgeSize() {edgeSize127,4001
+    public abstract boolean isDirected();isDirected142,4444
+    public int outDegree(Vertex v) {outDegree146,4592
+    public int inDegree(Vertex v) {inDegree158,4937
+    public final int degree(Vertex v) {degree165,5178
+    public boolean contains(Vertex u, Vertex v) {contains170,5328
+    public boolean contains(Vertex u, Vertex v,contains183,5666
+    public Vertex add(VLabel label) {add206,6226
+    public Edge add(Vertex from, Vertex to, ELabel label) {add230,7052
+    private Edge addEdge(Vertex from, Vertex to, ELabel label) {addEdge249,7489
+    private void addEdge(Vertex from, Vertex to, Edge edge) {addEdge256,7716
+    public Edge add(Vertex from,add263,8009
+    public void remove(Vertex v) {remove269,8174
+    public void remove(Edge e) {remove284,8617
+    private void remove(Vertex from, Vertex to, Edge edge) {remove293,8831
+    private void removeEdges(Vertex from, Vertex to) {removeEdges304,9216
+    public void remove(Vertex v1, Vertex v2) {remove316,9667
+    public Iteration<Vertex> vertices() {vertices325,9892
+    public Iteration<Vertex> successors(Vertex v) {successors336,10208
+    public Iteration<Vertex> predecessors(Vertex v) {predecessors349,10622
+    public final Iteration<Vertex> neighbors(Vertex v) {neighbors363,11074
+    public Iteration<Edge> edges() {edges368,11221
+    public Iteration<Edge> outEdges(Vertex v) {outEdges398,12147
+    public Iteration<Edge> inEdges(Vertex v) {inEdges410,12550
+    public final Iteration<Edge> edges(Vertex v) {edges426,13033
+    public static <T extends Comparable<? super T>> Comparator<T> naturalOrder()naturalOrder434,13341
+    public void orderEdges(Comparator<ELabel> comp) {orderEdges448,13815
+    private Map<Vertex, Map<Vertex, Set<Edge>>> matrix =matrix454,14014
+    private Comparator<ELabel> comparator;comparator458,14169
+    private static <T> Collection<T> createCollection(Iterable<T> iterable) {createCollection461,14262
+
+graph/Graphs.java,1095
+package graph;graph1,0
+public final class Graphs {Graphs15,279
+    shortestPath(Graph<VLabel, ELabel> G, Graph<VLabel, ELabel>.Vertex V0,shortestPath37,1453
+    buildEdges(Graph<VLabel, ELabel> graph,buildEdges103,4305
+    buildPath(Map<Graph<VLabel, ELabel>.Vertex,buildPath130,5199
+    buildWeightedEdges(Graph<VLabel, ELabel> graph,buildWeightedEdges151,6001
+    getMinEdge(Graph<VLabel, ELabel> graph,getMinEdge175,6835
+    getMinWeightedEdge(Graph<VLabel, ELabel> graph,getMinWeightedEdge201,7722
+    shortestPath(Graph<VLabel, ELabel> G,shortestPath247,9714
+    public static final Distancer<Object> ZERO_DISTANCER =ZERO_DISTANCER309,12298
+    getComparator() {getComparator320,12701
+    private static class VertexCost<VLabel, ELabel> {VertexCost332,13087
+        private double _cost;_cost338,13273
+        VertexCost(Graph<VLabel, ELabel>.Vertex vertex, double cost) {VertexCost341,13380
+        Graph<VLabel, ELabel>.Vertex getVertex() {getVertex347,13552
+        double getCost() {getCost352,13674
+        public String toString() {toString357,13756
+
+graph/GraphsTesting.java,954
+package graph;graph1,0
+public class GraphsTesting {GraphsTesting14,222
+    public void testAStar() {testAStar17,262
+    public void testAStarUnreachable() {testAStarUnreachable79,2579
+    public void testAStarWeighted() {testAStarWeighted131,4500
+    public void testAStarSideEffect() {testAStarSideEffect190,7216
+    private static class WeightedString implements Weightable, Weighted {WeightedString245,10072
+        private double _weight;_weight247,10147
+        private String _str;_str249,10180
+        WeightedString(String str, double weight) {WeightedString251,10210
+        public String getString() {getString256,10328
+        public String toString() {toString261,10418
+        public void setWeight(double w) {setWeight266,10507
+        public double weight() {weight271,10603
+    private Map<String, Double> edgeWeights() {edgeWeights276,10681
+    private Map<String, Double> heuristic() {heuristic293,11113
+
+graph/Iteration.java,658
+package graph;graph1,0
+public abstract class Iteration<Type>Iteration13,368
+    public Iterator<Type> iterator() {iterator17,469
+    public void remove() {remove22,550
+    private static class SimpleIteration<Type> extends Iteration<Type> {SimpleIteration27,738
+        SimpleIteration(Iterator<Type> iter) {SimpleIteration29,848
+        public boolean hasNext() {hasNext34,950
+        public Type next() {next39,1050
+        private Iterator<Type> _iter;_iter44,1181
+    static <Type> Iteration<Type> iteration(Iterator<Type> it) {iteration48,1286
+    static <Type> Iteration<Type> iteration(Iterable<Type> iterable) {iteration53,1466
+
+graph/Makefile,309
+STYLEPROG = style61bSTYLEPROG19,826
+SRCS := $(wildcard *.java)SRCS22,867
+TESTING_SRCS = Testing.java TESTING_SRCS25,914
+JFLAGS = -g -Xlint:unchecked -Xlint:deprecation \JFLAGS29,1040
+CLASSES = $(SRCS:.java=.class)CLASSES32,1134
+TESTING_CLASSES = $(TESTING_SRCS:.java=.class)TESTING_CLASSES33,1165
+
+graph/NoLabel.java,62
+package graph;graph1,0
+public class NoLabel {NoLabel8,163
+
+graph/PriorityQueueFringe.java,573
+package graph;graph1,0
+class PriorityQueueFringe<V> implements Fringe<V> {PriorityQueueFringe8,174
+    private PriorityQueue<V> pQueue;pQueue11,272
+    private Comparator<V> comparator;comparator14,364
+    private static final int INITIAL_CAPACITY = 100;INITIAL_CAPACITY17,458
+    PriorityQueueFringe(final Comparator<V> comp) {PriorityQueueFringe20,565
+    public void push(V v) {push32,892
+    public V pop() {pop37,964
+    public boolean isEmpty() {isEmpty42,1038
+    public void empty() {empty47,1123
+    public String toString() {toString52,1194
+
+graph/QueueFringe.java,396
+package graph;graph1,0
+class QueueFringe<Vertex> implements Fringe<Vertex> {QueueFringe8,125
+    private Queue<Vertex> queue;queue11,209
+    QueueFringe() {QueueFringe14,283
+    public void push(Vertex v) {push19,366
+    public Vertex pop() {pop24,442
+    public boolean isEmpty() {isEmpty29,520
+    public void empty() {empty34,604
+    public String toString() {toString39,674
+
+graph/RejectException.java,221
+package graph;graph1,0
+public class RejectException extends RuntimeException {RejectException7,163
+    public RejectException() {RejectException10,266
+    public RejectException(String msg) {RejectException14,358
+
+graph/StackFringe.java,395
+package graph;graph1,0
+class StackFringe<Vertex> implements Fringe<Vertex> {StackFringe7,96
+    private Stack<Vertex> stack;stack10,180
+    StackFringe() {StackFringe13,254
+    public void push(Vertex v) {push18,332
+    public Vertex pop() {pop23,409
+    public boolean isEmpty() {isEmpty28,484
+    public void empty() {empty33,566
+    public String toString() {toString38,636
+
+graph/StopException.java,209
+package graph;graph1,0
+public class StopException extends RuntimeException {StopException7,134
+    public StopException() {StopException10,233
+    public StopException(String msg) {StopException14,321
+
+graph/Testing.java,172
+package graph;graph1,0
+public class Testing {Testing15,437
+    public static void main(String[] ignored) {main18,514
+    public void emptyGraph() {emptyGraph27,862
+
+graph/Traversal.java,1597
+package graph;graph1,0
+public class Traversal<VLabel, ELabel> {Traversal37,1784
+    public void traverse(Graph<VLabel, ELabel> G,traverse44,2141
+    public void depthFirstTraverse(Graph<VLabel, ELabel> G,depthFirstTraverse59,2874
+    public void breadthFirstTraverse(Graph<VLabel, ELabel> G,breadthFirstTraverse92,4272
+    public void continueTraversing(Graph<VLabel, ELabel>.Vertex v) {continueTraversing122,5461
+    public Graph<VLabel, ELabel>.Vertex finalVertex() {finalVertex136,5925
+    public Graph<VLabel, ELabel>.Edge finalEdge() {finalEdge143,6223
+    protected Graph<VLabel, ELabel> theGraph() {theGraph149,6434
+    protected void preVisit(Graph<VLabel, ELabel>.Edge e,preVisit158,6787
+    protected void visit(Graph<VLabel, ELabel>.Vertex v) {visit165,7149
+    protected void postVisit(Graph<VLabel, ELabel>.Vertex v) {postVisit173,7506
+    private void universalTraverse(Graph<VLabel, ELabel> g,universalTraverse179,7786
+    private void resetStates() {resetStates241,10151
+    protected Graph<VLabel, ELabel> _graph;_graph254,10598
+    private Set<Graph<VLabel, ELabel>.Vertex> _closed =_closed257,10693
+    private Set<Graph<VLabel, ELabel>.Vertex> _postVisited =_postVisited260,10857
+    private Fringe<Graph<VLabel, ELabel>.Vertex> _fringe;_fringe263,11001
+    private Fringe<Graph<VLabel, ELabel>.Vertex> _holder;_holder265,11107
+    private ChildrenHandler _handler;_handler267,11205
+    private abstract class ChildrenHandler {ChildrenHandler270,11319
+        abstract void handle(Graph<VLabel, ELabel>.Vertex parent,handle274,11478
+
+graph/TraversalTesting.java,1978
+package graph;graph1,0
+public class TraversalTesting {TraversalTesting13,210
+    public void testDFSAllVertices() {testDFSAllVertices16,253
+    public void testDFSPrevisit() {testDFSPrevisit62,1657
+    public void testDFSVisit() {testDFSVisit96,2729
+    public void testDFSPostVisit() {testDFSPostVisit130,3769
+    public void testBFSAllVertices() {testBFSAllVertices164,4848
+    public void testBFSVisit() {testBFSVisit209,6206
+    public void testBFSPrevisit() {testBFSPrevisit243,7223
+    public void testBFSPostvisit() {testBFSPostvisit276,8244
+    public void testStopException() {testStopException310,9304
+    public void testStopResume() {testStopResume351,10569
+    public void testRejectPrevisit() {testRejectPrevisit401,12041
+    public void testRejectSuccessors() {testRejectSuccessors446,13517
+    public void testCustomTraverse() {testCustomTraverse488,14790
+    private static class ListTraversal extends Traversal<String, String> {ListTraversal536,16298
+        private List<Graph<String, String>.Vertex> vertices;vertices539,16416
+        private List<Graph<String, String>.Vertex> preVertices;preVertices542,16521
+        private List<Graph<String, String>.Vertex> postVertices;postVertices545,16631
+        private List<Graph<String, String>.Vertex> allVertices;allVertices548,16774
+        ListTraversal() {ListTraversal551,16888
+        List<Graph<String, String>.Vertex> getVertices() {getVertices559,17267
+        List<Graph<String, String>.Vertex> getAllVertices() {getAllVertices564,17416
+        List<Graph<String, String>.Vertex> getPrevisited() {getPrevisited569,17575
+        List<Graph<String, String>.Vertex> getPostvisited() {getPostvisited574,17734
+        protected void visit(Graph<String, String>.Vertex v) {visit579,17858
+        protected void preVisit(Graph<String, String>.Edge e,preVisit585,18011
+        protected void postVisit(Graph<String, String>.Vertex v) {postVisit597,18420
+
+graph/UndirectedGraph.java,231
+package graph;graph1,0
+public class UndirectedGraph<VLabel, ELabel> extends Graph<VLabel, ELabel> {UndirectedGraph11,342
+    public UndirectedGraph() {UndirectedGraph14,447
+    public boolean isDirected() {isDirected18,499
+
+graph/UndirectedGraphTesting.java,1421
+package graph;graph1,0
+public class UndirectedGraphTesting {UndirectedGraphTesting14,235
+    public void emptyGraph() {emptyGraph17,284
+    public void testGraphNumVertices() {testGraphNumVertices24,542
+    public void testGraphNumEdges() {testGraphNumEdges32,786
+    public void testGraphMultipleEdges() {testGraphMultipleEdges41,1120
+    public void testGraphDuplicatedEdges() {testGraphDuplicatedEdges54,1598
+    public void testSelfLoop() {testSelfLoop64,1969
+    public void testDegree() {testDegree75,2324
+    public void testDegreeSelfLoop() {testDegreeSelfLoop102,3420
+    public void testDegreeSelfLoopLabeled() {testDegreeSelfLoopLabeled112,3693
+    public void testNotContain() {testNotContain123,4006
+    public void testContains() {testContains131,4307
+    public void testContainsEdgeLabel() {testContainsEdgeLabel166,5904
+    public void testRemoveVertex() {testRemoveVertex213,7923
+    public void testRemoveEdge() {testRemoveEdge245,8998
+    public void testRemoveVertices() {testRemoveVertices276,10285
+    public void testVerticesIteration() {testVerticesIteration314,11544
+    public void testNeighbors() {testNeighbors362,12959
+    public void testEmptyNeighbors() {testEmptyNeighbors397,14075
+    public void testEdges() {testEdges415,14703
+    public void testAllEdges() {testAllEdges449,15939
+    public void testOrderEdges() {testOrderEdges486,17270
+
+graph/VertexPriorityQueueFringe.java,201
+package graph;graph1,0
+class VertexPriorityQueueFringe<VLabel, ELabel>VertexPriorityQueueFringe7,135
+    VertexPriorityQueueFringe(final Comparator<VLabel> comp) {VertexPriorityQueueFringe11,301
+
+graph/Weightable.java,135
+package graph;graph1,0
+public interface Weightable extends Weighted {Weightable6,116
+    void setWeight(double w);setWeight9,207
+
+graph/Weighted.java,103
+package graph;graph1,0
+public interface Weighted {Weighted7,135
+    double weight();weight10,194
+
+graph/Weighter.java,152
+package graph;graph1,0
+public interface Weighter<Item> extends Weighting<Item> {Weighter6,147
+    void setWeight(Item x, double v);setWeight9,253
+
+graph/Weighting.java,116
+package graph;graph1,0
+public interface Weighting<Item> {Weighting5,119
+    double weight(Item x);weight8,191
+
+make/Main.java,518
+package make;make1,0
+public final class Main {Main23,481
+    public static void main(String... args) {main29,675
+    private static void make(String makefileName, String fileInfoName,make77,2030
+    private static void usage() {usage105,3082
+    private static List<Rule> parseRules(String filename) {parseRules110,3174
+    private static Map<String, Integer> createNameDateMap(BufferedReadercreateNameDateMap161,4980
+    public static void reportError(String err, String... args) {reportError181,5693
+
+make/Makefile,286
+SRCS := $(wildcard *.java)SRCS20,845
+TESTING_SRCS = Testing.java TESTING_SRCS23,892
+JFLAGS = -g -Xlint:unchecked -Xlint:deprecation -sourcepath .. \JFLAGS27,1018
+CLASSES = $(SRCS:.java=.class)CLASSES30,1123
+TESTING_CLASSES = $(TESTING_SRCS:.java=.class)TESTING_CLASSES31,1154
+
+make/Rule.java,513
+package make;make1,0
+class Rule {Rule7,92
+    String _target;_target9,106
+    List<String> _dependencies;_dependencies10,126
+    List<String> _commands;_commands11,158
+    Rule(String target, List<String> dependencies, List<String> commands) {Rule13,187
+    Rule(String target, String[] dependencies) {Rule19,364
+    Rule(String target, List<String> dependencies) {Rule23,494
+    void addCommand(String command) {addCommand27,615
+    void addCommands(List<String> commands) {addCommands31,692
+
+make/Testing.java,121
+package make;make1,0
+public class Testing {Testing13,412
+    public static void main(String[] ignored) {main16,488
+
+make-tests/make01.mk,0
+
+Makefile,488
+SHELL = bash SHELL19,826
+STYLEPROG = style61bSTYLEPROG21,841
+GRAPH_SRCS := $(wildcard graph/*.java)GRAPH_SRCS23,863
+MAKE_SRCS := $(wildcard make/*.java)MAKE_SRCS24,902
+TRIP_SRCS := $(wildcard trip/*.java)TRIP_SRCS25,939
+SRCS := $(GRAPH_SRCS) $(MAKE_SRCS) $(TRIP_SRCS)SRCS28,996
+ALL_TESTS = $(wildcard make-tests/*.tst) $(wildcard trip-tests/*.tst)ALL_TESTS31,1063
+JFLAGS = -g -Xlint:unchecked -Xlint:deprecationJFLAGS35,1230
+CLASSES = $(SRCS:.java=.class)CLASSES37,1279
+
+test-app,529
+import sys, os, resys25,1138
+import sys, os, reos25,1138
+import sys, os, rere25,1138
+from subprocess import Popen, PIPEPopen26,1157
+from subprocess import Popen, PIPEPIPE26,1157
+def Contents(f):Contents28,1208
+    base = os.path.splitext(test)[0]base39,1408
+    name = os.path.basename(base)name40,1445
+    stdout = Contents(base + ".std")stdout41,1479
+    stderr = Contents(base + ".err")stderr42,1516
+    proc = Popen(Contents(test).strip(), shell=True,proc44,1558
+    code = proc.returncodecode47,1702
+
+trip/Distance.java,137
+package trip;trip1,0
+class Distance {Distance3,15
+    String _distance;_distance5,33
+    Distance(String distance) {Distance7,56
+
+trip/Location.java,137
+package trip;trip1,0
+class Location {Location3,15
+    String _location;_location5,33
+    Location(String location) {Location7,56
+
+trip/Main.java,232
+package trip;trip1,0
+public final class Main {Main19,419
+    public static void main(String... args) {main28,800
+    private static void trip(String mapFileName) {trip91,2694
+    private static void usage() {usage129,4051
+
+trip/Makefile,286
+SRCS := $(wildcard *.java)SRCS20,845
+TESTING_SRCS = Testing.java TESTING_SRCS23,892
+JFLAGS = -g -Xlint:unchecked -Xlint:deprecation -sourcepath .. \JFLAGS27,1018
+CLASSES = $(SRCS:.java=.class)CLASSES30,1112
+TESTING_CLASSES = $(TESTING_SRCS:.java=.class)TESTING_CLASSES31,1143
+
+trip/Testing.java,121
+package trip;trip1,0
+public class Testing {Testing13,412
+    public static void main(String[] ignored) {main16,489

@@ -1,0 +1,291 @@
+
+DirectedGraph.java,71
+public class DirectedGraph<VLabel, ELabel> extends Graph<Graph11,339
+
+DirectedGraphTesting.java,1717
+public class DirectedGraphTesting 14,233
+    public void emptyGraph(DirectedGraphTesting.emptyGraph17,280
+    public void testGraphNumVertices(DirectedGraphTesting.testGraphNumVertices24,536
+    public void testGraphNumEdges(DirectedGraphTesting.testGraphNumEdges32,778
+    public void testGraphMultipleEdges(DirectedGraphTesting.testGraphMultipleEdges41,1110
+    public void testGraphDuplicatedEdges(DirectedGraphTesting.testGraphDuplicatedEdges55,1587
+    public void testSelfLoop(DirectedGraphTesting.testSelfLoop65,1958
+    public void testOutDegree(DirectedGraphTesting.testOutDegree76,2311
+    public void testInDegree(DirectedGraphTesting.testInDegree105,3419
+    public void testNotContain(DirectedGraphTesting.testNotContain135,4586
+    public void testContains(DirectedGraphTesting.testContains164,5688
+    public void testContainsEdgeLabel(DirectedGraphTesting.testContainsEdgeLabel194,6818
+    public void testRemoveVertex(DirectedGraphTesting.testRemoveVertex234,8748
+    public void testRemoveEdge(DirectedGraphTesting.testRemoveEdge269,9920
+    public void testRemoveVertices(DirectedGraphTesting.testRemoveVertices301,11266
+    public void testVerticesIteration(DirectedGraphTesting.testVerticesIteration337,12724
+    public void testSuccessors(DirectedGraphTesting.testSuccessors385,14137
+    public void testPredecessors(DirectedGraphTesting.testPredecessors434,15732
+    public void testOutEdge(DirectedGraphTesting.testOutEdge492,17658
+    public void testInEdges(DirectedGraphTesting.testInEdges531,19148
+    public void testAllEdges(DirectedGraphTesting.testAllEdges574,20795
+    public void testOrderEdges(DirectedGraphTesting.testOrderEdges616,22340
+
+Distancer.java,44
+public interface Distancer<Distancer7,151
+
+Fringe.java,30
+interface Fringe<Fringe5,77
+
+Graph.java,2023
+    public class Vertex 43,1724
+        Vertex(Vertex.Vertex46,1818
+        public VLabel getLabel(Vertex.getLabel51,1937
+        public String toString(Vertex.toString56,2028
+        private final VLabel _label;Vertex._label61,2158
+    public class Edge 66,2242
+        Edge(Edge.Edge70,2388
+        public ELabel getLabel(Edge.getLabel77,2569
+        public Vertex getV0(Edge.getV083,2766
+        public Vertex getV1(Edge.getV189,2970
+        public final Vertex getV(Edge.getV94,3103
+        public String toString(Edge.toString106,3434
+        private final Vertex _v0,Edge._v0112,3653
+        private final Vertex _v0, _v1;Edge._v1112,3653
+        private final ELabel _label;Edge._label115,3732
+    public int vertexSize(122,3879
+    public int edgeSize(127,4001
+    public int outDegree(146,4592
+    public int inDegree(158,4937
+    public final int degree(165,5178
+    public boolean contains(170,5328
+    public boolean contains(183,5666
+    public Vertex add(206,6226
+    public Edge add(230,7052
+    private Edge addEdge(249,7489
+    private void addEdge(256,7716
+    public Edge add(263,8009
+    public void remove(269,8174
+    public void remove(284,8617
+    private void remove(293,8831
+    private void removeEdges(304,9216
+    public void remove(316,9667
+    public Iteration<Vertex> vertices(325,9892
+    public Iteration<Vertex> successors(336,10208
+    public Iteration<Vertex> predecessors(349,10622
+    public final Iteration<Vertex> neighbors(363,11074
+    public Iteration<Edge> edges(368,11221
+    public Iteration<Edge> outEdges(398,12147
+    public Iteration<Edge> inEdges(410,12550
+    public final Iteration<Edge> edges(426,13033
+    public static <T extends Comparable<? super T>> Comparator<T> naturalOrder(434,13341
+    public void orderEdges(448,13815
+    private Map<Vertex, Map<Vertex, Set<Edge>>> matrix 454,14014
+    private Comparator<ELabel> comparator;458,14169
+    private static <T> Collection<T> createCollection(461,14262
+
+Graphs.java,1293
+public final class Graphs 15,279
+    public static Graphs.static36,1385
+    public static <VLabel, ELabel> List<Graphs.List36,1385
+    shortestPath(Graphs.shortestPath37,1453
+    private static Graphs.static102,4236
+    private static <VLabel, ELabel> List<Graphs.List102,4236
+    buildEdges(Graphs.buildEdges103,4305
+    private static Graphs.static128,5124
+    List<Graphs.List129,5160
+    buildPath(Graphs.buildPath130,5199
+    private static Graphs.static149,5911
+    List<Graphs.List150,5964
+    buildWeightedEdges(Graphs.buildWeightedEdges151,6001
+    private static Graphs.static174,6772
+    private static <VLabel, ELabel> Graph<Graphs.Graph174,6772
+    getMinEdge(Graphs.getMinEdge175,6835
+    private static Graphs.static200,7642
+    private static <VLabel, ELabel extends Weighted> Graph<Graphs.Graph200,7642
+    getMinWeightedEdge(Graphs.getMinWeightedEdge201,7722
+    public staticGraphs.static244,9602
+    List<Graphs.List246,9677
+    shortestPath(Graphs.shortestPath247,9714
+    public static final Distancer<Object> ZERO_DISTANCER Graphs.ZERO_DISTANCER309,12298
+    private static Graphs.static319,12626
+    private static <VLabel, ELabel> Comparator<Graphs.Comparator319,12626
+    getComparator(Graphs.getComparator320,12701
+
+GraphsTesting.java,1206
+public class GraphsTesting 14,222
+    public void testAStar(GraphsTesting.testAStar17,262
+    public void testAStarUnreachable(GraphsTesting.testAStarUnreachable79,2579
+    public void testAStarWeighted(GraphsTesting.testAStarWeighted131,4500
+    public void testAStarSideEffect(GraphsTesting.testAStarSideEffect190,7216
+    private static class WeightedString GraphsTesting.WeightedString245,10072
+        private double _weight;GraphsTesting.WeightedString._weight247,10147
+        private String _str;GraphsTesting.WeightedString._str249,10180
+        WeightedString(GraphsTesting.WeightedString.WeightedString251,10210
+        public String getString(GraphsTesting.WeightedString.getString256,10328
+        public String toString(GraphsTesting.WeightedString.toString261,10418
+        public void setWeight(GraphsTesting.WeightedString.setWeight266,10507
+        public double weight(GraphsTesting.WeightedString.weight271,10603
+    private Map<GraphsTesting.Map276,10681
+    private Map<String, Double> edgeWeights(GraphsTesting.edgeWeights276,10681
+    private Map<GraphsTesting.Map293,11113
+    private Map<String, Double> heuristic(GraphsTesting.heuristic293,11113
+
+Iteration.java,671
+public abstract class Iteration<Iteration13,368
+    public Iterator<Type> iterator(Iteration.iterator17,469
+    public void remove(Iteration.remove22,550
+    private static class SimpleIteration<Iteration.SimpleIteration27,738
+        SimpleIteration(Iteration.SimpleIteration.SimpleIteration29,848
+        public boolean hasNext(Iteration.SimpleIteration.hasNext34,950
+        public Type next(Iteration.SimpleIteration.next39,1050
+        private Iterator<Type> _iter;Iteration.SimpleIteration._iter44,1181
+    static <Type> Iteration<Type> iteration(Iteration.iteration48,1286
+    static <Type> Iteration<Type> iteration(Iteration.iteration53,1466
+
+NoLabel.java,28
+public class NoLabel 8,163
+
+PriorityQueueFringe.java,652
+class PriorityQueueFringe<PriorityQueueFringe8,174
+    private PriorityQueue<V> pQueue;PriorityQueueFringe.pQueue11,272
+    private Comparator<V> comparator;PriorityQueueFringe.comparator14,364
+    private static final int INITIAL_CAPACITY PriorityQueueFringe.INITIAL_CAPACITY17,458
+    PriorityQueueFringe(PriorityQueueFringe.PriorityQueueFringe20,565
+    public void push(PriorityQueueFringe.push32,892
+    public V pop(PriorityQueueFringe.pop37,964
+    public boolean isEmpty(PriorityQueueFringe.isEmpty42,1038
+    public void empty(PriorityQueueFringe.empty47,1123
+    public String toString(PriorityQueueFringe.toString52,1194
+
+QueueFringe.java,394
+class QueueFringe<QueueFringe8,125
+    private Queue<Vertex> queue;QueueFringe.queue11,209
+    QueueFringe(QueueFringe.QueueFringe14,283
+    public void push(QueueFringe.push19,366
+    public Vertex pop(QueueFringe.pop24,442
+    public boolean isEmpty(QueueFringe.isEmpty29,520
+    public void empty(QueueFringe.empty34,604
+    public String toString(QueueFringe.toString39,674
+
+RejectException.java,170
+public class RejectException 7,163
+    public RejectException(RejectException.RejectException10,266
+    public RejectException(RejectException.RejectException14,358
+
+StackFringe.java,393
+class StackFringe<StackFringe7,96
+    private Stack<Vertex> stack;StackFringe.stack10,180
+    StackFringe(StackFringe.StackFringe13,254
+    public void push(StackFringe.push18,332
+    public Vertex pop(StackFringe.pop23,409
+    public boolean isEmpty(StackFringe.isEmpty28,484
+    public void empty(StackFringe.empty33,566
+    public String toString(StackFringe.toString38,636
+
+StopException.java,156
+public class StopException 7,134
+    public StopException(StopException.StopException10,233
+    public StopException(StopException.StopException14,321
+
+Testing.java,132
+public class Testing 15,437
+    public static void main(Testing.main18,514
+    public void emptyGraph(Testing.emptyGraph27,862
+
+Traversal.java,1098
+    public void traverse(44,2141
+    public void depthFirstTraverse(59,2874
+    public void breadthFirstTraverse(92,4272
+    public void continueTraversing(122,5461
+    public Graph<VLabel, ELabel>.Vertex finalVertex(136,5925
+    public Graph<VLabel, ELabel>.Edge finalEdge(143,6223
+    protected Graph<VLabel, ELabel> theGraph(149,6434
+    protected void preVisit(158,6787
+    protected void visit(165,7149
+    protected void postVisit(173,7506
+    private void universalTraverse(179,7786
+    private void resetStates(241,10151
+    protected Graph<VLabel, ELabel>.Vertex _finalVertex;250,10386
+    protected Graph<VLabel, ELabel>.Edge _finalEdge;252,10508
+    protected Graph<VLabel, ELabel> _graph;254,10598
+    private Set<Graph<VLabel, ELabel>.Vertex> _closed 257,10693
+    private Set<Graph<VLabel, ELabel>.Vertex> _postVisited 260,10857
+    private Fringe<Graph<VLabel, ELabel>.Vertex> _fringe;263,11001
+    private Fringe<Graph<VLabel, ELabel>.Vertex> _holder;265,11107
+    private ChildrenHandler _handler;267,11205
+    private abstract class ChildrenHandler 270,11319
+
+TraversalTesting.java,2873
+public class TraversalTesting 13,210
+    public void testDFSAllVertices(TraversalTesting.testDFSAllVertices16,253
+    public void testDFSPrevisit(TraversalTesting.testDFSPrevisit62,1657
+    public void testDFSVisit(TraversalTesting.testDFSVisit96,2729
+    public void testDFSPostVisit(TraversalTesting.testDFSPostVisit130,3769
+    public void testBFSAllVertices(TraversalTesting.testBFSAllVertices164,4848
+    public void testBFSVisit(TraversalTesting.testBFSVisit209,6206
+    public void testBFSPrevisit(TraversalTesting.testBFSPrevisit243,7223
+    public void testBFSPostvisit(TraversalTesting.testBFSPostvisit276,8244
+    public void testStopException(TraversalTesting.testStopException310,9304
+    public void testStopResume(TraversalTesting.testStopResume351,10569
+    public void testRejectPrevisit(TraversalTesting.testRejectPrevisit401,12041
+    public void testRejectSuccessors(TraversalTesting.testRejectSuccessors446,13517
+    public void testCustomTraverse(TraversalTesting.testCustomTraverse488,14790
+    private static class ListTraversal TraversalTesting.ListTraversal536,16298
+        private List<TraversalTesting.ListTraversal.List539,16416
+        private List<Graph<String, String>.Vertex> vertices;TraversalTesting.ListTraversal.vertices539,16416
+        private List<TraversalTesting.ListTraversal.List542,16521
+        private List<Graph<String, String>.Vertex> preVertices;TraversalTesting.ListTraversal.preVertices542,16521
+        private List<TraversalTesting.ListTraversal.List545,16631
+        private List<Graph<String, String>.Vertex> postVertices;TraversalTesting.ListTraversal.postVertices545,16631
+        private List<TraversalTesting.ListTraversal.List548,16774
+        private List<Graph<String, String>.Vertex> allVertices;TraversalTesting.ListTraversal.allVertices548,16774
+        ListTraversal(TraversalTesting.ListTraversal.ListTraversal551,16888
+        List<TraversalTesting.ListTraversal.List559,17267
+        List<Graph<String, String>.Vertex> getVertices(TraversalTesting.ListTraversal.getVertices559,17267
+        List<TraversalTesting.ListTraversal.List564,17416
+        List<Graph<String, String>.Vertex> getAllVertices(TraversalTesting.ListTraversal.getAllVertices564,17416
+        List<TraversalTesting.ListTraversal.List569,17575
+        List<Graph<String, String>.Vertex> getPrevisited(TraversalTesting.ListTraversal.getPrevisited569,17575
+        List<TraversalTesting.ListTraversal.List574,17734
+        List<Graph<String, String>.Vertex> getPostvisited(TraversalTesting.ListTraversal.getPostvisited574,17734
+        protected void visit(TraversalTesting.ListTraversal.visit579,17858
+        protected void preVisit(TraversalTesting.ListTraversal.preVisit585,18011
+        protected void postVisit(TraversalTesting.ListTraversal.postVisit597,18420
+
+UndirectedGraph.java,73
+public class UndirectedGraph<VLabel, ELabel> extends Graph<Graph11,342
+
+UndirectedGraphTesting.java,1792
+public class UndirectedGraphTesting 14,235
+    public void emptyGraph(UndirectedGraphTesting.emptyGraph17,284
+    public void testGraphNumVertices(UndirectedGraphTesting.testGraphNumVertices24,542
+    public void testGraphNumEdges(UndirectedGraphTesting.testGraphNumEdges32,786
+    public void testGraphMultipleEdges(UndirectedGraphTesting.testGraphMultipleEdges41,1120
+    public void testGraphDuplicatedEdges(UndirectedGraphTesting.testGraphDuplicatedEdges54,1598
+    public void testSelfLoop(UndirectedGraphTesting.testSelfLoop64,1969
+    public void testDegree(UndirectedGraphTesting.testDegree75,2324
+    public void testDegreeSelfLoop(UndirectedGraphTesting.testDegreeSelfLoop102,3420
+    public void testDegreeSelfLoopLabeled(UndirectedGraphTesting.testDegreeSelfLoopLabeled112,3693
+    public void testNotContain(UndirectedGraphTesting.testNotContain123,4006
+    public void testContains(UndirectedGraphTesting.testContains131,4307
+    public void testContainsEdgeLabel(UndirectedGraphTesting.testContainsEdgeLabel166,5904
+    public void testRemoveVertex(UndirectedGraphTesting.testRemoveVertex213,7923
+    public void testRemoveEdge(UndirectedGraphTesting.testRemoveEdge245,8998
+    public void testRemoveVertices(UndirectedGraphTesting.testRemoveVertices276,10285
+    public void testVerticesIteration(UndirectedGraphTesting.testVerticesIteration314,11544
+    public void testNeighbors(UndirectedGraphTesting.testNeighbors362,12959
+    public void testEmptyNeighbors(UndirectedGraphTesting.testEmptyNeighbors397,14075
+    public void testEdges(UndirectedGraphTesting.testEdges415,14703
+    public void testAllEdges(UndirectedGraphTesting.testAllEdges449,15939
+    public void testOrderEdges(UndirectedGraphTesting.testOrderEdges486,17270
+
+VertexPriorityQueueFringe.java,38
+    VertexPriorityQueueFringe(11,301
+
+Weightable.java,35
+public interface Weightable 6,116
+
+Weighted.java,33
+public interface Weighted 7,135
+
+Weighter.java,42
+public interface Weighter<Weighter6,147
+
+Weighting.java,44
+public interface Weighting<Weighting5,119

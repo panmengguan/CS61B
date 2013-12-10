@@ -1,7 +1,7 @@
-# This a Makefile, an input file for the 'make' program.  For you 
+# This a Makefile, an input file for the 'make' program.  For you
 # command-line and Emacs enthusiasts, this makes it possible to build
 # this program with a single command:
-#     make 
+#     make
 # (or just 'make' if you are on a system that uses GNU make by default,
 # such as Linux.) You can also clean up junk files and .class files with
 #     make clean
@@ -11,16 +11,16 @@
 #     make check
 
 # This is not an especially efficient Makefile, because it's not easy to
-# figure out the minimal set of Java files that need to be recompiled.  
+# figure out the minimal set of Java files that need to be recompiled.
 # So if any .class file does not exist or is older than its .java file,
-# we just remove all the .class files, compile the main class, and 
-# then compile everything in the plugin directory.  
+# we just remove all the .class files, compile the main class, and
+# then compile everything in the plugin directory.
 
 # All source files
 SRCS := $(wildcard *.java)
 
 # Unit test files.
-TESTING_SRCS = Testing.java 
+TESTING_SRCS = Testing.java
 
 # Flags to pass to Java compilations (include debugging info and report
 # "unsafe" operations.)
@@ -39,7 +39,7 @@ default: $(CLASSES)
 
 # If any class is missing, or any source changed since the main classes were
 # compiled, remove all class files and recompile.
-$(CLASSES): $(SRCS)	
+$(CLASSES): $(SRCS)
 	$(RM) $(CLASSES)
 	javac $(JFLAGS) $(SRCS) || { $(RM) $(CLASSES); false; }
 
@@ -48,7 +48,7 @@ check: unit-test regression-test
 
 # Run Junit tests.
 unit-test: $(CLASSES)
-	java -ea -classpath ..:$(CLASSPATH) trip.Testing
+	java -ea -classpath ..:$(CLASSPATH) make.Testing
 
 regression-test: $(CLASSES)
 	cd ..; ./test-app make-tests/*.tst
@@ -61,5 +61,3 @@ style:
 # Do not touch .svn directories.
 clean :
 	$(RM) *~ *.class
-
-

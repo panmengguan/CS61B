@@ -161,6 +161,40 @@ public class TraversalTesting {
     }
 
     @Test
+    public void testDFSPostVisitDirected() {
+        Graph<String, String> g = new DirectedGraph<String, String>();
+        Graph<String, String>.Vertex A = g.add("A");
+        Graph<String, String>.Vertex B = g.add("B");
+        Graph<String, String>.Vertex C = g.add("C");
+        Graph<String, String>.Vertex D = g.add("D");
+        Graph<String, String>.Vertex E = g.add("E");
+        Graph<String, String>.Vertex F = g.add("F");
+
+        g.add(A, B);
+        g.add(A, C);
+        g.add(A, D);
+        g.add(C, E);
+        g.add(D, E);
+        g.add(D, F);
+
+        List<Graph<String, String>.Vertex> postVertices =
+            new ArrayList<Graph<String, String>.Vertex>();
+
+        postVertices.add(B);
+        postVertices.add(E);
+        postVertices.add(C);
+        postVertices.add(F);
+        postVertices.add(D);
+        postVertices.add(A);
+
+        ListTraversal traverser = new ListTraversal();
+        traverser.depthFirstTraverse(g, A);
+
+        assertEquals("visit vertices incorrect", postVertices,
+                     traverser.getPostvisited());
+    }
+
+    @Test
     public void testBFSAllVertices() {
         Graph<String, String> g = new UndirectedGraph<String, String>();
         Graph<String, String>.Vertex A = g.add("A");

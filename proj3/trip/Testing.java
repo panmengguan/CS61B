@@ -17,5 +17,7 @@ public class Testing {
         System.exit(textui.runClasses(trip.Testing.class));
     }
 
-
+    @Test
+    public void testMe() {
+    }
 }
