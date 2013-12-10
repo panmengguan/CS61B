@@ -145,11 +145,6 @@ public abstract class Graph<VLabel, ELabel> {
      *  my vertices.  */
     public int outDegree(Vertex v) {
         Collection<Edge> edges = createCollection(outEdges(v));
-
-        if (!isDirected()) {
-            return edges.size() + matrix.get(v).get(v).size();
-        }
-
         return edges.size();
     }
 

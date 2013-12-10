@@ -105,7 +105,7 @@ public class UndirectedGraphTesting {
 
         g.add(A, A);
 
-        assertEquals("incorrect number of degree", 2, g.degree(A));
+        assertEquals("incorrect number of degree", 1, g.degree(A));
     }
 
     @Test
@@ -116,7 +116,7 @@ public class UndirectedGraphTesting {
         g.add(A, A, "A1");
         g.add(A, A, "A2");
 
-        assertEquals("incorrect number of degree", 4, g.degree(A));
+        assertEquals("incorrect number of degree", 2, g.degree(A));
     }
 
     @Test
