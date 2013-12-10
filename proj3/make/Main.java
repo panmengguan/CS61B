@@ -126,8 +126,8 @@ public final class Main {
         int currentTime = 0;
         try {
             try {
-            currentTime = Integer.parseInt(reader.readLine().replaceAll("\\s+",
-                                                                        ""));
+                currentTime = Integer.parseInt(reader.readLine()
+                                               .replaceAll("\\s+", ""));
             } catch (NumberFormatException e) {
                 reportErrorExit("Fileinfo missing current time!");
             }

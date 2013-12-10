@@ -104,6 +104,27 @@ class Make {
         }
     }
 
+    /** The weighter for an edge in our dependency graph.*/
+    private Weighting<NoLabel> weighter = new Weighting<NoLabel>() {
+        @Override
+        public double weight(NoLabel h) {
+            return 1.0;
+        }
+    };
+
+    /** Empty vweighter.*/
+    private Weighter<String> vweighter = new Weighter<String>() {
+        @Override
+        public void setWeight(String h, double v) {
+        }
+
+        @Override
+        public double weight(String h) {
+            return 1.0;
+        }
+    };
+
+
     /** Returns the dependency graph.*/
     Graph<String, NoLabel> getGraph() {
         return _graph;
@@ -132,30 +153,15 @@ class Make {
                 return;
             }
 
-            Weighting<NoLabel> weighter = new Weighting<NoLabel>() {
-                @Override
-                public double weight(NoLabel h) {
-                    return 1.0;
-                }
-            };
-
-            Weighter<String> vweighter = new Weighter<String>() {
-                @Override
-                public void setWeight(String h, double v) {
-                }
-
-                @Override
-                public double weight(String h) {
-                    return 1.0;
-                }
-            };
-
             for (Graph<String, NoLabel>.Vertex v: _graph.successors(vertex)) {
-
-                List<Graph<String, NoLabel>.Edge> path =
-                    Graphs.shortestPath(_graph, v, vertex,
-                                        Graphs.ZERO_DISTANCER,
-                                        vweighter, weighter);
+                List<Graph<String, NoLabel>.Edge> path = null;
+                try {
+                    path = Graphs.shortestPath(_graph, v, vertex,
+                                               Graphs.ZERO_DISTANCER,
+                                               vweighter, weighter);
+                } catch (IllegalArgumentException e) {
+                    path = null;
+                }
 
                 if (path != null) {
                     Main.reportError(_err,
