@@ -15,6 +15,8 @@ import java.util.regex.Matcher;
 
 import java.io.PrintWriter;
 
+import java.math.BigDecimal;
+
 /** A trip planner that finds the shortest path back between two locations.
  *  @author Kiet Lam.*/
 public class Planner {
@@ -27,7 +29,25 @@ public class Planner {
 
     /** The output pattern used to format output.*/
     private static final String OUTPUT_PATTERN
+        = "%d. Take %s %s for %f miles.";
+
+    /** The output pattern to format the final output when normalizing.*/
+    private static final String FINAL_OUTPUT_PATTERN
         = "%d. Take %s %s for %.1f miles.";
+
+    /** The destination output pattern.*/
+    private static final String DESTINATION_PATTERN
+        = "%d. Take %s %s for %.1f miles to %s.";
+
+    /** The normal output pattern.*/
+    private static final String NORMAL_PATTERN
+        = "([0-9]+)\\.\\sTake\\s([^\\s]+)\\s([^\\s]+)\\sfor"
+        + "\\s([.0-9]+)\\smiles\\.\\s*";
+
+    /** The final destination pattern.*/
+    private static final String FINAL_PATTERN
+        = "([0-9]+)\\.\\sTake\\s([^\\s]+)\\s([^\\s]+)\\sfor"
+        + "\\s([.0-9]+)\\smiles\\sto\\s([^\\s.]+)\\.";
 
     /** The map of a distance's road and route to the actual distance object.*/
     private Map<String, Distance> _distances;
@@ -93,7 +113,6 @@ public class Planner {
         int directionCounter = 1;
 
         Graph<Location, Distance>.Vertex prevVertex = null;
-
         String end = "";
 
         for (int i = 0; i < locations.size(); i += 1) {
@@ -123,11 +142,13 @@ public class Planner {
                 if (path == null) {
                     Main.reportError(_err,
                                      "Path does not exist to location!");
+                    System.exit(1);
                 } else {
                     List<String> dirs = generateDirections(path, prevVertex,
                                                            directionCounter);
                     directions.addAll(dirs);
                     directionCounter += path.size();
+                    prevVertex = vertex;
                 }
             }
         }
@@ -144,16 +165,24 @@ public class Planner {
                        int counter) {
         List<String> directions = new ArrayList<String>();
 
-        for (Graph<Location, Distance>.Edge e: edges) {
+        String destination = "";
+
+        for (int i = 0; i < edges.size(); i += 1) {
+            Graph<Location, Distance>.Edge e = edges.get(i);
             Distance distance = e.getLabel();
-            Graph<Location, Distance>.Vertex other
-                = e.getV(begin);
+            Graph<Location, Distance>.Vertex other = e.getV(begin);
             String road = distance.road();
             String direction = distance.directionTo(begin.getLabel().name());
-            double dist = distance.distance();
+            BigDecimal dist = new BigDecimal(distance.distance());
 
-            directions.add(String.format(OUTPUT_PATTERN, counter, road,
-                                         direction, dist));
+            if (i == edges.size() - 1) {
+                directions.add(String.format(DESTINATION_PATTERN, counter, road,
+                                             direction, dist,
+                                             other.getLabel().name()));
+            } else {
+                directions.add(String.format(OUTPUT_PATTERN, counter, road,
+                                             direction, dist));
+            }
 
             counter += 1;
             begin = other;
@@ -167,52 +196,94 @@ public class Planner {
     private static List<String> normalizeDirections(List<String> directions,
                                                     String end) {
         List<String> newDirections = new ArrayList<String>();
-        String pat = "([0-9])+\\.\\sTake\\s([^\\s]+)\\s([^\\s]+)\\sfor"
-            + "\\s([.0-9]+)\\smiles.*";
+        int currentCounter = 1;
+        BigDecimal cumulativeDist = new BigDecimal(0.0);
+        String destination = "";
 
-        Pattern pattern = Pattern.compile(pat);
+        for (int i = 0; i < directions.size(); i += 1) {
+            String dir = directions.get(i);
+            int counter = getCounter(dir);
+            String road = getRoad(dir);
+            String route = getRoute(dir);
+            cumulativeDist
+                = cumulativeDist.add(new BigDecimal(getDistance(dir)));
+            if (!getDestination(dir).equals("")) {
+                destination = getDestination(dir);
+            }
 
-        int currentCounter = 0;
-        double cumulativeDist = 0.0;
-        String road = "";
-        String route = "";
-
-        for (String dir: directions) {
-            Matcher matcher = pattern.matcher(dir);
-            matcher.matches();
-
-            int counter = Integer.parseInt(matcher.group(1));
-            String ro = matcher.group(2);
-            String rout = matcher.group(3);
-            double dist = Double.parseDouble(matcher.group(4));
-
-            if (road.equals(ro) && route.equals(rout)) {
-                cumulativeDist += dist;
-            } else if (currentCounter == 0) {
-                currentCounter += 1;
-                road = ro;
-                route = rout;
-                cumulativeDist = dist;
+            if (i < directions.size() - 1) {
+                String next = directions.get(i + 1);
+                if (!road.equals(getRoad(next))
+                    || !route.equals(getRoute(next))) {
+                    newDirections.add(toOutput(currentCounter, road, route,
+                                               cumulativeDist, destination));
+                    cumulativeDist = new BigDecimal(0.0);
+                    destination = "";
+                    currentCounter += 1;
+                }
             } else {
-                double cumu = (double) Math.round(cumulativeDist * 10) / 10;
-                String str = String.format(OUTPUT_PATTERN, currentCounter, road,
-                                           route, cumu);
-                newDirections.add(str);
-                road = ro;
-                route = rout;
-                cumulativeDist = dist;
-                currentCounter += 1;
+                newDirections.add(toOutput(currentCounter, road, route,
+                                           cumulativeDist, destination));
+                cumulativeDist = new BigDecimal(0.0);
             }
         }
 
-        if (currentCounter != 0) {
-            double cumu = (double) Math.round(cumulativeDist * 10) / 10;
-            String str = String.format(OUTPUT_PATTERN, currentCounter, road,
-                                       route, cumu);
-            str = str.substring(0, str.length() - 2) + " to " + end;
-            newDirections.add(str);
+        return newDirections;
+    }
+
+    /** Returns appropriate outut from COUNTER, ROAD, ROUTE, DIST and
+     *  DESTINATION.*/
+    private static String toOutput(int counter, String road, String route,
+                            BigDecimal dist, String destination) {
+        if (destination.equals("")) {
+            return String.format(FINAL_OUTPUT_PATTERN, counter, road, route,
+                                 dist);
+        } else {
+            return String.format(DESTINATION_PATTERN, counter, road, route,
+                                 dist, destination);
+        }
+    }
+
+    /** Returns the coutner in the string STR.*/
+    private static int getCounter(String str) {
+        String pat = "^([0-9]+)\\..*";
+        return Integer.parseInt(getMatch(str, pat));
+    }
+
+    /** Returns the destination from DEST.*/
+    private static String getDestination(String dest) {
+        if (!dest.matches(FINAL_PATTERN)) {
+            return "";
         }
 
-        return newDirections;
+        String pat = ".*\\s(.*)\\.$";
+        return getMatch(dest, pat);
+    }
+
+    /** Returns the distance from DIST.*/
+    private static double getDistance(String dist) {
+        String pat = "[0-9]+\\.\\sTake\\s[^\\s]+\\s[^\\s]+\\sfor\\s"
+            + "([-+]?[0-9]*\\.?[0-9]+)\\s.*";
+        return Double.parseDouble(getMatch(dist, pat));
+    }
+
+    /** Returns the road of the string ROAD.*/
+    private static String getRoad(String road) {
+        String pat = "[0-9]+\\.\\sTake\\s([^\\s]+)\\s.*";
+        return getMatch(road, pat);
+    }
+
+    /** Returns the route of the string ROUTE.*/
+    private static String getRoute(String route) {
+        String pat = "[0-9]+\\.\\sTake\\s[^\\s]+\\s([^\\s]+)\\s.*";
+        return getMatch(route, pat);
+    }
+
+    /** Returns a match for string STR given a pattern PAT.*/
+    private static String getMatch(String str, String pat) {
+        Pattern pattern = Pattern.compile(pat);
+        Matcher matcher = pattern.matcher(str);
+        matcher.matches();
+        return matcher.group(1);
     }
 }
