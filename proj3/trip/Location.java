@@ -22,6 +22,9 @@ class Location implements Weightable {
     public static final String LOCATION_PATTERN =
         "^L\\s+([^\\s]+)\\s+([-+]?[0-9]*\\.?[0-9]+)\\s+([-+]?[0-9]*\\.?[0-9]+)";
 
+    /** The wieght for the location.*/
+    private double _weight = Double.POSITIVE_INFINITY;
+
     /** Create a location object basede on the string LOCATION.*/
     Location(String location) {
         Pattern pattern = Pattern.compile(LOCATION_PATTERN);
@@ -57,10 +60,11 @@ class Location implements Weightable {
 
     @Override
     public void setWeight(double d) {
+        _weight = d;
     }
 
     @Override
     public double weight() {
-        return 0.0;
+        return _weight;
     }
 }
