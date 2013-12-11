@@ -4,14 +4,9 @@ import java.io.File;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.io.FileOutputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.InputStream;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -38,10 +33,10 @@ public final class Main {
      */
     public static void main(String... args) {
         String mapFileName = "Map";
-        String requestFileName;
+        String requestFileName = null;
         PrintWriter output = new PrintWriter(System.out);
         PrintWriter err = new PrintWriter(System.err);
-        String outFileName = requestFileName = null;
+        String outFileName = null;
 
         int a;
         for (a = 0; a < args.length; a += 1) {
@@ -71,7 +66,6 @@ public final class Main {
         } else if (a > args.length) {
             usage();
         }
-
         if (requestFileName != null) {
             try {
                 _in = new BufferedInputStream(new
@@ -80,7 +74,6 @@ public final class Main {
                 reportErrorExit("Could not open %s.\n", requestFileName);
             }
         }
-
         if (outFileName != null) {
             try {
                 output = new PrintWriter(new File(outFileName));
@@ -89,15 +82,11 @@ public final class Main {
                                 outFileName);
             }
         }
-
         _out = output;
         _err = err;
-
         trip(mapFileName);
-
         _out.close();
         _err.close();
-
         if (_hasError) {
             System.exit(1);
         }
@@ -155,8 +144,9 @@ public final class Main {
         }
     }
 
+    /** Return a list of locations from _in.*/
     private static List<String> parseLocations() {
-        Scanner scanner = scanner = new Scanner(_in);
+        Scanner scanner = new Scanner(_in);
         scanner.useDelimiter("\\s*,\\s*");
 
         List<String> locations = new ArrayList<String>();
@@ -216,9 +206,13 @@ public final class Main {
         _hasError = true;
     }
 
+    /** The input stream to get requests from.*/
     private static InputStream _in = new BufferedInputStream(System.in);
 
+    /** The output writer to write outputs to.*/
     private static PrintWriter _out;
+
+    /** The error writer to write error to.*/
     private static PrintWriter _err;
 
     /** Flag for if we have an error or not.*/

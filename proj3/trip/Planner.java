@@ -8,7 +8,6 @@ import graph.UndirectedGraph;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.LinkedHashMap;
 import java.util.HashMap;
 
 import java.util.regex.Pattern;
@@ -16,23 +15,31 @@ import java.util.regex.Matcher;
 
 import java.io.PrintWriter;
 
-/** A trip planner that finds the shortest path back between two locations
+/** A trip planner that finds the shortest path back between two locations.
  *  @author Kiet Lam.*/
 public class Planner {
 
+    /** The graph of the map using Location as vertices and Distance as edges.*/
     private Graph<Location, Distance> _graph;
 
+    /** The map of a location name and the actual vertices in the graph.*/
     private Map<String, Graph<Location, Distance>.Vertex> _locationsMap;
 
+    /** The output pattern used to format output.*/
     private static final String OUTPUT_PATTERN
         = "%d. Take %s %s for %.1f miles.";
 
+    /** The map of a distance's road and route to the actual distance object.*/
     private Map<String, Distance> _distances;
 
+    /** The error writer to write errors to.*/
     private PrintWriter _err;
 
+    /** The output writer to write outputs to.*/
     private PrintWriter _out;
 
+    /** Create a trip planner that will print output to OUT
+     *  and print error to ERR.*/
     Planner(PrintWriter out, PrintWriter err) {
         _graph = new UndirectedGraph<Location, Distance>();
         _locationsMap = new HashMap<String, Graph<Location, Distance>.Vertex>();
@@ -41,12 +48,14 @@ public class Planner {
         _err = err;
     }
 
+    /** Add a location LOCATION to our graph.*/
     public void addLocation(Location location) {
         Graph<Location, Distance>.Vertex vertex =
             _graph.add(location);
         _locationsMap.put(location.name(), vertex);
     }
 
+    /** Add a distance DISTANCE to our graph.*/
     public void addDistance(Distance distance) {
         String c0 = distance.c0();
         String c1 = distance.c1();
@@ -66,9 +75,18 @@ public class Planner {
         _distances.put(distance.identifier(), distance);
     }
 
+    /** Returns a list of directions to get to all the LOCATIONS.*/
     public List<String> planTrip(List<String> locations) {
         List<Graph<Location, Distance>.Edge> edges =
             new ArrayList<Graph<Location, Distance>.Edge>();
+        Distancer<Location> euclideanDistancer = new Distancer<Location>() {
+
+            @Override
+            public double dist(Location l1, Location l2) {
+                return Math.sqrt(Math.pow(l1.x() - l2.x(), 2)
+                                 + Math.pow(l1.y() - l2.y(), 2));
+            }
+        };
 
         List<String> directions = new ArrayList<String>();
 
@@ -118,6 +136,8 @@ public class Planner {
         return directions;
     }
 
+    /** Returns a list of directions by going through each edge in EDGES
+     *  and building up a list of outputs starting from BEGIN and COUNTER.*/
     private static List<String>
     generateDirections(List<Graph<Location, Distance>.Edge> edges,
                        Graph<Location, Distance>.Vertex begin,
@@ -142,6 +162,8 @@ public class Planner {
         return directions;
     }
 
+    /** Returns a list of normalized directions (all distances summed up)
+     *  from DIRECTIONS and ending at END.*/
     private static List<String> normalizeDirections(List<String> directions,
                                                     String end) {
         List<String> newDirections = new ArrayList<String>();
@@ -193,14 +215,4 @@ public class Planner {
 
         return newDirections;
     }
-
-    private static Distancer<Location> euclideanDistancer =
-        new Distancer<Location>() {
-
-        @Override
-        public double dist(Location l1, Location l2) {
-            return Math.sqrt(Math.pow(l1.x() - l2.x(), 2)
-                             + Math.pow(l1.y() - l2.y(), 2));
-        }
-    };
 }
