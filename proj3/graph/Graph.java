@@ -94,7 +94,6 @@ public abstract class Graph<VLabel, ELabel> {
 
         /** The label on this vertex. */
         private final VLabel _label;
-
     }
 
     /** Represents one of my edges. */

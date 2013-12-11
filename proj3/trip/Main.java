@@ -1,5 +1,11 @@
 package trip;
 
+import java.io.File;
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.FileOutputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.InputStream;
@@ -7,16 +13,21 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.io.FileNotFoundException;
-import java.util.NoSuchElementException;
 import java.io.IOException;
 
+import java.util.Scanner;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
+
 
 /** Initial class for the 'trip' program.
- *  @author
+ *  @author Kiet Lam
  */
 public final class Main {
+
+    /** Location of usage message resource. */
+    private static final String USAGE = "trip/Usage.txt";
 
     /** Entry point for the CS61B trip program.  ARGS may contain options
      *  and targets:
@@ -26,12 +37,11 @@ public final class Main {
      *  the locations along the requested trip.
      */
     public static void main(String... args) {
-        String mapFileName;
-        String outFileName;
+        String mapFileName = "Map";
         String requestFileName;
-
-        mapFileName = "Map";
-        outFileName = requestFileName = null;
+        PrintWriter output = new PrintWriter(System.out);
+        PrintWriter err = new PrintWriter(System.err);
+        String outFileName = requestFileName = null;
 
         int a;
         for (a = 0; a < args.length; a += 1) {
@@ -64,25 +74,33 @@ public final class Main {
 
         if (requestFileName != null) {
             try {
-                System.setIn(new FileInputStream(requestFileName));
+                _in = new BufferedInputStream(new
+                                              FileInputStream(requestFileName));
             } catch  (FileNotFoundException e) {
-                System.err.printf("Could not open %s.%n", requestFileName);
-                System.exit(1);
+                reportErrorExit("Could not open %s.\n", requestFileName);
             }
         }
 
         if (outFileName != null) {
             try {
-                System.setOut(new PrintStream(new FileOutputStream(outFileName),
-                                              true));
+                output = new PrintWriter(new File(outFileName));
             } catch  (FileNotFoundException e) {
-                System.err.printf("Could not open %s for writing.%n",
-                                  outFileName);
-                System.exit(1);
+                reportErrorExit("Could not open %s for writing.\n",
+                                outFileName);
             }
         }
 
+        _out = output;
+        _err = err;
+
         trip(mapFileName);
+
+        _out.close();
+        _err.close();
+
+        if (_hasError) {
+            System.exit(1);
+        }
     }
 
     /** Print a trip for the request on the standard input to the stsndard
@@ -93,41 +111,116 @@ public final class Main {
         try {
             iStream = new FileInputStream(mapFileName);
         } catch (FileNotFoundException e) {
-            // TODO: Report error here...
+            reportErrorExit("Failed to read map file");
         }
 
         BufferedReader reader = new BufferedReader(new
                                                    InputStreamReader(iStream));
 
-        List<Location> locations = new ArrayList<Location>();
-        List<Distance> distances = new ArrayList<Distance>();
-
+        Planner planner = new Planner(_out, _err);
         try {
+            List<String> locations = parseLocations();
+
             String line = null;
+
             while ((line = reader.readLine()) != null) {
                 if (line.equals("")) {
                     continue;
                 }
 
-                String locationPat = "^L\\s+[^\\s]+\\s+[.0-9]+\\s+[.0-9]+\\s+";
-                String distancePat = "^R\\s+([^\\s]+\\s+[.0-9]+\\s+[.0-9]+\\s+)+";
+                String locationPat = Location.LOCATION_PATTERN;
+                String distancePat = Distance.DISTANCE_PATTERN;
 
                 if (line.matches(locationPat)) {
-                    locations.add(new Location(line));
+                    planner.addLocation(new Location(line));
                 } else if (line.matches(distancePat)) {
-                    distances.add(new Distance(line));
+                    planner.addDistance(new Distance(line));
+                } else {
+                    reportErrorExit("Invalid syntax");
                 }
             }
+
+            List<String> directions = planner.planTrip(locations);
+
+            _out.printf("From %s:\n\n", locations.get(0));
+
+            for (String direction: directions) {
+                _out.println(direction);
+            }
+
         } catch (NoSuchElementException e) {
-            // TODO: Handle exception
+            reportErrorExit("Failed to parse input");
         } catch (IOException e) {
-            // TODO: Handle exception
+            reportErrorExit("Failed to parse input");
         }
+    }
+
+    private static List<String> parseLocations() {
+        Scanner scanner = scanner = new Scanner(_in);
+        scanner.useDelimiter("\\s*,\\s*");
+
+        List<String> locations = new ArrayList<String>();
+
+        while (scanner.hasNext()) {
+            locations.add(scanner.next().trim());
+        }
+
+        return locations;
     }
 
     /** Print a brief usage message and exit program abnormally. */
     private static void usage() {
-        // FILL THIS IN
+        printHelpResource(USAGE, new PrintWriter(System.err));
         System.exit(1);
     }
+
+    /** Print the contents of the resource named NAME on OUT.
+     *  NAME will typically be a file name based in one of the directories
+     *  in the class path.  */
+    static void printHelpResource(String name, PrintWriter out) {
+        try {
+            InputStream resource =
+                Main.class.getClassLoader().getResourceAsStream(name);
+            BufferedReader str =
+                new BufferedReader(new InputStreamReader(resource));
+            for (String s = str.readLine(); s != null; s = str.readLine())  {
+                out.println(s);
+            }
+            str.close();
+            out.flush();
+        } catch (IOException excp) {
+            out.printf("No help found.");
+            out.flush();
+        }
+    }
+
+    /** Report an error and exit using S and ARGS.*/
+    public static void reportErrorExit(String s, Object... args) {
+        _err.printf(s + "\n", args);
+        _err.flush();
+        System.exit(1);
+    }
+
+    /** Report an error using WRITER, S and ARGS.*/
+    public static void reportError(PrintWriter writer, String s, Object... args)
+    {
+        writer.printf(s + "\n", args);
+        writer.flush();
+        _hasError = true;
+    }
+
+    /** Report an error using S and ARGS.*/
+    public static void reportError(String s, Object... args) {
+        _err.printf(s + "\n", args);
+        _err.flush();
+        _hasError = true;
+    }
+
+    private static InputStream _in = new BufferedInputStream(System.in);
+
+    private static PrintWriter _out;
+    private static PrintWriter _err;
+
+    /** Flag for if we have an error or not.*/
+    private static boolean _hasError = false;
 }
