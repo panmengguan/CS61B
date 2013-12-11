@@ -1,9 +1,6 @@
 package make;
 
 import graph.Graph;
-import graph.Weighting;
-import graph.Weighter;
-import graph.Graphs;
 import graph.DirectedGraph;
 import graph.Traversal;
 import graph.NoLabel;
@@ -103,28 +100,6 @@ class Make {
             traverser.depthFirstTraverse(_graph, begin);
         }
     }
-
-    /** The weighter for an edge in our dependency graph.*/
-    private Weighting<NoLabel> weighter = new Weighting<NoLabel>() {
-        @Override
-        public double weight(NoLabel h) {
-            return 1.0;
-        }
-    };
-
-    /** Empty vweighter.*/
-    private Weighter<String> vweighter = new Weighter<String>() {
-        @Override
-        public void setWeight(String h, double v) {
-        }
-
-        @Override
-        public double weight(String h) {
-            return 1.0;
-        }
-    };
-
-
     /** Returns the dependency graph.*/
     Graph<String, NoLabel> getGraph() {
         return _graph;
@@ -153,17 +128,11 @@ class Make {
                 return;
             }
 
-            for (Graph<String, NoLabel>.Vertex v: _graph.successors(vertex)) {
+            for (Graph<String, NoLabel>.Vertex child: _graph.successors(vertex))
+            {
                 List<Graph<String, NoLabel>.Edge> path = null;
-                try {
-                    path = Graphs.shortestPath(_graph, v, vertex,
-                                               Graphs.ZERO_DISTANCER,
-                                               vweighter, weighter);
-                } catch (IllegalArgumentException e) {
-                    path = null;
-                }
 
-                if (path != null) {
+                if (pathExists(_graph, child, vertex)) {
                     Main.reportError(_err,
                                      "make file has circular dependency!");
                     throw new StopException();
@@ -232,5 +201,26 @@ class Make {
                 creation.put(target, _currentTime);
             }
         }
+    }
+
+    /** Returns true iff there V1 can be reached from V0 in GRAPH.*/
+    private boolean pathExists(Graph<String, NoLabel> graph,
+                               Graph<String, NoLabel>.Vertex v0,
+                               final Graph<String, NoLabel>.Vertex v1) {
+        final int[] exists = {-1};
+        Traversal<String, NoLabel> traverser = null;
+        traverser = new Traversal<String, NoLabel>() {
+
+            @Override
+            public void visit(Graph<String, NoLabel>.Vertex v) {
+                if (v.equals(v1)) {
+                    exists[0] = 1;
+                }
+            }
+        };
+
+        traverser.depthFirstTraverse(graph, v0);
+
+        return exists[0] != -1;
     }
 }

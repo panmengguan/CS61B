@@ -82,7 +82,7 @@ public final class Graphs {
                 }
 
                 if (!totalCostMap.containsKey(child)
-                    || totalCost < totalCostMap.get(child)) {
+                    || totalCost <= totalCostMap.get(child)) {
                     from.put(child, vertex);
                     costMap.put(child, backwardCost);
                     vweighter.setWeight(child.getLabel(), backwardCost);

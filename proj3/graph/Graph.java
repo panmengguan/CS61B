@@ -2,19 +2,13 @@ package graph;
 
 import java.util.Comparator;
 
-import java.util.TreeSet;
-import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.LinkedHashMap;
 import java.util.Collection;
 import java.util.Collections;
-
-import java.text.NumberFormat;
 
 /* Do not add or remove public or protected members, or modify the signatures of
  * any public methods.  You may make changes that don't affect the API as seen
@@ -64,18 +58,22 @@ public abstract class Graph<VLabel, ELabel> {
             return String.valueOf(_label);
         }
 
+        /** Returns a list of successors from this vertex.*/
         private List<Vertex> successors() {
             return _successors;
         }
 
+        /** Returns a list of predecessors from this vertex.*/
         private List<Vertex> predecessors() {
             return _predecessors;
         }
 
+        /** Returns a list of out edges from this vertex.*/
         private List<Edge> outEdges() {
             return _outEdges;
         }
 
+        /** Returns a list of in edges to this vertex.*/
         private List<Edge> inEdges() {
             return _inEdges;
         }
@@ -249,7 +247,7 @@ public abstract class Graph<VLabel, ELabel> {
             }
         }
 
-        if (isDirected() && u.predecessors().contains(v)) {
+        if (!isDirected() && u.predecessors().contains(v)) {
             for (Edge e: u.inEdges()) {
                 if (e.getV(u).equals(v)) {
                     if (e.getLabel() == null && label == null) {

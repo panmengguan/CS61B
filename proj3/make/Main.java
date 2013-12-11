@@ -102,6 +102,8 @@ public final class Main {
         make(makefileName, fileInfoName, targets);
 
         if (_hasError) {
+            _out.close();
+            _err.close();
             System.exit(1);
         }
     }
