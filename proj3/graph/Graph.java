@@ -2,14 +2,19 @@ package graph;
 
 import java.util.Comparator;
 
+import java.util.TreeSet;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
 import java.util.Collection;
 import java.util.Collections;
+
+import java.text.NumberFormat;
 
 /* Do not add or remove public or protected members, or modify the signatures of
  * any public methods.  You may make changes that don't affect the API as seen
@@ -45,6 +50,8 @@ public abstract class Graph<VLabel, ELabel> {
         /** A new vertex with LABEL as the value of getLabel(). */
         Vertex(VLabel label) {
             _label = label;
+            _successors = new ArrayList<Vertex>();
+            _predecessors = new ArrayList<Vertex>();
         }
 
         /** Returns the label on this vertex. */
@@ -56,6 +63,34 @@ public abstract class Graph<VLabel, ELabel> {
         public String toString() {
             return String.valueOf(_label);
         }
+
+        private List<Vertex> successors() {
+            return _successors;
+        }
+
+        private List<Vertex> predecessors() {
+            return _predecessors;
+        }
+
+        private List<Edge> outEdges() {
+            return _outEdges;
+        }
+
+        private List<Edge> inEdges() {
+            return _inEdges;
+        }
+
+        /** List of successors.*/
+        private List<Vertex> _successors = new ArrayList<Vertex>();
+
+        /** List of predecessors.*/
+        private List<Vertex> _predecessors = new ArrayList<Vertex>();
+
+        /** List of out edges.*/
+        private List<Edge> _outEdges = new ArrayList<Edge>();
+
+        /** List of in edges.*/
+        private List<Edge> _inEdges = new ArrayList<Edge>();
 
         /** The label on this vertex. */
         private final VLabel _label;
@@ -120,19 +155,16 @@ public abstract class Graph<VLabel, ELabel> {
 
     /** Returns the number of vertices in me. */
     public int vertexSize() {
-        return matrix.keySet().size();
+        return _vertices.size();
     }
 
     /** Returns the number of edges in me. */
     public int edgeSize() {
         Set<Edge> edges = new LinkedHashSet<Edge>();
 
-        for (Map.Entry<Vertex, Map<Vertex, Set<Edge>>> entry: matrix.entrySet())
-        {
-            for (Vertex vertex: entry.getValue().keySet()) {
-                Set<Edge> eds = entry.getValue().get(vertex);
-                edges.addAll(eds);
-            }
+        for (Vertex v: _vertices) {
+            edges.addAll(v.outEdges());
+            edges.addAll(v.inEdges());
         }
 
         return edges.size();
@@ -144,15 +176,23 @@ public abstract class Graph<VLabel, ELabel> {
     /** Returns the number of outgoing edges incident to V. Assumes V is one of
      *  my vertices.  */
     public int outDegree(Vertex v) {
-        Collection<Edge> edges = createCollection(outEdges(v));
-        return edges.size();
+        int offset = 0;
+
+        if (v.successors().indexOf(v) != -1) {
+            for (Edge e: v.outEdges()) {
+                if (e.getV(v).equals(v)) {
+                    offset -= 1;
+                }
+            }
+        }
+
+        return v.outEdges().size() + offset / 2;
     }
 
     /** Returns the number of incoming edges incident to V. Assumes V is one of
      *  my vertices. */
     public int inDegree(Vertex v) {
-        Collection<Edge> edges = createCollection(inEdges(v));
-        return edges.size();
+        return v.inEdges().size();
     }
 
     /** Returns outDegree(V). This is simply a synonym, intended for
@@ -163,33 +203,63 @@ public abstract class Graph<VLabel, ELabel> {
 
     /** Returns true iff there is an edge (U, V) in me with any label. */
     public boolean contains(Vertex u, Vertex v) {
-        if (!matrix.containsKey(u)) {
+        if (!_vertices.contains(u) || !_vertices.contains(v)) {
             return false;
         }
 
-        if (!matrix.get(u).containsKey(v)) {
-            return false;
+        Set<Edge> edges = new HashSet<Edge>();
+
+        if (u.successors().contains(v)) {
+            for (Edge e: u.outEdges()) {
+                if (e.getV(u).equals(v)) {
+                    return true;
+                }
+            }
         }
 
-        return matrix.get(u).get(v).size() > 0;
+        if (!isDirected() && u.predecessors().contains(v)) {
+            for (Edge e: u.inEdges()) {
+                if (e.getV(u).equals(v)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /** Returns true iff there is an edge (U, V) in me with label LABEL. */
     public boolean contains(Vertex u, Vertex v,
                             ELabel label) {
-        if (!matrix.containsKey(u)) {
+        if (!_vertices.contains(u) || !_vertices.contains(v)) {
             return false;
         }
 
-        if (!matrix.get(u).containsKey(v)) {
-            return false;
+        Set<Edge> edges = new HashSet<Edge>();
+
+        if (u.successors().contains(v)) {
+            for (Edge e: u.outEdges()) {
+                if (e.getV(u).equals(v)) {
+                    if (e.getLabel() == null && label == null) {
+                        return true;
+                    } else if (e != null
+                               && e.getLabel().equals(label)) {
+                        return true;
+                    }
+                }
+            }
         }
 
-        Set<Edge> edges = matrix.get(u).get(v);
-
-        for (Edge edge: edges) {
-            if (edge.getLabel().equals(label)) {
-                return true;
+        if (isDirected() && u.predecessors().contains(v)) {
+            for (Edge e: u.inEdges()) {
+                if (e.getV(u).equals(v)) {
+                    if (e.getLabel() == null && label == null) {
+                        return true;
+                    } else if (e != null
+                               && e.getLabel().equals(label)) {
+                        return true;
+                    }
+                }
             }
         }
 
@@ -200,22 +270,7 @@ public abstract class Graph<VLabel, ELabel> {
      *  incident edges. */
     public Vertex add(VLabel label) {
         Vertex vertex = new Vertex(label);
-
-        for (Map.Entry<Vertex, Map<Vertex, Set<Edge>>> entry: matrix.entrySet())
-        {
-            Map<Vertex, Set<Edge>> edgeMap = entry.getValue();
-            edgeMap.put(vertex, new LinkedHashSet<Edge>());
-        }
-
-        Map<Vertex, Set<Edge>> edgeSetMap =
-            new LinkedHashMap<Vertex, Set<Edge>>();
-
-        for (Vertex v: matrix.keySet()) {
-            edgeSetMap.put(v, new LinkedHashSet<Edge>());
-        }
-
-        edgeSetMap.put(vertex, new LinkedHashSet<Edge>());
-        matrix.put(vertex, edgeSetMap);
+        _vertices.add(vertex);
         return vertex;
     }
 
@@ -223,33 +278,27 @@ public abstract class Graph<VLabel, ELabel> {
      *  and adds it to this graph. If I am directed, the edge is directed
      *  (leaves FROM and enters TO). */
     public Edge add(Vertex from, Vertex to, ELabel label) {
-        if (!matrix.containsKey(from)) {
+        if (!_vertices.contains(from) || !_vertices.contains(to)) {
             return null;
         }
 
-        if (!matrix.get(from).containsKey(to)) {
-            return null;
-        }
+        Edge e = new Edge(from, to, label);
 
-        Edge edge =  addEdge(from, to, label);
+        from.outEdges().add(e);
+        from.successors().add(to);
+
+        to.inEdges().add(e);
+        to.predecessors().add(from);
 
         if (!isDirected()) {
-            addEdge(to, from, edge);
+            to.outEdges().add(e);
+            to.successors().add(from);
+
+            from.inEdges().add(e);
+            from.predecessors().add(to);
         }
 
-        return edge;
-    }
-
-    /** Returns an edge created from FROM to TO with LABEL.*/
-    private Edge addEdge(Vertex from, Vertex to, ELabel label) {
-        Edge edge = new Edge(from, to, label);
-        addEdge(from, to, edge);
-        return edge;
-    }
-
-    /** Add an edge from FROM to TO with EDGE edge.*/
-    private void addEdge(Vertex from, Vertex to, Edge edge) {
-        matrix.get(from).get(to).add(edge);
+        return e;
     }
 
     /** Returns an edge incident on FROM and TO with a null label
@@ -262,48 +311,48 @@ public abstract class Graph<VLabel, ELabel> {
 
     /** Remove V and all adjacent edges, if present. */
     public void remove(Vertex v) {
-        if (matrix.containsKey(v)) {
-            matrix.remove(v);
+        for (Vertex ve: v.predecessors()) {
+            ve.successors().removeAll(Collections.singleton(v));
+
+            Set<Edge> edgesToRemove = new HashSet<Edge>();
+
+            for (Edge e: ve.outEdges()) {
+                if (e.getV(ve).equals(v)) {
+                    edgesToRemove.add(e);
+                }
+            }
+
+            ve.outEdges().removeAll(edgesToRemove);
         }
 
-        for (Vertex vertex: matrix.keySet()) {
-            Map<Vertex, Set<Edge>> edgeMap = matrix.get(vertex);
-            if (edgeMap.containsKey(v)) {
-                edgeMap.remove(v);
+        for (Vertex ve: v.successors()) {
+            ve.predecessors().removeAll(Collections.singleton(v));
+
+            Set<Edge> edgesToRemove = new HashSet<Edge>();
+
+            for (Edge e: ve.inEdges()) {
+                if (e.getV(ve).equals(v)) {
+                    edgesToRemove.add(e);
+                }
             }
+
+            ve.inEdges().removeAll(edgesToRemove);
         }
+
+        _vertices.remove(v);
     }
 
     /** Remove E from me, if present.  E must be between my vertices,
      *  or the result is undefined.  */
     public void remove(Edge e) {
-        remove(e.getV0(), e.getV1(), e);
+        Vertex v0 = e.getV0();
+        Vertex v1 = e.getV1();
 
-        if (!isDirected()) {
-            remove(e.getV1(), e.getV0(), e);
-        }
-    }
+        v0.inEdges().remove(e);
+        v0.outEdges().remove(e);
 
-    /** Remove an EDGE with vertice FROM, TO.*/
-    private void remove(Vertex from, Vertex to, Edge edge) {
-        if (matrix.containsKey(from)) {
-            Map<Vertex, Set<Edge>> edgeMap = matrix.get(from);
-            if (edgeMap.containsKey(to)) {
-                Set<Edge> edges = edgeMap.get(to);
-                edges.remove(edge);
-            }
-        }
-    }
-
-    /** Remove all edges in EDGESTOREMOVE on FROM and TO.*/
-    private void removeEdges(Vertex from, Vertex to) {
-        if (matrix.containsKey(from)) {
-            Map<Vertex, Set<Edge>> edgeMap = matrix.get(from);
-            if (edgeMap.containsKey(to)) {
-                Set<Edge> edges = edgeMap.get(to);
-                edges.clear();
-            }
-        }
+        v1.inEdges().remove(e);
+        v1.outEdges().remove(e);
     }
 
     /** Remove all edges from V1 to V2 from me, if present.  The result is
@@ -316,41 +365,45 @@ public abstract class Graph<VLabel, ELabel> {
         }
     }
 
-    /** Returns an Iterator over all vertices in arbitrary order. */
-    public Iteration<Vertex> vertices() {
-        Set<Vertex> vertices = new LinkedHashSet<Vertex>();
+    /** Remove all edges from V1 to V2.*/
+    private void removeEdges(Vertex v1, Vertex v2) {
+        List<Edge> successorsEdge = new ArrayList<Edge>();
 
-        for (Vertex vertex: matrix.keySet()) {
-            vertices.add(vertex);
+        for (Edge e: v1.outEdges()) {
+            if (e.getV(v1).equals(v2)) {
+                successorsEdge.add(e);
+            }
         }
 
-        return Iteration.iteration(vertices.iterator());
+        v1.outEdges().removeAll(successorsEdge);
+
+        List<Edge> predecessorsEdge = new ArrayList<Edge>();
+
+        for (Edge e: v2.inEdges()) {
+            if (e.getV(v2).equals(v1)) {
+                predecessorsEdge.add(e);
+            }
+        }
+
+        v2.inEdges().removeAll(predecessorsEdge);
+
+        v1.successors().remove(v2);
+        v2.predecessors().remove(v1);
+    }
+
+    /** Returns an Iterator over all vertices in arbitrary order. */
+    public Iteration<Vertex> vertices() {
+        return Iteration.iteration(_vertices.iterator());
     }
 
     /** Returns an iterator over all successors of V. */
     public Iteration<Vertex> successors(Vertex v) {
-        Set<Edge> outEdges =
-            new LinkedHashSet<Edge>(createCollection(outEdges(v)));
-        Set<Vertex> vertices = new LinkedHashSet<Vertex>();
-
-        for (Edge e: outEdges) {
-            vertices.add(e.getV(v));
-        }
-
-        return Iteration.iteration(vertices.iterator());
+        return Iteration.iteration(v.successors().iterator());
     }
 
     /** Returns an iterator over all predecessors of V. */
     public Iteration<Vertex> predecessors(Vertex v) {
-        Set<Edge> inEdges =
-            new LinkedHashSet<Edge>(createCollection(inEdges(v)));
-        Set<Vertex> vertices = new LinkedHashSet<Vertex>();
-
-        for (Edge e: inEdges) {
-            vertices.add(e.getV(v));
-        }
-
-        return Iteration.iteration(vertices.iterator());
+        return Iteration.iteration(v.predecessors().iterator());
     }
 
     /** Returns successors(V).  This is a synonym typically used on
@@ -361,21 +414,14 @@ public abstract class Graph<VLabel, ELabel> {
 
     /** Returns an iterator over all edges in me. */
     public Iteration<Edge> edges() {
-        Set<Edge> inEdges = new LinkedHashSet<Edge>();
+        Set<Edge> edgeSet = new LinkedHashSet<Edge>();
 
-        for (Vertex vertex: matrix.keySet()) {
-            inEdges.addAll(createCollection(inEdges(vertex)));
+        for (Vertex v: _vertices) {
+            edgeSet.addAll(v.outEdges());
+            edgeSet.addAll(v.inEdges());
         }
 
-        Set<Edge> outEdges = new LinkedHashSet<Edge>();
-
-        for (Vertex vertex: matrix.keySet()) {
-            outEdges.addAll(createCollection(outEdges(vertex)));
-        }
-
-        inEdges.addAll(outEdges);
-
-        List<Edge> edges = new ArrayList<Edge>(inEdges);
+        List<Edge> edges = new ArrayList<Edge>(edgeSet);
 
         if (comparator != null) {
             Collections.sort(edges, new Comparator<Edge>() {
@@ -391,33 +437,12 @@ public abstract class Graph<VLabel, ELabel> {
 
     /** Returns iterator over all outgoing edges from V. */
     public Iteration<Edge> outEdges(Vertex v) {
-        Set<Edge> edges = new LinkedHashSet<Edge>();
-        Map<Vertex, Set<Edge>> edgeMap = matrix.get(v);
-
-        if (edgeMap != null) {
-            Set<Map.Entry<Vertex, Set<Edge>>> entries = edgeMap.entrySet();
-
-            for (Map.Entry<Vertex, Set<Edge>> entry: entries) {
-                edges.addAll(entry.getValue());
-            }
-        }
-
-        return Iteration.iteration(edges.iterator());
+        return Iteration.iteration(v.outEdges().iterator());
     }
 
     /** Returns iterator over all incoming edges to V. */
     public Iteration<Edge> inEdges(Vertex v) {
-        Set<Edge> edges = new LinkedHashSet<Edge>();
-
-        for (Vertex vertex: matrix.keySet()) {
-            Map<Vertex, Set<Edge>> edgeMap = matrix.get(vertex);
-
-            if (edgeMap.containsKey(v)) {
-                edges.addAll(edgeMap.get(v));
-            }
-        }
-
-        return Iteration.iteration(edges.iterator());
+        return Iteration.iteration(v.inEdges().iterator());
     }
 
     /** Returns outEdges(V). This is a synonym typically used
@@ -448,10 +473,8 @@ public abstract class Graph<VLabel, ELabel> {
         comparator = comp;
     }
 
-    /** Class representing a vertices coming to.*/
-    /** Matrix of which node has an edge to another node.*/
-    private Map<Vertex, Map<Vertex, Set<Edge>>> matrix =
-        new LinkedHashMap<Vertex, Map<Vertex, Set<Edge>>>();
+    /** List of vertices.*/
+    private Set<Vertex> _vertices = new LinkedHashSet<Vertex>();
 
     /** Comparator for the edges.*/
     private Comparator<ELabel> comparator;
