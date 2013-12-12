@@ -142,7 +142,6 @@ public class Planner {
                 if (path == null) {
                     Main.reportError(_err,
                                      "Path does not exist to location!");
-                    System.exit(1);
                 } else {
                     List<String> dirs = generateDirections(path, prevVertex,
                                                            directionCounter);

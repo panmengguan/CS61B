@@ -6,16 +6,15 @@ package trip;
  * possible to remove them and still have your package work). */
 
 import org.junit.Test;
+import org.junit.Before;
 import ucb.junit.textui;
 import static org.junit.Assert.*;
 
-import graph.Graph;
-import graph.Graphs;
-import graph.UndirectedGraph;
-import graph.Distancer;
-import graph.Weightable;
+import java.io.StringWriter;
+import java.io.PrintWriter;
 
 import java.util.List;
+import java.util.ArrayList;
 
 /** Unit tests for the trip package. */
 public class Testing {
@@ -25,58 +24,131 @@ public class Testing {
         System.exit(textui.runClasses(trip.Testing.class));
     }
 
-    @Test
-    public void testMe() {
+    /** Collects output to StringWriter .*/
+    private StringWriter output;
+
+    /** Output printer.*/
+    private PrintWriter outPrinter;
+
+    /** Collects err to StringWriter .*/
+    private StringWriter err;
+
+    /** Trip planner.*/
+    private Planner planner;
+
+    /** Output printer.*/
+    private PrintWriter errPrinter;
+
+    /** Setup the output and writer.*/
+    private void setupWriter() {
+        output = new StringWriter();
+        err = new StringWriter();
+        outPrinter = new PrintWriter(output);
+        errPrinter = new PrintWriter(err);
+        planner = new Planner(outPrinter, errPrinter);
+    }
+
+    @Before
+    public void setUp() {
+        setupWriter();
     }
 
     @Test
-    public void testAStarWeighted() {
-        Graph<WeightedString, WeightedString> g
-            = new UndirectedGraph<WeightedString, WeightedString>();
+    public void testSimpleTrip() {
+        Location lA = new Location("A", 0.0, 0.0);
+        Location lB = new Location("B", 1.0, 1.0);
+        Location lC = new Location("C", 2.0, 2.0);
 
-        Graph<WeightedString, WeightedString>.Vertex A
-            = g.add(new WeightedString("A"));
+        planner.addLocation(lA);
+        planner.addLocation(lB);
+        planner.addLocation(lC);
 
-        Graph<WeightedString, WeightedString>.Vertex B
-            = g.add(new WeightedString("B"));
+        Distance d1 = new Distance("R A R1 1.0 NS B");
+        Distance d2 = new Distance("R B R2 1.0 NS C");
 
-        g.add(A, B, new WeightedString("A-B", 1.0));
+        planner.addDistance(d1);
+        planner.addDistance(d2);
 
-        Distancer<WeightedString> distancer = new Distancer<WeightedString>() {
-            @Override
-            public double dist(WeightedString v0, WeightedString v1) {
-                return 0.0;
-            }
-        };
+        List<String> locations = new ArrayList<String>();
 
-        List<Graph<WeightedString, WeightedString>.Edge> output
-            = Graphs.shortestPath(g, A, B, distancer);
-        assertNotNull("Why does this always fail???", output);
+        locations.add("A");
+        locations.add("C");
+
+        List<String> directions = planner.planTrip(locations);
+
+        List<String> expected = new ArrayList<String>();
+        expected.add("1. Take R1 south for 1.0 miles.");
+        expected.add("2. Take R2 south for 1.0 miles to C.");
+
+        assertEquals("incorrect directions", expected, directions);
     }
 
-    public class WeightedString implements Weightable {
+    @Test
+    public void testNoPath() {
+        Location lA = new Location("A", 0.0, 0.0);
+        Location lB = new Location("B", 1.0, 1.0);
+        Location lC = new Location("C", 2.0, 2.0);
 
-        private String _str;
+        planner.addLocation(lA);
+        planner.addLocation(lB);
+        planner.addLocation(lC);
 
-        private double _weight = Double.POSITIVE_INFINITY;
+        Distance d1 = new Distance("R A R1 1.0 NS B");
+        Distance d2 = new Distance("R B R2 1.0 NS C");
 
-        WeightedString(String str) {
-            _str = str;
-        }
+        planner.addDistance(d1);
 
-        WeightedString(String str, double weight) {
-            _str = str;
-            _weight = weight;
-        }
+        List<String> locations = new ArrayList<String>();
 
-        @Override
-        public void setWeight(double w) {
-            _weight = w;
-        }
+        locations.add("A");
+        locations.add("C");
 
-        @Override
-        public double weight() {
-            return _weight;
-        }
+        List<String> directions = planner.planTrip(locations);
+        List<String> expected = new ArrayList<String>();
+
+        assertTrue("there was an error", err.toString().length() > 0);
+    }
+
+    @Test
+    public void testTwoLocations() {
+        Location lA = new Location("A", 0.0, 0.0);
+        Location lB = new Location("B", 1.0, 1.0);
+
+        List<String> locations = new ArrayList<String>();
+        locations.add("A");
+        locations.add("B");
+
+        planner.addLocation(lA);
+        planner.addLocation(lB);
+
+        Distance d1 = new Distance("R A R1 1.0 NS B");
+
+        planner.addDistance(d1);
+
+        List<String> directions = planner.planTrip(locations);
+        List<String> expected = new ArrayList<String>();
+
+        expected.add("1. Take R1 south for 1.0 miles to B.");
+        assertEquals("incorrect directions", expected, directions);
+    }
+
+    @Test
+    public void testInvalidLocation() {
+        Location lA = new Location("A", 0.0, 0.0);
+        Location lB = new Location("B", 1.0, 1.0);
+
+        List<String> locations = new ArrayList<String>();
+        locations.add("B");
+        locations.add("K");
+
+        planner.addLocation(lA);
+        planner.addLocation(lB);
+
+        Distance d1 = new Distance("R A R1 1.0 NS B");
+
+        planner.addDistance(d1);
+        planner.planTrip(locations);
+
+        assertTrue("need error message", err.toString().length() > 0);
     }
 }

@@ -1,11 +1,11 @@
 package trip;
 
-import java.io.File;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.FileOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -34,12 +34,11 @@ public final class Main {
     public static void main(String... args) {
         String mapFileName = "Map";
         String requestFileName = null;
-        PrintWriter output = new PrintWriter(System.out);
-        PrintWriter err = new PrintWriter(System.err);
-        String outFileName = null;
+        _out = new PrintWriter(System.out);
+        _err = new PrintWriter(System.err);
 
         int a;
-        for (a = 0; a < args.length; a += 1) {
+        for (a = 0; a < args.length - 1; a += 1) {
             if (args[a].equals("-m")) {
                 a += 1;
                 if (a == args.length) {
@@ -52,44 +51,63 @@ public final class Main {
                 if (a == args.length) {
                     usage();
                 } else {
-                    outFileName = args[a];
+                    _out = getOutput(args[a]);
+                }
+            } else if (args[a].equals("-e")) {
+                a += 1;
+                if (a == args.length) {
+                    usage();
+                } else {
+                    _err = getOutput(args[a]);
                 }
             } else if (args[a].startsWith("-")) {
                 usage();
-            } else {
-                break;
             }
         }
 
         if (a == args.length - 1) {
-            requestFileName = args[a];
+            _in = getInputStream(args[a]);
         } else if (a > args.length) {
             usage();
         }
+
         if (requestFileName != null) {
-            try {
-                _in = new BufferedInputStream(new
-                                              FileInputStream(requestFileName));
-            } catch  (FileNotFoundException e) {
-                reportErrorExit("Could not open %s.\n", requestFileName);
-            }
+            _in = getInputStream(requestFileName);
         }
-        if (outFileName != null) {
-            try {
-                output = new PrintWriter(new File(outFileName));
-            } catch  (FileNotFoundException e) {
-                reportErrorExit("Could not open %s for writing.\n",
-                                outFileName);
-            }
-        }
-        _out = output;
-        _err = err;
+
         trip(mapFileName);
         _out.close();
         _err.close();
         if (_hasError) {
             System.exit(1);
         }
+    }
+
+    /** Returns an inputsteam from file FILENAME.*/
+    private static InputStream getInputStream(String filename) {
+        InputStream in = null;
+        try {
+            in = new FileInputStream(filename);
+        } catch (FileNotFoundException e) {
+            return null;
+        }
+
+        return in;
+    }
+
+    /** Returns a printwriter from file FILENAME.*/
+    private static PrintWriter getOutput(String filename) {
+        PrintWriter pw = null;
+        if (filename != null) {
+            try {
+                pw = new PrintWriter(new FileOutputStream(filename));
+            } catch (FileNotFoundException e) {
+                reportErrorExit("Could not open %s for writing.\n",
+                                filename);
+            }
+        }
+
+        return pw;
     }
 
     /** Print a trip for the request on the standard input to the stsndard
@@ -132,9 +150,11 @@ public final class Main {
             List<String> directions = planner.planTrip(locations);
 
             _out.printf("From %s:\n\n", locations.get(0));
+            _out.flush();
 
             for (String direction: directions) {
                 _out.println(direction);
+                _out.flush();
             }
 
         } catch (NoSuchElementException e) {
@@ -146,6 +166,10 @@ public final class Main {
 
     /** Return a list of locations from _in.*/
     private static List<String> parseLocations() {
+        if (_in == null) {
+            reportErrorExit("Could not open request file.");
+        }
+
         Scanner scanner = new Scanner(_in);
         scanner.useDelimiter("\\s*,\\s*");
 
@@ -210,10 +234,10 @@ public final class Main {
     private static InputStream _in = new BufferedInputStream(System.in);
 
     /** The output writer to write outputs to.*/
-    private static PrintWriter _out;
+    private static PrintWriter _out = new PrintWriter(System.out);
 
     /** The error writer to write error to.*/
-    private static PrintWriter _err;
+    private static PrintWriter _err = new PrintWriter(System.err);
 
     /** Flag for if we have an error or not.*/
     private static boolean _hasError = false;
