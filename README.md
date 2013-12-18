@@ -1,4 +1,2 @@
-CS61B
+CS61B with Hilfinger
 =====
-
-Attempt at not getting Hilfinger'ed
